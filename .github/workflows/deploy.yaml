@@ -1,0 +1,41 @@
+name: Deploy
+
+on:
+  push:
+    branches: 
+      - master
+
+jobs:
+  android:
+    name: Deploy Android
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '1.22.5'
+      - run: flutter build apk
+      - uses: w9jds/firebase-action@master
+        with:
+          args: |
+            appdistribution:distribute \
+            build/app/outputs/apk/release/app-release.apk \
+            --app ${{ secrets.FIREBASE_ANDROID_APP_ID }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+  web:
+    name: Deploy Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: beta
+          flutter-version: '1.23.0-18.1.pre'
+      - run: flutter config --enable-web
+      - run: flutter build web
+      - uses: w9jds/firebase-action@master
+        with:
+          args: deploy --project ${{ secrets.FIREBASE_PROJECT_ID }}
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

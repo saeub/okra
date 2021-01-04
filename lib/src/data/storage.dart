@@ -1,0 +1,77 @@
+import 'package:flutter/foundation.dart';
+import 'package:localstorage/localstorage.dart';
+
+import 'api.dart';
+import 'tutorial.dart';
+
+class IncompatibleStorageError implements Exception {
+  final String key;
+  final dynamic value;
+
+  IncompatibleStorageError(this.key, this.value);
+
+  @override
+  String toString() {
+    return 'Storage key "$key" has incompatible value: $value';
+  }
+}
+
+class Storage extends ChangeNotifier {
+  static const storageName = 'storage';
+  static const apisKey = 'apis';
+  static const tutorialKey = 'tutorial';
+
+  final LocalStorage storage;
+  List<WebApi> _webApis;
+  TutorialApi _tutorialApi;
+
+  Storage(this.storage) {
+    List<dynamic> apiJsons = storage.getItem(apisKey) ?? [];
+    try {
+      _webApis =
+          apiJsons.cast<Map<String, dynamic>>().map(WebApi.fromJson).toList();
+    } on TypeError {
+      throw IncompatibleStorageError(apisKey, apiJsons);
+    } on NoSuchMethodError {
+      throw IncompatibleStorageError(apisKey, apiJsons);
+    }
+    Map<String, dynamic> tutorialJson =
+        storage.getItem(tutorialKey) ?? TutorialApi().toJson();
+    try {
+      _tutorialApi = TutorialApi.fromJson(tutorialJson);
+    } on TypeError {
+      throw IncompatibleStorageError(tutorialKey, tutorialJson);
+    }
+  }
+
+  List<WebApi> get webApis => _webApis;
+  TutorialApi get tutorialApi => _tutorialApi;
+
+  static Future<LocalStorage> loadLocalStorage() async {
+    var storage = LocalStorage(storageName);
+    var ready = await storage.ready;
+    if (ready) {
+      return storage;
+    } else {
+      throw 'Storage not ready';
+    }
+  }
+
+  void addWebApi(WebApi api) {
+    _webApis.add(api);
+    storage.setItem(apisKey, _webApis.map((api) => api.toJson()).toList());
+    notifyListeners();
+  }
+
+  void removeWebApi(WebApi api) {
+    _webApis.remove(api);
+    storage.setItem(apisKey, _webApis.map((api) => api.toJson()).toList());
+    notifyListeners();
+  }
+
+  void resetTutorial() {
+    _tutorialApi.resetProgress();
+    storage.setItem(tutorialKey, _tutorialApi.toJson());
+    notifyListeners();
+  }
+}
