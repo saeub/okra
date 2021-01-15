@@ -66,10 +66,7 @@ class Cloze extends Task {
                 logger
                     .log('started segment', {'segment': _currentSegmentIndex});
               } else {
-                finish(
-                  this,
-                  data: {'chosenIndices': _chosenIndices},
-                );
+                finish(data: {'chosenIndices': _chosenIndices});
               }
             },
           ),

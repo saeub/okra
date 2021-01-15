@@ -2,8 +2,7 @@ import 'package:flutter/widgets.dart';
 
 import '../data/models.dart';
 
-typedef FinishCallback = void Function(
-  Task task, {
+typedef FinishCallback = void Function({
   Map<String, dynamic> data,
   String message,
 });

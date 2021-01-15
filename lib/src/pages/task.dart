@@ -93,7 +93,7 @@ class _TaskPageState extends State<TaskPage> {
                   widget.experiment.type.taskFactory,
                   snapshot.data.data,
                   _logger,
-                  (task, {data, message}) {
+                  ({data, message}) {
                     _logger.stopwatch.stop();
                     _taskId = snapshot.data.id;
                     _results = TaskResults(
@@ -101,7 +101,7 @@ class _TaskPageState extends State<TaskPage> {
                       events: _logger.events,
                       message: message,
                     );
-                    if (widget.experiment.ratings != null) {
+                    if (widget.experiment.ratings != null && widget.experiment.ratings.isNotEmpty) {
                       startRatings();
                     } else {
                       finishTask();

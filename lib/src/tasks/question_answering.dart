@@ -28,7 +28,7 @@ class QuestionAnswering extends Task {
         });
         logger.log('started answering');
       } else {
-        finish(this);
+        finish(data: {'chosenIndices': []});
       }
     };
     switch (readingType) {
@@ -67,7 +67,7 @@ class QuestionAnswering extends Task {
       case QuestionAnsweringMode.questions:
         return QuestionsWidget(_questions, logger, (answers) {
           logger.log('finished answering');
-          finish(this);
+          finish(data: {'chosenIndices': answers});
         });
     }
   }

@@ -118,10 +118,7 @@ class PictureNaming extends Task {
                 logger
                     .log('started subtask', {'subtask': _currentSubtaskIndex});
               } else {
-                finish(
-                  this,
-                  data: {'chosenIndices': _chosenIndices},
-                );
+                finish(data: {'chosenIndices': _chosenIndices});
               }
             },
           ),
