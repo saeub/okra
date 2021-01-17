@@ -1,15 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:okra/generated/l10n.dart';
 
+import '../../generated/l10n.dart';
 import '../tasks/types.dart';
 import 'api.dart';
 import 'models.dart';
+import 'storage.dart';
 
-class _ExperimentTasks {
-  final Experiment experiment;
+class _TutorialExperiment {
+  final TutorialApi api;
+  final String id;
+  final TaskType type;
+  final String title;
+  final String instructions;
+  final List<TaskRating> ratings;
   final List<TaskData> tasks;
+  int progress;
 
-  _ExperimentTasks(this.experiment, this.tasks);
+  _TutorialExperiment(this.api, this.id,
+      {@required this.type,
+      @required this.title,
+      @required this.instructions,
+      @required this.ratings,
+      @required this.tasks,
+      @required this.progress});
+
+  Experiment toExperiment() {
+    return Experiment(
+      api,
+      id,
+      type: type,
+      title: title,
+      coverImageUrl: null,
+      instructions: instructions,
+      instructionsAudioUrl: null,
+      nTasks: tasks.length,
+      nTasksDone: progress,
+      ratings: ratings,
+    );
+  }
 
   bool hasTask(String taskId) {
     return tasks.where((task) => task.id == taskId).isNotEmpty;
@@ -17,19 +45,19 @@ class _ExperimentTasks {
 }
 
 class TutorialApi extends Api {
-  Map<String, _ExperimentTasks> _experiments;
-  Map<String, int> _progresses;
+  final Storage storage;
+  Map<String, _TutorialExperiment> _experiments;
 
-  TutorialApi([Map<String, int> progress]) {
+  TutorialApi(this.storage, [Map<String, int> progress]) {
+    progress ??= {};
     // TODO: Translate
     _experiments = {
-      '1': _ExperimentTasks(
-        Experiment(
-          this,
-          '1',
-          type: TaskType.questionAnswering,
-          title: 'What is Okra?',
-          instructions: '''
+      '1': _TutorialExperiment(
+        this,
+        '1',
+        type: TaskType.questionAnswering,
+        title: 'What is Okra?',
+        instructions: '''
 # What you will learn in this tutorial:
 
 - What is Okra and what is it for?
@@ -42,27 +70,26 @@ to the next sentence.**
 
 ## Press the button below to start!
           ''',
-          nTasks: 1,
-          ratings: [
-            TaskRating(
-              'How difficult was the text?',
-              TaskRatingType.slider,
-              lowExtreme: 'easy',
-              highExtreme: 'hard',
-            ),
-            TaskRating(
-              'How difficult were the questions?',
-              TaskRatingType.slider,
-              lowExtreme: 'easy',
-              highExtreme: 'hard',
-            ),
-            TaskRating(
-              'How much did you enjoy reading the text?',
-              TaskRatingType.emoticon,
-            ),
-          ],
-        ),
-        [
+        ratings: [
+          TaskRating(
+            'How difficult was the text?',
+            TaskRatingType.slider,
+            lowExtreme: 'easy',
+            highExtreme: 'hard',
+          ),
+          TaskRating(
+            'How difficult were the questions?',
+            TaskRatingType.slider,
+            lowExtreme: 'easy',
+            highExtreme: 'hard',
+          ),
+          TaskRating(
+            'How much did you enjoy reading the text?',
+            TaskRatingType.emoticon,
+          ),
+        ],
+        progress: progress['1'] ?? 0,
+        tasks: [
           TaskData(
             '1',
             {
@@ -124,18 +151,19 @@ to the next sentence.**
         ],
       ),
     };
-    _progresses = progress ?? {for (String id in _experiments.keys) id: 0};
   }
 
-  static TutorialApi fromJson(Map<String, dynamic> json) {
+  static TutorialApi fromJson(Map<String, dynamic> json, Storage storage) {
     return TutorialApi(
+      storage,
       Map<String, int>.from(json['progress']),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'progress': _progresses,
+      'progress': _experiments.map<String, dynamic>(
+          (id, experiment) => MapEntry(id, experiment.progress))
     };
   }
 
@@ -152,39 +180,36 @@ to the next sentence.**
   @override
   Future<List<Experiment>> getExperiments() async {
     return _experiments.values
-        .map((experiment) => experiment.experiment)
+        .map((experiment) => experiment.toExperiment())
         .toList();
   }
 
   @override
   Future<Experiment> getExperiment(String experimentId) async {
-    return _experiments[experimentId].experiment;
-  }
-
-  @override
-  Future<int> getExperimentProgress(String experimentId) async {
-    return _progresses[experimentId];
+    return _experiments[experimentId].toExperiment();
   }
 
   @override
   Future<TaskData> startTask(String experimentId) async {
-    var taskId = _progresses[experimentId];
+    var taskId = _experiments[experimentId].progress;
     return _experiments[experimentId].tasks[taskId];
   }
 
   @override
   Future<void> finishTask(String taskId, TaskResults results) async {
     var experiment = _experiments.values
-        .firstWhere((experiment) => experiment.hasTask(taskId))
-        .experiment;
-    _progresses[experiment.id]++;
+        .firstWhere((experiment) => experiment.hasTask(taskId));
+    experiment.progress++;
+    storage.saveTutorial();
   }
 
   void resetProgress() {
-    _progresses.updateAll((id, progress) => 0);
+    for (var experiment in _experiments.values) {
+      experiment.progress = 0;
+    }
   }
 
   bool isResettable() {
-    return _progresses.values.any((progress) => progress > 0);
+    return _experiments.values.any((experiment) => experiment.progress > 0);
   }
 }

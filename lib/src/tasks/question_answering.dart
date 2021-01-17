@@ -323,7 +323,7 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
       child: Center(
         child: Column(
           children: [
-            for (int i = 0; i < widget.questions.length; i++)
+            for (var i = 0; i < widget.questions.length; i++)
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Column(
@@ -335,7 +335,7 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                     ),
                     Column(
                       children: [
-                        for (int j = 0;
+                        for (var j = 0;
                             j < widget.questions[i].answers.length;
                             j++)
                           Row(

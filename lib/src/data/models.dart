@@ -10,17 +10,18 @@ class Experiment {
   final String id;
   final TaskType type;
   final String title, coverImageUrl, instructions, instructionsAudioUrl;
-  final int nTasks;
+  final int nTasks, nTasksDone;
   final List<TaskRating> ratings;
 
   Experiment(this.api, this.id,
-      {this.type,
-      this.title,
-      this.coverImageUrl,
-      this.instructions,
-      this.instructionsAudioUrl,
-      this.nTasks,
-      this.ratings});
+      {@required this.type,
+      @required this.title,
+      @required this.coverImageUrl,
+      @required this.instructions,
+      @required this.instructionsAudioUrl,
+      @required this.nTasks,
+      @required this.nTasksDone,
+      @required this.ratings});
 
   static Experiment fromJson(Api api, Map<String, dynamic> json) {
     List<Map<String, dynamic>> ratingsData =
@@ -34,11 +35,10 @@ class Experiment {
       instructions: json['instructions'],
       instructionsAudioUrl: json['instructionsAudioUrl'],
       nTasks: json['nTasks'],
+      nTasksDone: json['nTasksDone'],
       ratings: ratingsData?.map(TaskRating.fromJson)?.toList(),
     );
   }
-
-  Future<int> nTasksDone() async => api.getExperimentProgress(id);
 }
 
 @immutable

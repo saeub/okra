@@ -47,7 +47,7 @@ class PictureNaming extends Task {
           crossAxisCount: sqrt(nCards).ceil(),
           shrinkWrap: true,
           children: [
-            for (int i = 0; i < subtask.pictures.length; i++)
+            for (var i = 0; i < subtask.pictures.length; i++)
               Card(
                 margin:
                     _chosenIndex == i ? EdgeInsets.all(chosenCardMargin) : null,

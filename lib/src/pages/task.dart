@@ -101,7 +101,8 @@ class _TaskPageState extends State<TaskPage> {
                       events: _logger.events,
                       message: message,
                     );
-                    if (widget.experiment.ratings != null && widget.experiment.ratings.isNotEmpty) {
+                    if (widget.experiment.ratings != null &&
+                        widget.experiment.ratings.isNotEmpty) {
                       startRatings();
                     } else {
                       finishTask();
@@ -407,7 +408,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
     super.initState();
     _currentRatingIndex = 0;
     _answers = [
-      for (TaskRating rating in widget.ratings)
+      for (var rating in widget.ratings)
         rating.type == TaskRatingType.slider ? 0.5 : null
     ];
   }
@@ -432,7 +433,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (int i = 0; i < TaskRating.emoticons.length; i++)
+                    for (var i = 0; i < TaskRating.emoticons.length; i++)
                       IconButton(
                         icon: DecoratedBox(
                           decoration: _answers[_currentRatingIndex] == i
@@ -462,7 +463,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (int i = 0; i < TaskRating.radioLevels; i++)
+                    for (var i = 0; i < TaskRating.radioLevels; i++)
                       Radio(
                         value: i,
                         groupValue: _answers[_currentRatingIndex],
@@ -535,7 +536,12 @@ class ResultsWidget extends StatefulWidget {
 
 class _ResultsWidgetState extends State<ResultsWidget> {
   String _message;
-  Future<int> _progressFuture;
+  Future<Experiment> _experimentFuture;
+
+  /// Reload and return the experiment for checking the new `nTasksDone`
+  Future<Experiment> loadUpdatedExperiment() {
+    return widget.experiment.api.getExperiment(widget.experiment.id);
+  }
 
   @override
   void initState() {
@@ -547,7 +553,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
     ];
     _message = widget.message ??
         defaultMessages[Random().nextInt(defaultMessages.length)];
-    _progressFuture = widget.experiment.nTasksDone();
+    _experimentFuture = loadUpdatedExperiment();
   }
 
   @override
@@ -567,11 +573,11 @@ class _ResultsWidgetState extends State<ResultsWidget> {
               ),
             ),
             Spacer(flex: 1),
-            FutureBuilder<int>(
-              future: _progressFuture,
+            FutureBuilder<Experiment>(
+              future: _experimentFuture,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data < widget.experiment.nTasks) {
+                  if (snapshot.data.nTasksDone < snapshot.data.nTasks) {
                     // Still tasks left
                     return Column(
                       children: [
@@ -610,7 +616,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                     S.of(context).errorGeneric(snapshot.error),
                     retry: () {
                       setState(() {
-                        _progressFuture = widget.experiment.nTasksDone();
+                        _experimentFuture = loadUpdatedExperiment();
                       });
                     },
                   );

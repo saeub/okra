@@ -20,10 +20,12 @@ class Storage extends ChangeNotifier {
   static const storageName = 'storage';
   static const apisKey = 'apis';
   static const tutorialKey = 'tutorial';
+  static const showCompletedKey = 'showCompleted';
 
   final LocalStorage storage;
   List<WebApi> _webApis;
   TutorialApi _tutorialApi;
+  bool _showCompleted;
 
   Storage(this.storage) {
     List<dynamic> apiJsons = storage.getItem(apisKey) ?? [];
@@ -36,16 +38,18 @@ class Storage extends ChangeNotifier {
       throw IncompatibleStorageError(apisKey, apiJsons);
     }
     Map<String, dynamic> tutorialJson =
-        storage.getItem(tutorialKey) ?? TutorialApi().toJson();
+        storage.getItem(tutorialKey) ?? TutorialApi(this).toJson();
     try {
-      _tutorialApi = TutorialApi.fromJson(tutorialJson);
+      _tutorialApi = TutorialApi.fromJson(tutorialJson, this);
     } on TypeError {
       throw IncompatibleStorageError(tutorialKey, tutorialJson);
     }
+    _showCompleted = storage.getItem(showCompletedKey) ?? false;
   }
 
   List<WebApi> get webApis => _webApis;
   TutorialApi get tutorialApi => _tutorialApi;
+  bool get showCompleted => _showCompleted;
 
   static Future<LocalStorage> loadLocalStorage() async {
     var storage = LocalStorage(storageName);
@@ -72,6 +76,17 @@ class Storage extends ChangeNotifier {
   void resetTutorial() {
     _tutorialApi.resetProgress();
     storage.setItem(tutorialKey, _tutorialApi.toJson());
+    notifyListeners();
+  }
+
+  void saveTutorial() {
+    storage.setItem(tutorialKey, _tutorialApi.toJson());
+    notifyListeners();
+  }
+
+  void setShowCompleted(bool value) {
+    _showCompleted = value;
+    storage.setItem(showCompletedKey, _showCompleted);
     notifyListeners();
   }
 }

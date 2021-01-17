@@ -25,7 +25,7 @@ class _SettingsPageState extends State<SettingsPage> {
       body: ListView(
         children: [
           ListHeadingTile(S.of(context).settingsApiHeading),
-          for (WebApi api in storage.webApis)
+          for (var api in storage.webApis)
             ListTile(
               title: Text('${api.name} (${api.baseUrl})'),
               subtitle: Text(S.of(context).settingsApiDate(
@@ -72,6 +72,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 storage.addWebApi(newApi);
               }
             },
+          ),
+          CheckboxListTile(
+            title: Text('Show completed experiments'),
+            value: storage.showCompleted,
+            onChanged: storage.setShowCompleted,
           ),
           Divider(),
           ListHeadingTile(S.of(context).settingsTutorialHeading),

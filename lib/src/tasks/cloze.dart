@@ -77,7 +77,7 @@ class Cloze extends Task {
               child: Wrap(
                 alignment: WrapAlignment.center,
                 children: [
-                  for (int i = 0; i < segment.options.length; i++)
+                  for (var i = 0; i < segment.options.length; i++)
                     ClozeGap(
                       segment.options[i],
                       onTap: () {

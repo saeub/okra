@@ -5,9 +5,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:okra/generated/l10n.dart';
-import 'package:okra/src/util.dart';
 
+import '../../generated/l10n.dart';
+import '../util.dart';
 import 'models.dart';
 
 abstract class Api {
@@ -18,8 +18,6 @@ abstract class Api {
   Future<List<Experiment>> getExperiments();
 
   Future<Experiment> getExperiment(String experimentId);
-
-  Future<int> getExperimentProgress(String experimentId);
 
   Future<TaskData> startTask(String experimentId);
 
@@ -145,12 +143,6 @@ class WebApi extends Api {
   }
 
   @override
-  Future<int> getExperimentProgress(String experimentId) async {
-    Map<String, dynamic> data = await get('experiments/$experimentId');
-    return data['nTasksDone'];
-  }
-
-  @override
   Future<TaskData> startTask(String experimentId) async {
     Map<String, dynamic> data = await post('experiments/$experimentId/start');
     return TaskData.fromJson(data);
@@ -175,6 +167,8 @@ class WebApi extends Api {
       ).timeout(Duration(seconds: timeout));
     } on TimeoutException {
       throw ApiError(message: (s) => s.apiErrorTimeout, retriable: true);
+    } on SocketException {
+      throw ApiError(message: (s) => s.apiErrorConnectionFailed, retriable: true);
     }
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -203,6 +197,8 @@ class WebApi extends Api {
           .timeout(Duration(seconds: timeout));
     } on TimeoutException {
       throw ApiError(message: (s) => s.apiErrorTimeout, retriable: true);
+    } on SocketException {
+      throw ApiError(message: (s) => s.apiErrorConnectionFailed, retriable: true);
     }
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

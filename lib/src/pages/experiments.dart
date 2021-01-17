@@ -7,6 +7,7 @@ import '../../generated/l10n.dart';
 import '../data/api.dart';
 import '../data/models.dart';
 import '../data/storage.dart';
+import '../data/tutorial.dart';
 import '../pages/settings.dart';
 import '../pages/task.dart';
 import '../util.dart';
@@ -20,20 +21,16 @@ class ExperimentsMenuPage extends StatefulWidget {
 
 class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
   LinkedHashMap<Api, Future<List<Experiment>>> _experiments;
-  DateTime _lastUpdate;
 
   LinkedHashMap<Api, Future<List<Experiment>>> loadExperiments() {
     var storage = context.read<Storage>();
     var apis = <Api>[];
     apis.add(storage.tutorialApi);
     apis.addAll(storage.webApis);
-    // apis.add(FakeApi());
     var experiments = LinkedHashMap<Api, Future<List<Experiment>>>.fromIterable(
         apis,
         key: (api) => api,
         value: (api) => api.getExperiments());
-
-    _lastUpdate = DateTime.now();
     return experiments;
   }
 
@@ -72,69 +69,78 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
       body: RefreshIndicator(
         child: ListView(
           children: [
-            for (Api api in _experiments.keys)
-              Column(
-                key: ValueKey(api),
-                children: [
-                  ApiTitle(api),
-                  FutureBuilder<List<Experiment>>(
-                    future: _experiments[api],
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        if (snapshot.data.isNotEmpty) {
-                          return Column(
-                            children: snapshot.data
-                                .map((experiment) => ExperimentCard(
-                                      experiment,
-                                      lastUpdate: _lastUpdate,
-                                      onTap: () async {
-                                        await Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                TaskPage(experiment),
-                                          ),
-                                        );
-                                        setState(() {
-                                          _experiments = loadExperiments();
-                                        });
-                                      },
-                                      key: ValueKey<String>(experiment.id),
-                                    ))
-                                .toList(),
-                          );
-                        } else {
-                          return Column(
-                            children: [
-                              Icon(
-                                Icons.assignment,
-                                size: 50.0,
-                                color: Colors.grey,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 8.0),
-                                child: Text(S.of(context).experimentsNoTasks),
-                              ),
-                            ],
-                          );
-                        }
-                      } else if (snapshot.hasError) {
-                        return ErrorMessage(
-                            S.of(context).errorGeneric(snapshot.error),
-                            retry: () {
-                          setState(() {
-                            _experiments = loadExperiments();
-                          });
-                        });
-                      } else {
-                        return Column(children: [
-                          CircularProgressIndicator(),
-                        ]);
-                      }
-                    },
-                  ),
-                  Divider(),
-                ],
+            for (var api in _experiments.keys)
+              FutureBuilder<List<Experiment>>(
+                future: _experiments[api],
+                builder: (context, snapshot) {
+                  Widget content;
+                  if (snapshot.hasData) {
+                    var visibleExperiments = snapshot.data.where((experiment) =>
+                        storage.showCompleted ||
+                        experiment.nTasksDone < experiment.nTasks);
+                    if (visibleExperiments.isNotEmpty) {
+                      content = Column(
+                        children: [
+                          ...visibleExperiments
+                              .map((experiment) => ExperimentCard(
+                                    experiment,
+                                    onTap: () async {
+                                      await Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              TaskPage(experiment),
+                                        ),
+                                      );
+                                      setState(() {
+                                        _experiments = loadExperiments();
+                                      });
+                                    },
+                                    key: ValueKey<String>(experiment.id),
+                                  ))
+                              .toList(),
+                        ],
+                      );
+                    } else if (api is TutorialApi) {
+                      content = null;
+                    } else {
+                      content = Column(children: [
+                        Icon(
+                          Icons.assignment,
+                          size: 50.0,
+                          color: Colors.grey,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(S.of(context).experimentsNoTasks),
+                        ),
+                      ]);
+                    }
+                  } else if (snapshot.hasError) {
+                    content = ErrorMessage(
+                        S.of(context).errorGeneric(snapshot.error), retry: () {
+                      setState(() {
+                        _experiments = loadExperiments();
+                      });
+                    });
+                  } else {
+                    content = Column(
+                      children: [
+                        CircularProgressIndicator(),
+                      ],
+                    );
+                  }
+                  return Column(
+                    key: ValueKey(api),
+                    children: content != null
+                        ? [
+                            ApiTitle(api),
+                            content,
+                            Divider(),
+                          ]
+                        : [],
+                  );
+                },
               ),
           ],
         ),
@@ -177,53 +183,21 @@ class ApiTitle extends StatelessWidget {
   }
 }
 
-class ExperimentCard extends StatefulWidget {
+class ExperimentCard extends StatelessWidget {
   final Experiment experiment;
-  final DateTime lastUpdate;
   final GestureTapCallback onTap;
 
-  const ExperimentCard(this.experiment, {this.lastUpdate, this.onTap, Key key})
+  const ExperimentCard(this.experiment, {this.onTap, Key key})
       : super(key: key);
-
-  @override
-  _ExperimentCardState createState() => _ExperimentCardState();
-}
-
-class _ExperimentCardState extends State<ExperimentCard> {
-  Future<int> _progressFuture;
-  bool _disabled = false;
-
-  Future<int> loadProgress() {
-    return widget.experiment.nTasksDone().then((nTasksDone) {
-      setState(() {
-        _disabled = nTasksDone >= widget.experiment.nTasks;
-      });
-      return nTasksDone;
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _progressFuture = loadProgress();
-  }
-
-  @override
-  void didUpdateWidget(ExperimentCard oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.lastUpdate != widget.lastUpdate) {
-      _progressFuture = loadProgress();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     Widget content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (widget.experiment.coverImageUrl != null)
+        if (experiment.coverImageUrl != null)
           Image.network(
-            widget.experiment.coverImageUrl,
+            experiment.coverImageUrl,
             height: 150.0,
             fit: BoxFit.cover,
           ),
@@ -232,50 +206,29 @@ class _ExperimentCardState extends State<ExperimentCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.experiment.title,
+              Text(experiment.title,
                   style: TextStyle(
                     fontSize: 20.0,
                   )),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  FutureBuilder<int>(
-                    future: _progressFuture,
-                    builder: (context, snapshot) {
-                      if (snapshot.hasData) {
-                        return Text(
-                          S.of(context).experimentsTasksLeft(
-                              widget.experiment.nTasks - snapshot.data),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text(S.of(context).errorGeneric(snapshot.error));
-                      } else {
-                        return Text('');
-                      }
-                    },
-                  ),
+                  Text(
+                    S.of(context).experimentsTasksLeft(
+                        experiment.nTasks - experiment.nTasksDone),
+                  )
                 ],
               ),
             ],
           ),
         ),
-        FutureBuilder<int>(
-          future: _progressFuture,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              return LinearProgressIndicator(
-                  value: snapshot.data / widget.experiment.nTasks);
-            } else if (snapshot.hasError) {
-              return Text(S.of(context).errorGeneric(snapshot.error));
-            } else {
-              return LinearProgressIndicator();
-            }
-          },
-        ),
+        LinearProgressIndicator(
+            value: experiment.nTasksDone / experiment.nTasks)
       ],
     );
 
-    if (_disabled) {
+    var enabled = experiment.nTasksDone < experiment.nTasks;
+    if (!enabled) {
       content = ColorFiltered(
         colorFilter: ColorFilter.mode(Colors.white, BlendMode.saturation),
         child: content,
@@ -293,7 +246,7 @@ class _ExperimentCardState extends State<ExperimentCard> {
               child: InkWell(
                 highlightColor: Colors.transparent,
                 splashColor: Theme.of(context).accentColor.withOpacity(0.5),
-                onTap: _disabled ? null : widget.onTap,
+                onTap: enabled ? onTap : null,
               ),
             ),
           ),
