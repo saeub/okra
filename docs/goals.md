@@ -8,3 +8,11 @@ These are the main goals guiding Okra's design:
 - The tasks should be easily configurable and extensible.
 - The collected data should be useful (focus on research and automatic text processing).
 - The experiment environment should be as natural as possible (not "lab conditions").
+- Experiments for longitudinal studies should be possible.
+
+These are some possible use cases:
+
+- Research targeting between-subject differences in reading comprehension/behavior.
+- Research targeting the influence of text/language features on comprehension.
+- Data collection for text difficulty classification.
+- Evaluation of manual or automatic text simplification output.

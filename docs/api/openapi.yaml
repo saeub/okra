@@ -1,0 +1,285 @@
+openapi: "3.0.3"
+
+info:
+  title: "Okra API"
+  version: "0.1.0"
+  description: "Specification for the Okra API"
+  license:
+    name: "MIT"
+    url: "https://opensource.org/licenses/MIT"
+
+tags:
+  - name: "api"
+    description: "Operations related to the API and participant registration"
+  - name: "experiments"
+    description: "Operations related to experiments and task assignment"
+
+paths:
+  "/register":
+    post:
+      summary: "Register a participant"
+      tags:
+        - "api"
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: "object"
+              properties:
+                participantID:
+                  type: "string"
+                  description: "Participant ID"
+                registrationKey:
+                  type: "string"
+                  description: "Registration key"
+      responses:
+        "200":
+          description: "Successfully registered"
+          content:
+            "application/json":
+              schema:
+                type: "object"
+                properties:
+                  name:
+                    type: "string"
+                    description: "API name"
+                  iconURL:
+                    type: "string"
+                    description: "URL to API icon image"
+                  participantID:
+                    type: "string"
+                    description: "Participant ID"
+                  deviceKey:
+                    type: "string"
+                    description: "Device-specific access key"
+        "401":
+          $ref: "#/components/responses/InvalidCredentials"
+        default:
+          $ref: "#/components/responses/UnknownError"
+  "/experiments":
+    get:
+      summary: "List of available experiments"
+      tags:
+        - "experiments"
+      security:
+        - participantID: []
+        - deviceKey: []
+      responses:
+        "200":
+          description: "Experiment list"
+          content:
+            "application/json":
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Experiment"
+        "401":
+          $ref: "#/components/responses/InvalidCredentials"
+        default:
+          $ref: "#/components/responses/UnknownError"
+  "/experiments/{experimentID}":
+    get:
+      summary: "Information about an experiment"
+      tags:
+        - "experiments"
+      parameters:
+        - name: "experimentID"
+          in: "path"
+          description: "Experiment ID"
+          required: true
+          schema:
+            type: "string"
+      security:
+        - participantID: []
+        - deviceKey: []
+      responses:
+        "200":
+          description: "Experiment information"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/Experiment"
+        "401":
+          $ref: "#/components/responses/InvalidCredentials"
+        default:
+          $ref: "#/components/responses/UnknownError"
+  "/experiments/{experimentID}/start":
+    post:
+      summary: "Start a task in an experiment"
+      tags:
+        - "experiments"
+      parameters:
+        - name: "experimentID"
+          in: "path"
+          description: "Experiment ID"
+          required: true
+          schema:
+            type: "string"
+      security:
+        - participantID: []
+        - deviceKey: []
+      responses:
+        "200":
+          description: "Task successfully started"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/Task"
+        "401":
+          $ref: "#/components/responses/InvalidCredentials"
+        default:
+          $ref: "#/components/responses/UnknownError"
+  "/tasks/{taskID}/finish":
+    post:
+      summary: "Finish a previously started task"
+      tags:
+        - "experiments"
+      parameters:
+        - name: "taskID"
+          in: "path"
+          description: "Task ID"
+          required: true
+          schema:
+            type: "string"
+      security:
+        - participantID: []
+        - deviceKey: []
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/TaskResults"
+      responses:
+        "200":
+          description: "Task successfully finished"
+        "401":
+          $ref: "#/components/responses/InvalidCredentials"
+        default:
+          $ref: "#/components/responses/UnknownError"
+
+components:
+  schemas:
+    Experiment:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          description: "Experiment ID"
+        type:
+          type: "string"
+          description: "Task type"
+          enum:
+            - cloze
+            - picture-naming
+            - question-answering
+        title:
+          type: "string"
+          description: "Experiment title"
+        coverImageURL:
+          type: "string"
+          description: "URL to experiment cover image"
+        instructions:
+          type: "string"
+          description: "Task instructions (Markdown)"
+        nTasks:
+          type: "integer"
+          description: "Total number of tasks in the experiment"
+        nTasksDone:
+          type: "integer"
+          description: "Number of tasks already completed in the experiment"
+        ratings:
+          type: "array"
+          description: "Rating questions presented after each task"
+          items:
+            $ref: "#/components/schemas/TaskRating"
+    Task:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+          description: "Task ID"
+        data:
+          type: "object"
+          description: "Task data (schema specific to task type; see https://saeub.github.com/okra/tasks.html)"
+    TaskRating:
+      type: "object"
+      properties:
+        question:
+          type: "string"
+          description: "Question to be answered/rated"
+        type:
+          type: "string"
+          description: "Type of scale used for answering"
+          enum:
+            - emoticon
+            - radio
+            - slider
+        lowExtreme:
+          type: "string"
+          description: "Label of lowest value answer"
+        highExtreme:
+          type: "string"
+          description: "Label of highest value answer"
+    TaskResults:
+      type: "object"
+      properties:
+        data:
+          type: "object"
+          description: "Task result data (schema specific to task type)"
+        events:
+          type: "array"
+          description: "Events logged during task"
+          items:
+            $ref: "#/components/schemas/TaskEvent"
+        message:
+          type: "string"
+          description: "Message displayed to the participant at the end of the task"
+        ratingAnswers:
+          type: "array"
+          description: "Answers to rating questions"
+          items:
+            type: "number"
+    TaskEvent:
+      type: "object"
+      properties:
+        time:
+          type: "string"
+          description: "ISO-8601 timestamp (yyyy-MM-ddTHH:mm:ss.mmmuuu)"
+        label:
+          type: "string"
+          description: "Event label"
+        data:
+          type: "object"
+          description: "Additional event data"
+    Error:
+      type: "object"
+      properties:
+        error:
+          type: "string"
+          description: "Error message"
+  securitySchemes:
+    participantID:
+      type: "apiKey"
+      name: "X-Participant-ID"
+      in: "header"
+    deviceKey:
+      type: "apiKey"
+      name: "X-Device-Key"
+      in: "header"
+  responses:
+    InvalidCredentials:
+      description: "Invalid credentials"
+      content:
+        "application/json":
+          schema:
+            $ref: "#/components/schemas/Error"
+    UnknownError:
+      description: "Unknown error"
+      content:
+        "application/json":
+          schema:
+            $ref: "#/components/schemas/Error"
+
+externalDocs:
+  description: "Okra documentation on GitHub"
+  url: "https://saeub.github.com/okra"

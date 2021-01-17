@@ -150,7 +150,7 @@ class WebApi extends Api {
 
   @override
   Future<void> finishTask(String taskId, TaskResults results) async {
-    await post('tasks/$taskId/finish');
+    await post('tasks/$taskId/finish', data: results.toJson());
   }
 
   Future<dynamic> get(String route, {int timeout = 30}) async {
@@ -168,7 +168,8 @@ class WebApi extends Api {
     } on TimeoutException {
       throw ApiError(message: (s) => s.apiErrorTimeout, retriable: true);
     } on SocketException {
-      throw ApiError(message: (s) => s.apiErrorConnectionFailed, retriable: true);
+      throw ApiError(
+          message: (s) => s.apiErrorConnectionFailed, retriable: true);
     }
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -198,7 +199,8 @@ class WebApi extends Api {
     } on TimeoutException {
       throw ApiError(message: (s) => s.apiErrorTimeout, retriable: true);
     } on SocketException {
-      throw ApiError(message: (s) => s.apiErrorConnectionFailed, retriable: true);
+      throw ApiError(
+          message: (s) => s.apiErrorConnectionFailed, retriable: true);
     }
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

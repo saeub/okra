@@ -261,7 +261,8 @@ void main() {
       l.expectDoneLogging();
     });
 
-    testWidgets('supports self-paced reading without questions', (WidgetTester tester) async {
+    testWidgets('supports self-paced reading without questions',
+        (WidgetTester tester) async {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -273,9 +274,7 @@ void main() {
         },
         logger,
         ({data, message}) {
-          expect(data, {
-            'chosenIndices': []
-          });
+          expect(data, {'chosenIndices': []});
           expect(message, null);
         },
       ));
@@ -283,24 +282,32 @@ void main() {
 
       l.expectLogged('started reading');
 
-      l.expectLogged('started segment', {'segments': [0]});
+      l.expectLogged('started segment', {
+        'segments': [0]
+      });
       expect(find.text('First segment.'), findsOneWidget);
       await tester.tap(find.text('First segment.'));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started segment', {'segments': [0, 1]});
+      l.expectLogged('started segment', {
+        'segments': [0, 1]
+      });
       expect(find.text('First segment.'), findsOneWidget);
       expect(find.text('Second segment.'), findsOneWidget);
       await tester.tap(find.text('Second segment.'));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started segment', {'segments': [1, 2]});
+      l.expectLogged('started segment', {
+        'segments': [1, 2]
+      });
       expect(find.text('Second segment.'), findsOneWidget);
       expect(find.text('Third segment.'), findsOneWidget);
       await tester.tap(find.text('Third segment.'));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started segment', {'segments': [2]});
+      l.expectLogged('started segment', {
+        'segments': [2]
+      });
       expect(find.text('Third segment.'), findsOneWidget);
       await tester.tap(find.text('Third segment.'));
       await tester.pumpAndSettle();
