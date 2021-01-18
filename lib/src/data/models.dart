@@ -114,7 +114,7 @@ class TaskResults {
   Map<String, dynamic> toJson() {
     return {
       'data': data,
-      'events': events.map((event) => event.toJson()),
+      'events': events.map((event) => event.toJson()).toList(),
       'message': message,
       'ratingAnswers': ratingAnswers,
     };
