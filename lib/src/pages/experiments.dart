@@ -223,7 +223,7 @@ class ExperimentCard extends StatelessWidget {
           ),
         ),
         LinearProgressIndicator(
-            value: experiment.nTasksDone / experiment.nTasks)
+            value: experiment.nTasksDone / experiment.nTasks, minHeight: 8.0)
       ],
     );
 

@@ -18,6 +18,7 @@ class App extends StatelessWidget {
       title: 'Okra',
       theme: ThemeData(
         primarySwatch: Colors.green,
+        primaryColor: Colors.green[600],
       ),
       home: StorageWrapper(),
       localizationsDelegates: <LocalizationsDelegate>[
