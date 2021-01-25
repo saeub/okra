@@ -12,7 +12,8 @@ class Cloze extends Task {
   int _chosenIndex;
   List<int> _chosenIndices;
 
-  Cloze(Map<String, dynamic> data, TaskEventLogger logger) : super(logger) {
+  @override
+  void init(Map<String, dynamic> data) {
     List<String> segmentsData = data['segments'].cast<String>();
     _segments = segmentsData.map(Segment.fromString).toList();
     _currentSegmentIndex = 0;

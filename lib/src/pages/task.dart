@@ -197,6 +197,7 @@ class _TaskPageState extends State<TaskPage> {
                       onPressed: () {
                         _logger.log('confirmed aborting task');
                         Navigator.of(context).pop(true);
+                        // TODO: Send aborted task
                       },
                     ),
                   ],
@@ -369,9 +370,9 @@ class _TaskWidgetState extends State<TaskWidget> {
   @override
   void initState() {
     super.initState();
-    _task = widget.taskFactory(widget.data, widget.logger);
-    _task.setState = setState;
-    _task.finish = widget.onFinished;
+    _task = widget.taskFactory();
+    _task.injectDependencies(widget.logger, setState, widget.onFinished);
+    _task.init(widget.data);
   }
 
   @override

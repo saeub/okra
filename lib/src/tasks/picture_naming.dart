@@ -16,8 +16,8 @@ class PictureNaming extends Task {
   int _chosenIndex;
   List<int> _chosenIndices;
 
-  PictureNaming(Map<String, dynamic> data, TaskEventLogger logger)
-      : super(logger) {
+  @override
+  void init(Map<String, dynamic> data) {
     List<Map<String, dynamic>> subtaskData =
         data['subtasks'].cast<Map<String, dynamic>>();
     _subtasks = subtaskData.map(Subtask.fromJson).toList();

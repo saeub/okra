@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:okra/src/tasks/lexical_decision.dart';
 
 import 'cloze.dart';
 import 'picture_naming.dart';
 import 'question_answering.dart';
 import 'task.dart';
 
-typedef TaskFactory<T extends Task> = T Function(
-    Map<String, dynamic> data, TaskEventLogger logger);
+typedef TaskFactory<T extends Task> = T Function();
 
 @immutable
 class TaskType {
@@ -18,22 +18,28 @@ class TaskType {
 
   static final TaskType cloze = TaskType(
     Icons.assignment,
-    (data, logger) => Cloze(data, logger),
+    () => Cloze(),
+  );
+  static final TaskType lexicalDecision = TaskType(
+    Icons.spellcheck,
+    () => LexicalDecision(),
   );
   static final TaskType pictureNaming = TaskType(
     Icons.photo,
-    (data, logger) => PictureNaming(data, logger),
+    () => PictureNaming(),
     forceOrientation: Orientation.portrait,
   );
   static final TaskType questionAnswering = TaskType(
     Icons.question_answer,
-    (data, logger) => QuestionAnswering(data, logger),
+    () => QuestionAnswering(),
   );
 
   static TaskType fromString(String identifier) {
     switch (identifier) {
       case 'cloze':
         return cloze;
+      case 'lexical-decision':
+        return lexicalDecision;
       case 'picture-naming':
         return pictureNaming;
       case 'question-answering':

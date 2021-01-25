@@ -25,6 +25,29 @@ One segment of text is shown at a time, with a blank which has to be filled in b
   ```
   **NOTE:** An index of `null` means that there was no blank in this segment.
 
+## Lexical decision
+
+One word is shown at a time. The task is to determine whether it is a real word or a non-word. Similar to the original experiment described by [Meyer and Schvaneveldt (1971)](https://psycnet.apa.org/record/1972-04123-001), but showing single words instead of word pairs (though the task implementation allows newlines in words to display pairs).
+
+- Identifier: `lexical-decision`
+- Implementation: [`lib/src/tasks/lexical_decision.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/lexical_decision.dart)
+- Data structure:
+  ```json
+  {
+      "words": ["WORD", "WROD", ...],
+      "correctAnswers": [true, false, ...]
+  }
+  ```
+  **NOTE:** `correctAnswers` is optional and must be the same length as `words`. If it is provided, the participant will get immediate feedback about the correctness of their answer.
+- Results data structure:
+  ```json
+  {
+      "answers": [true, false, ...],
+      "durations": [123, 234, ...]
+  }
+  ```
+  **NOTE:** Durations are in milliseconds.
+
 ## Picture naming
 
 A textual stimulus is shown above a number of pictures. One of the pictures (or optionally a question mark, meaning "don't know") has to be selected.

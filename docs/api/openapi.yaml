@@ -170,6 +170,7 @@ components:
           description: "Task type"
           enum:
             - cloze
+            - lexical-decision
             - picture-naming
             - question-answering
         title:

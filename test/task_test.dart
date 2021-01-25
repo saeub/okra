@@ -106,6 +106,134 @@ void main() {
     });
   });
 
+  group('Lexical decision', () {
+    testWidgets('can be completed', (WidgetTester tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskWidget(
+        TaskType.lexicalDecision,
+        {
+          'words': ['word', 'non-word'],
+        },
+        logger,
+        ({data, message}) {
+          expect(data['answers'], [true, false]);
+          expect(data['durations'].length, 2);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started countdown');
+      expect(find.text('3'), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.tap(find.text('NOT A WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      expect(find.text('2'), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.tap(find.text('NOT A WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      expect(find.text('1'), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.tap(find.text('NOT A WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished countdown');
+
+      l.expectLogged('started word', {'word': 0});
+      expect(find.textContaining('word'), findsOneWidget);
+      await tester.tap(find.text('WORD'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished word', {'word': 0, 'answer': true});
+
+      l.expectLogged('started word', {'word': 1});
+      expect(find.textContaining('word'), findsOneWidget);
+      await tester.tap(find.text('NOT A WORD'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished word', {'word': 1, 'answer': false});
+
+      l.expectDoneLogging();
+    });
+
+    testWidgets('supports feedback', (WidgetTester tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskWidget(
+        TaskType.lexicalDecision,
+        {
+          'words': ['word', 'word', 'non-word', 'non-word'],
+          'correctAnswers': [true, true, false, false],
+        },
+        logger,
+        ({data, message}) {
+          expect(data['answers'], [true, false, true, false]);
+          expect(data['durations'].length, 4);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started countdown');
+      expect(find.text('3'), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      expect(find.text('2'), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      expect(find.text('1'), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished countdown');
+
+      l.expectLogged('started word', {'word': 0});
+      expect(find.textContaining('word'), findsOneWidget);
+      await tester.tap(find.text('WORD'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished word', {'word': 0, 'answer': true});
+      l.expectLogged('started feedback', {'word': 0, 'feedback': true});
+      expect(find.byIcon(Icons.thumb_up), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished feedback', {'word': 0});
+
+      l.expectLogged('started word', {'word': 1});
+      expect(find.textContaining('word'), findsOneWidget);
+      await tester.tap(find.text('NOT A WORD'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished word', {'word': 1, 'answer': false});
+      l.expectLogged('started feedback', {'word': 1, 'feedback': false});
+      expect(find.byIcon(Icons.thumb_down), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished feedback', {'word': 1});
+
+      l.expectLogged('started word', {'word': 2});
+      expect(find.textContaining('word'), findsOneWidget);
+      await tester.tap(find.text('WORD'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished word', {'word': 2, 'answer': true});
+      l.expectLogged('started feedback', {'word': 2, 'feedback': false});
+      expect(find.byIcon(Icons.thumb_down), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished feedback', {'word': 2});
+
+      l.expectLogged('started word', {'word': 3});
+      expect(find.textContaining('word'), findsOneWidget);
+      await tester.tap(find.text('NOT A WORD'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished word', {'word': 3, 'answer': false});
+      l.expectLogged('started feedback', {'word': 3, 'feedback': true});
+      expect(find.byIcon(Icons.thumb_up), findsOneWidget);
+      await tester.tap(find.text('WORD')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished feedback', {'word': 3});
+
+      l.expectDoneLogging();
+    });
+  });
+
   group('Picture naming', () {
     testWidgets('can be completed', (WidgetTester tester) async {
       // TODO: Make the task screen size independent, remove this setup

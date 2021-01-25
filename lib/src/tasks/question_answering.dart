@@ -16,8 +16,8 @@ class QuestionAnswering extends Task {
   List<Question> _questions;
   QuestionAnsweringMode _mode;
 
-  QuestionAnswering(Map<String, dynamic> data, TaskEventLogger logger)
-      : super(logger) {
+  @override
+  void init(Map<String, dynamic> data) {
     String readingType = data['readingType'];
     String text = data['text'];
     VoidCallback finishedReadingCallback = () {
