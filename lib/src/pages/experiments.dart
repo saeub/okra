@@ -25,7 +25,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
   LinkedHashMap<Api, Future<List<Experiment>>> loadExperiments() {
     var storage = context.read<Storage>();
     var apis = <Api>[];
-    apis.add(storage.tutorialApi);
+    // apis.add(storage.tutorialApi);
     apis.addAll(storage.webApis);
     var experiments = LinkedHashMap<Api, Future<List<Experiment>>>.fromIterable(
         apis,
