@@ -17,7 +17,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '1.22.5'
+          channel: beta
+          flutter-version: '1.23.0-18.1.pre'
       - run: flutter format -n --set-exit-if-changed lib/main.dart lib/src/ test/ test_driver/
       - run: flutter analyze
   test:
@@ -28,7 +29,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '1.22.5'
+          channel: beta
+          flutter-version: '1.23.0-18.1.pre'
       - run: flutter test
   drive-android:
     name: Integration tests
@@ -45,7 +47,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: subosito/flutter-action@v1
         with:
-          flutter-version: '1.22.5'
+          channel: beta
+          flutter-version: '1.23.0-18.1.pre'
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
