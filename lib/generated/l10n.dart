@@ -487,6 +487,26 @@ class S {
     );
   }
 
+  /// `NOT A WORD`
+  String get taskLexicalDecisionNonword {
+    return Intl.message(
+      'NOT A WORD',
+      name: 'taskLexicalDecisionNonword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `WORD`
+  String get taskLexicalDecisionWord {
+    return Intl.message(
+      'WORD',
+      name: 'taskLexicalDecisionWord',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `FINISH EXPERIMENT`
   String get taskResultsFinishExperiment {
     return Intl.message(

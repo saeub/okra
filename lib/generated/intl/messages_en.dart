@@ -76,6 +76,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "taskAbortDialogTitle" : MessageLookupByLibrary.simpleMessage("Do you really want to abort?"),
     "taskAdvance" : MessageLookupByLibrary.simpleMessage("CONTINUE"),
     "taskFinish" : MessageLookupByLibrary.simpleMessage("FINISH"),
+    "taskLexicalDecisionNonword" : MessageLookupByLibrary.simpleMessage("NOT A WORD"),
+    "taskLexicalDecisionWord" : MessageLookupByLibrary.simpleMessage("WORD"),
     "taskResultsFinishExperiment" : MessageLookupByLibrary.simpleMessage("FINISH EXPERIMENT"),
     "taskResultsMessage1" : MessageLookupByLibrary.simpleMessage("Awesome!"),
     "taskResultsMessage2" : MessageLookupByLibrary.simpleMessage("Well done!"),

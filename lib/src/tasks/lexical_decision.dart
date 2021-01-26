@@ -3,6 +3,7 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
 import 'package:okra/src/tasks/task.dart';
 
+import '../../generated/l10n.dart';
 import '../util.dart';
 
 class LexicalDecision extends Task {
@@ -78,7 +79,7 @@ class LexicalDecision extends Task {
                   child: AspectRatio(
                     aspectRatio: 1.0,
                     child: RaisedButton(
-                      child: Text('WORD'),
+                      child: Text(S.of(context).taskLexicalDecisionWord),
                       onPressed: buttonsEnabled ? () => _onTap(true) : null,
                     ),
                   ),
@@ -90,7 +91,7 @@ class LexicalDecision extends Task {
                   child: AspectRatio(
                     aspectRatio: 1.0,
                     child: RaisedButton(
-                      child: Text('NOT A WORD'),
+                      child: Text(S.of(context).taskLexicalDecisionNonword),
                       onPressed: buttonsEnabled ? () => _onTap(false) : null,
                     ),
                   ),

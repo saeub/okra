@@ -44,6 +44,8 @@
   "taskAbortDialogTitle": "Do you really want to abort?",
   "taskAdvance": "CONTINUE",
   "taskFinish": "FINISH",
+  "taskLexicalDecisionNonword": "NOT A WORD",
+  "taskLexicalDecisionWord": "WORD",
   "taskResultsFinishExperiment": "FINISH EXPERIMENT",
   "taskResultsMessage1": "Awesome!",
   "taskResultsMessage2": "Well done!",
