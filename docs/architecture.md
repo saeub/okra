@@ -1,8 +1,8 @@
-# System architecture and technical overview
+## System architecture and technical overview
 
 Okra, as a client-side application, is embedded in a client-server framework. The server-side implementation is largely up to the researcher creating and distributing the experiments, to keep the distribution logic and server infrastructure as flexible as possible. An example server implementation can be found [here](https://github.com/saeub/okra-server-example).
 
-## Terminology
+### Terminology
 
 **Experiment:** Has a set of tasks of a single type, which are to be completed in a specific order. A list of available experiments is shown to participants on the home screen of the app.
 
@@ -14,11 +14,11 @@ Okra, as a client-side application, is embedded in a client-server framework. Th
 
 **API:** A server endpoint which delivers experiments and tasks to participants. Defined by a base URL (e.g. `https://example.com/api`) An API may have many registered participants, and a participant may register with many APIs, and no data will be shared between APIs.
 
-## Client-server communication
+### Client-server communication
 
 A participant who has the app installed on their device may register with one or more APIs. After registering, they get an API-specific participant ID which is then used to identify the participant in subsequent HTTP requests.
 
-### Participant registration and authentication
+#### Participant registration and authentication
 
 To register with an API, a participant needs:
 
@@ -35,7 +35,7 @@ To identify and authenticate participants, two tokens are needed:
 
 These two tokens are included in the header of subsequent HTTP requests to that API.
 
-### Experiment and task distribution
+#### Experiment and task distribution
 
 The app fetches experiments and task data through HTTP requests and JSON. A simplified example:
 

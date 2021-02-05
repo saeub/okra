@@ -167,12 +167,7 @@ components:
           description: "Experiment ID"
         type:
           type: "string"
-          description: "Task type"
-          enum:
-            - cloze
-            - lexical-decision
-            - picture-naming
-            - question-answering
+          description: "Task type identifier (see https://saeub.github.io/okra/tasks.html)"
         title:
           type: "string"
           description: "Experiment title"
@@ -201,7 +196,7 @@ components:
           description: "Task ID"
         data:
           type: "object"
-          description: "Task data (schema specific to task type; see https://saeub.github.com/okra/tasks.html)"
+          description: "Task data (schema specific to task type; see https://saeub.github.io/okra/tasks.html)"
     TaskRating:
       type: "object"
       properties:
@@ -283,4 +278,4 @@ components:
 
 externalDocs:
   description: "Okra documentation on GitHub"
-  url: "https://saeub.github.com/okra"
+  url: "https://saeub.github.io/okra"
