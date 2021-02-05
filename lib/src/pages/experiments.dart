@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -75,32 +76,46 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                 builder: (context, snapshot) {
                   Widget content;
                   if (snapshot.hasData) {
-                    var visibleExperiments = snapshot.data.where((experiment) =>
-                        storage.showCompleted ||
-                        experiment.nTasksDone < experiment.nTasks);
+                    var visibleExperiments = snapshot.data
+                        .where((experiment) =>
+                            storage.showCompleted ||
+                            experiment.nTasksDone < experiment.nTasks)
+                        .toList();
                     if (visibleExperiments.isNotEmpty) {
-                      content = Column(
-                        children: [
-                          ...visibleExperiments
-                              .map((experiment) => ExperimentCard(
-                                    experiment,
-                                    onTap: () async {
-                                      await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              TaskPage(experiment),
-                                        ),
-                                      );
-                                      setState(() {
-                                        _experiments = loadExperiments();
-                                      });
-                                    },
-                                    key: ValueKey<String>(experiment.id),
-                                  ))
-                              .toList(),
-                        ],
-                      );
+                      content = LayoutBuilder(builder: (context, constraints) {
+                        var nColumns = max(constraints.maxWidth ~/ 400.0, 1);
+                        var columns = List<List<ExperimentCard>>.generate(
+                            nColumns, (_) => []);
+                        for (var i = 0; i < visibleExperiments.length; i++) {
+                          columns[i % nColumns].add(ExperimentCard(
+                            visibleExperiments[i],
+                            onTap: () async {
+                              await Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      TaskPage(visibleExperiments[i]),
+                                ),
+                              );
+                              setState(() {
+                                _experiments = loadExperiments();
+                              });
+                            },
+                            key: ValueKey<String>(visibleExperiments[i].id),
+                          ));
+                        }
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            for (var column in columns)
+                              Expanded(
+                                child: Column(
+                                  children: column,
+                                ),
+                              ),
+                          ],
+                        );
+                      });
                     } else if (api is TutorialApi) {
                       content = null;
                     } else {
@@ -195,12 +210,29 @@ class ExperimentCard extends StatelessWidget {
     Widget content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (experiment.coverImageUrl != null)
-          Image.network(
-            experiment.coverImageUrl,
-            height: 150.0,
-            fit: BoxFit.cover,
-          ),
+        SizedBox(
+          height: 150.0,
+          child: experiment.coverImageUrl != null
+              ? Image.network(
+                  experiment.coverImageUrl,
+                  fit: BoxFit.cover,
+                )
+              : ClipRect(
+                  child: Center(
+                    child: Transform.translate(
+                      offset: Offset(0, -25.0),
+                      child: Transform.rotate(
+                        angle: -0.3,
+                        child: Icon(
+                          experiment.type.icon,
+                          size: 200.0,
+                          color: Colors.green[200],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+        ),
         Padding(
           padding: EdgeInsets.all(8.0),
           child: Column(
