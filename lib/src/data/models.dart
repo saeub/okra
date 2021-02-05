@@ -16,12 +16,12 @@ class Experiment {
   Experiment(this.api, this.id,
       {@required this.type,
       @required this.title,
-      @required this.coverImageUrl,
+      this.coverImageUrl,
       @required this.instructions,
-      @required this.instructionsAudioUrl,
+      this.instructionsAudioUrl,
       @required this.nTasks,
       @required this.nTasksDone,
-      @required this.ratings});
+      this.ratings});
 
   static Experiment fromJson(Api api, Map<String, dynamic> json) {
     List<Map<String, dynamic>> ratingsData =
