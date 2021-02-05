@@ -33,7 +33,12 @@ jobs:
         with:
           channel: beta
           flutter-version: '1.23.0-18.1.pre'
-      - run: flutter test
+      - run: flutter test --coverage
+      - uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage/lcov.info
+          fail_ci_if_error: true
   # drive-android:
   #   name: Integration tests
   #   runs-on: ubuntu-latest
