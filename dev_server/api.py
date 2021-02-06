@@ -24,6 +24,120 @@ PARTICIPANT_ID = "mock_participant"
 REGISTRATION_KEY = "mock_regkey"
 DEVICE_KEY = "mock_devkey"
 
+EXAMPLE_IMAGE = "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5/ooooA//2Q=="
+EXAMPLE_RATING = {
+    "question": "Question?",
+    "type": "emoticon",
+    "lowExtreme": "bad",
+    "highExtreme": "good",
+}
+
+EXPERIMENTS_TASKS = [
+    (
+        {
+            "id": "1",
+            "type": "cloze",
+            "title": "Cloze task",
+            "instructions": "Fill in the gaps.",
+            "nTasks": 3,
+            "nTasksDone": 2,
+            "ratings": [EXAMPLE_RATING],
+        },
+        {
+            "segments": [
+                "This is a {{test|example}}.",
+                "This is a {{test|example}}.",
+                "This is a {{test|example}}.",
+            ],
+        },
+    ),
+    (
+        {
+            "id": "2",
+            "type": "lexical-decision",
+            "title": "Lexical decision task",
+            "instructions": "Is it a word?",
+            "nTasks": 5,
+            "nTasksDone": 0,
+            "ratings": [EXAMPLE_RATING],
+        },
+        {
+            "words": ["EXAMPLE", "EXALMPE", "EXAMPLE"],
+            "correctAnswers": [True, False, True],
+        },
+    ),
+    (
+        {
+            "id": "3",
+            "type": "picture-naming",
+            "title": "Picture-naming task",
+            "instructions": "Choose the matching picture.",
+            "nTasks": 4,
+            "nTasksDone": 3,
+            "ratings": [EXAMPLE_RATING],
+        },
+        {
+            "showQuestionMark": True,
+            "subtasks": [
+                {
+                    "text": "Example",
+                    "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
+                },
+                {
+                    "text": "Example",
+                    "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
+                },
+                {
+                    "text": "Example",
+                    "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
+                },
+            ],
+        },
+    ),
+    (
+        {
+            "id": "4",
+            "type": "question-answering",
+            "title": "Question answering task (normal)",
+            "instructions": "Answer the questions.",
+            "nTasks": 3,
+            "nTasksDone": 1,
+            "ratings": [EXAMPLE_RATING],
+        },
+        {
+            "readingType": "normal",
+            "text": "This is an example.",
+            "questions": [
+                {
+                    "question": "Question",
+                    "answers": ["Answer 1", "Answer 2", "Answer 3"],
+                },
+            ],
+        },
+    ),
+    (
+        {
+            "id": "5",
+            "type": "question-answering",
+            "title": "Question answering task (self-paced)",
+            "instructions": "Answer the questions.",
+            "nTasks": 2,
+            "nTasksDone": 2,
+            "ratings": [EXAMPLE_RATING],
+        },
+        {
+            "readingType": "self-paced",
+            "text": "This is an example.\nThis is an example.\nThis is an example.",
+            "questions": [
+                {
+                    "question": "Question",
+                    "answers": ["Answer 1", "Answer 2", "Answer 3"],
+                },
+            ],
+        },
+    ),
+]
+
 app = Flask(__name__)
 
 
@@ -69,9 +183,7 @@ def get_experiments():
         return {"error": "Invalid credentials"}, 401
 
     return {
-        "experiments": [
-            get_experiment("123")[0],
-        ],
+        "experiments": [experiment for experiment, _ in EXPERIMENTS_TASKS],
     }, 200
 
 
@@ -80,17 +192,11 @@ def get_experiment(experiment_id):
     if not check_credentials():
         return {"error": "Invalid credentials"}, 401
 
-    if experiment_id == "123":
-        return {
-            "id": "123",
-            "type": "cloze",
-            "title": "Cloze test",
-            "instructions": "Fill in the gaps.",
-            "nTasks": 3,
-            "nTasksDone": 2,
-        }, 200
-    else:
-        return {"error": f"No experiment with ID {experiment_id}"}, 404
+    for experiment, _ in EXPERIMENTS_TASKS:
+        if experiment["id"] == experiment_id:
+            return experiment, 200
+
+    return {"error": f"No experiment with ID {experiment_id}"}, 404
 
 
 @app.route("/experiments/<experiment_id>/start", methods=["POST"])
@@ -101,15 +207,12 @@ def start_experiment(experiment_id):
     if not request.is_json:
         return {"error": "Invalid request"}, 400
 
-    if experiment_id == "123":
-        return {
-            "id": "abc",
-            "data": {
-                "segments": [
-                    "This is an example of a {{cloze|close|kloze}} test.",
-                ],
-            },
-        }
+    for experiment, task in EXPERIMENTS_TASKS:
+        if experiment["id"] == experiment_id:
+            return {
+                "id": experiment["id"],
+                "data": task,
+            }
 
     return {"error": f"No experiment with ID {experiment_id}"}, 404
 
@@ -122,9 +225,10 @@ def finish_experiment(task_id):
     if not request.is_json:
         return {"error": "Invalid request"}, 400
 
-    if task_id == "abc":
-        print("Received results:", request.json)
-        return {}, 200
+    for experiment, task in EXPERIMENTS_TASKS:
+        if experiment["id"] == task_id:
+            print("Received results:", request.json)
+            return {}, 200
 
     return {"error": f"No task with ID {task_id}"}, 404
 
