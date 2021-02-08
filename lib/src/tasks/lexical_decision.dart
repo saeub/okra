@@ -80,7 +80,8 @@ class LexicalDecision extends Task {
                           padding: const EdgeInsets.only(right: 4.0),
                           child: RaisedButton(
                             child: Text(S.of(context).taskLexicalDecisionWord),
-                            onPressed: buttonsEnabled ? () => _onTap(true) : null,
+                            onPressed:
+                                buttonsEnabled ? () => _onTap(true) : null,
                           ),
                         ),
                       ),
@@ -88,7 +89,8 @@ class LexicalDecision extends Task {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 4.0),
                           child: RaisedButton(
-                            child: Text(S.of(context).taskLexicalDecisionNonword),
+                            child:
+                                Text(S.of(context).taskLexicalDecisionNonword),
                             onPressed:
                                 buttonsEnabled ? () => _onTap(false) : null,
                           ),

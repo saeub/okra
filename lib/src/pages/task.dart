@@ -316,33 +316,35 @@ class InstructionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Text(
-                  S.of(context).instructionsTitle,
-                  style: Theme.of(context).textTheme.headline4,
+          child: ReadingWidth(
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    S.of(context).instructionsTitle,
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
                 ),
-              ),
-              if (audioUrl != null) ReadAloudWidget(audioUrl),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: MarkdownBody(
-                  data: text,
-                  fitContent: false,
+                if (audioUrl != null) ReadAloudWidget(audioUrl),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: MarkdownBody(
+                    data: text,
+                    fitContent: false,
+                  ),
                 ),
-              ),
-              AccentButton(
-                Icons.arrow_forward,
-                S.of(context).instructionsStartTask,
-                onPressed: onStartPressed,
-              ),
-            ],
+                AccentButton(
+                  Icons.arrow_forward,
+                  S.of(context).instructionsStartTask,
+                  onPressed: onStartPressed,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -455,8 +457,8 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                               child: Icon(TaskRating.emoticons[i]),
                             ),
                             iconSize: 40.0,
-                            color: getEmoticonColor(
-                                i, _answers[_currentRatingIndex] == i ? 900 : 700),
+                            color: getEmoticonColor(i,
+                                _answers[_currentRatingIndex] == i ? 900 : 700),
                             onPressed: () {
                               setState(() {
                                 _answers[_currentRatingIndex] = i;

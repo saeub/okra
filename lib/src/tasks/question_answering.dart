@@ -101,15 +101,19 @@ class NormalReading extends StatelessWidget {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            MarkdownBody(data: text),
-            AccentButton(
-              Icons.arrow_forward,
-              S.of(context).taskAdvance,
-              onPressed: onFinishedReading,
+        child: Center(
+          child: ReadingWidth(
+            Column(
+              children: [
+                MarkdownBody(data: text),
+                AccentButton(
+                  Icons.arrow_forward,
+                  S.of(context).taskAdvance,
+                  onPressed: onFinishedReading,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -147,19 +151,21 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: ColoredBox(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: [
             Spacer(),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: AnimatedSegments(
-                _currentSegmentIndex > 0
-                    ? _segments[_currentSegmentIndex - 1]
-                    : '',
-                _currentSegmentIndex < _segments.length
-                    ? _segments[_currentSegmentIndex]
-                    : '',
+              child: ReadingWidth(
+                AnimatedSegments(
+                  _currentSegmentIndex > 0
+                      ? _segments[_currentSegmentIndex - 1]
+                      : '',
+                  _currentSegmentIndex < _segments.length
+                      ? _segments[_currentSegmentIndex]
+                      : '',
+                ),
               ),
             ),
             Spacer(),
@@ -321,66 +327,68 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Center(
-        child: Column(
-          children: [
-            for (var i = 0; i < widget.questions.length; i++)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.questions[i].question,
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    Column(
-                      children: [
-                        for (var j = 0;
-                            j < widget.questions[i].answers.length;
-                            j++)
-                          Row(
-                            children: [
-                              Radio(
-                                value: j,
-                                groupValue: _answers[i],
-                                onChanged: (value) {
-                                  widget.logger.log('chose answer',
-                                      {'question': i, 'answer': j});
-                                  setState(() {
-                                    _answers[i] = j;
-                                  });
-                                },
-                              ),
-                              Expanded(
-                                child: GestureDetector(
-                                    child: Text(
-                                      widget.questions[i].answers[j],
-                                    ),
-                                    onTap: () {
-                                      widget.logger.log('chose answer',
-                                          {'question': i, 'answer': j});
-                                      setState(() {
-                                        _answers[i] = j;
-                                      });
-                                    }),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ],
+        child: ReadingWidth(
+          Column(
+            children: [
+              for (var i = 0; i < widget.questions.length; i++)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.questions[i].question,
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      Column(
+                        children: [
+                          for (var j = 0;
+                              j < widget.questions[i].answers.length;
+                              j++)
+                            Row(
+                              children: [
+                                Radio(
+                                  value: j,
+                                  groupValue: _answers[i],
+                                  onChanged: (value) {
+                                    widget.logger.log('chose answer',
+                                        {'question': i, 'answer': j});
+                                    setState(() {
+                                      _answers[i] = j;
+                                    });
+                                  },
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                      child: Text(
+                                        widget.questions[i].answers[j],
+                                      ),
+                                      onTap: () {
+                                        widget.logger.log('chose answer',
+                                            {'question': i, 'answer': j});
+                                        setState(() {
+                                          _answers[i] = j;
+                                        });
+                                      }),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+              AccentButton(
+                Icons.arrow_forward,
+                S.of(context).taskFinish,
+                onPressed: !_answers.contains(null)
+                    ? () {
+                        widget.onFinishedAnswering(_answers);
+                      }
+                    : null,
               ),
-            AccentButton(
-              Icons.arrow_forward,
-              S.of(context).taskFinish,
-              onPressed: !_answers.contains(null)
-                  ? () {
-                      widget.onFinishedAnswering(_answers);
-                    }
-                  : null,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -34,71 +34,75 @@ class PictureNaming extends Task {
     if (_showQuestionMark) nCards++;
     return Column(
       children: [
-        Spacer(),
+        Spacer(flex: 2),
         Text(
           subtask.text,
           style: TextStyle(
             fontSize: 30.0,
           ),
         ),
-        Spacer(),
+        Spacer(flex: 1),
         // TODO: guarantee no overflow
-        GridView.count(
-          crossAxisCount: sqrt(nCards).ceil(),
-          shrinkWrap: true,
-          children: [
-            for (var i = 0; i < subtask.pictures.length; i++)
-              Card(
-                margin:
-                    _chosenIndex == i ? EdgeInsets.all(chosenCardMargin) : null,
-                clipBehavior: Clip.antiAlias,
-                child: Stack(
-                  children: [
-                    SizedBox.expand(
-                      child: FittedBox(
-                        child: subtask.pictures[i],
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    Positioned.fill(
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          highlightColor: Colors.transparent,
-                          onTap: () {
-                            _onTap(i);
-                          },
+        ReadingWidth(
+          GridView.count(
+            crossAxisCount: sqrt(nCards).ceil(),
+            shrinkWrap: true,
+            children: [
+              for (var i = 0; i < subtask.pictures.length; i++)
+                Card(
+                  margin: _chosenIndex == i
+                      ? EdgeInsets.all(chosenCardMargin)
+                      : null,
+                  clipBehavior: Clip.antiAlias,
+                  child: Stack(
+                    children: [
+                      SizedBox.expand(
+                        child: FittedBox(
+                          child: subtask.pictures[i],
+                          fit: BoxFit.contain,
                         ),
                       ),
-                    ),
-                  ],
+                      Positioned.fill(
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            highlightColor: Colors.transparent,
+                            onTap: () {
+                              _onTap(i);
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            if (_showQuestionMark)
-              Card(
-                margin: _chosenIndex == -1
-                    ? EdgeInsets.all(chosenCardMargin)
-                    : null,
-                child: InkWell(
-                  highlightColor: Colors.transparent,
-                  onTap: () {
-                    _onTap(-1);
-                  },
-                  child: Center(
-                    child: Text(
-                      '?',
-                      style: TextStyle(
-                        fontSize:
-                            _chosenIndex == -1 ? 70.0 - chosenCardMargin : 70.0,
-                        fontWeight: FontWeight.bold,
+              if (_showQuestionMark)
+                Card(
+                  margin: _chosenIndex == -1
+                      ? EdgeInsets.all(chosenCardMargin)
+                      : null,
+                  child: InkWell(
+                    highlightColor: Colors.transparent,
+                    onTap: () {
+                      _onTap(-1);
+                    },
+                    child: Center(
+                      child: Text(
+                        '?',
+                        style: TextStyle(
+                          fontSize: _chosenIndex == -1
+                              ? 70.0 - chosenCardMargin
+                              : 70.0,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
-        Spacer(),
+        Spacer(flex: 1),
         Visibility(
           visible: _chosenIndex != null,
           maintainSize: true,
@@ -123,6 +127,7 @@ class PictureNaming extends Task {
             },
           ),
         ),
+        Spacer(flex: 1),
         AnimatedLinearProgressIndicator(
             _currentSubtaskIndex / _subtasks.length),
       ],

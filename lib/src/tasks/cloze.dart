@@ -27,24 +27,26 @@ class Cloze extends Task {
     return Column(
       children: [
         Expanded(
-          child: Center(
-            child: Text.rich(
-              TextSpan(children: [
-                TextSpan(text: segment.pre),
-                if (segment.options.isNotEmpty)
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.baseline,
-                    baseline: TextBaseline.alphabetic,
-                    child: ClozeGap(_chosenIndex != null
-                        ? segment.options[_chosenIndex]
-                        : null),
-                  ),
-                TextSpan(text: segment.post),
-              ]),
-              style: TextStyle(
-                fontSize: fontSize,
+          child: ReadingWidth(
+            Center(
+              child: Text.rich(
+                TextSpan(children: [
+                  TextSpan(text: segment.pre),
+                  if (segment.options.isNotEmpty)
+                    WidgetSpan(
+                      alignment: PlaceholderAlignment.baseline,
+                      baseline: TextBaseline.alphabetic,
+                      child: ClozeGap(_chosenIndex != null
+                          ? segment.options[_chosenIndex]
+                          : null),
+                    ),
+                  TextSpan(text: segment.post),
+                ]),
+                style: TextStyle(
+                  fontSize: fontSize,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
         ),

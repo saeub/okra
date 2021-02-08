@@ -113,3 +113,17 @@ class _AnimatedLinearProgressIndicatorState
     );
   }
 }
+
+class ReadingWidth extends StatelessWidget {
+  final Widget child;
+
+  const ReadingWidth(this.child, {Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 700.0),
+      child: child,
+    );
+  }
+}
