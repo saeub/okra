@@ -25,12 +25,16 @@ REGISTRATION_KEY = "mock_regkey"
 DEVICE_KEY = "mock_devkey"
 
 EXAMPLE_IMAGE = "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5/ooooA//2Q=="
-EXAMPLE_RATING = {
-    "question": "Question?",
-    "type": "emoticon",
-    "lowExtreme": "bad",
-    "highExtreme": "good",
-}
+
+
+def example_rating(type: str = "emoticon"):
+    return {
+        "question": "Question?",
+        "type": type,
+        "lowExtreme": "bad",
+        "highExtreme": "good",
+    }
+
 
 EXPERIMENTS_TASKS = [
     (
@@ -41,7 +45,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "Fill in the gaps.",
             "nTasks": 3,
             "nTasksDone": 2,
-            "ratings": [EXAMPLE_RATING],
+            "ratings": [example_rating("emoticon")],
         },
         {
             "segments": [
@@ -59,7 +63,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "Is it a word?",
             "nTasks": 5,
             "nTasksDone": 0,
-            "ratings": [EXAMPLE_RATING],
+            "ratings": [example_rating("radio")],
         },
         {
             "words": ["EXAMPLE", "EXALMPE", "EXAMPLE"],
@@ -74,7 +78,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "Choose the matching picture.",
             "nTasks": 4,
             "nTasksDone": 3,
-            "ratings": [EXAMPLE_RATING],
+            "ratings": [example_rating("slider")],
         },
         {
             "showQuestionMark": True,
@@ -102,7 +106,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "Answer the questions.",
             "nTasks": 3,
             "nTasksDone": 1,
-            "ratings": [EXAMPLE_RATING],
+            "ratings": [example_rating("emoticon"), example_rating("slider")],
         },
         {
             "readingType": "normal",
@@ -121,9 +125,8 @@ EXPERIMENTS_TASKS = [
             "type": "question-answering",
             "title": "Question answering task (self-paced)",
             "instructions": "Answer the questions.",
-            "nTasks": 2,
+            "nTasks": 7,
             "nTasksDone": 2,
-            "ratings": [EXAMPLE_RATING],
         },
         {
             "readingType": "self-paced",
