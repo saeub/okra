@@ -587,18 +587,24 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                           style: Theme.of(context).textTheme.headline6,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            AccentButton(
-                              Icons.schedule,
-                              S.of(context).taskResultsNoNextTask,
-                              color: Colors.grey,
-                              onPressed: Navigator.of(context).pop,
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: AccentButton(
+                                Icons.schedule,
+                                S.of(context).taskResultsNoNextTask,
+                                color: Colors.grey,
+                                onPressed: Navigator.of(context).pop,
+                              ),
                             ),
-                            AccentButton(
-                              Icons.arrow_forward,
-                              S.of(context).taskResultsNextTask,
-                              onPressed: widget.onContinuePressed,
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: AccentButton(
+                                Icons.arrow_forward,
+                                S.of(context).taskResultsNextTask,
+                                onPressed: widget.onContinuePressed,
+                              ),
                             ),
                           ],
                         ),

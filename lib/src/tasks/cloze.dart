@@ -72,27 +72,30 @@ class Cloze extends Task {
             },
           ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                children: [
-                  for (var i = 0; i < segment.options.length; i++)
-                    ClozeGap(
-                      segment.options[i],
-                      onTap: () {
-                        logger.log('chose option',
-                            {'segment': _currentSegmentIndex, 'option': i});
-                        setState(() {
-                          _chosenIndex = i;
-                        });
-                      },
-                    ),
-                ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  children: [
+                    for (var i = 0; i < segment.options.length; i++)
+                      ClozeGap(
+                        segment.options[i],
+                        onTap: () {
+                          logger.log('chose option',
+                              {'segment': _currentSegmentIndex, 'option': i});
+                          setState(() {
+                            _chosenIndex = i;
+                          });
+                        },
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         AnimatedLinearProgressIndicator(
             _currentSegmentIndex / _segments.length),
