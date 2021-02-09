@@ -17,7 +17,7 @@ class TaskType {
   TaskType(this.icon, this.taskFactory, {this.forceOrientation});
 
   static final TaskType cloze = TaskType(
-    Icons.assignment,
+    Icons.description,
     () => Cloze(),
   );
   static final TaskType lexicalDecision = TaskType(

@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:okra/src/tasks/task.dart';
 
 import '../../generated/l10n.dart';
-import '../util.dart';
 
 class LexicalDecision extends Task {
   List<String> _words;
@@ -34,73 +33,80 @@ class LexicalDecision extends Task {
   }
 
   @override
+  double getProgress() => _feedback == null
+      ? _currentWordIndex / _words.length
+      : (_currentWordIndex + 1) / _words.length;
+
+  @override
   Widget build(BuildContext context) {
     var buttonsEnabled = _currentWordIndex >= 0 && _feedback == null;
     return Column(
       children: [
-        Spacer(),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: _currentWordIndex == -1
-              ? Text(
-                  _countdown.toString(),
-                  style: TextStyle(
-                    fontSize: 30.0,
-                  ),
-                )
-              : _feedback == null
-                  ? Text(
-                      _words[_currentWordIndex],
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 30.0,
-                      ),
-                    )
-                  : _feedback == true
-                      ? Icon(
-                          Icons.thumb_up,
-                          color: Colors.green,
-                          size: 50.0,
-                        )
-                      : Icon(
-                          Icons.thumb_down,
-                          color: Colors.red,
-                          size: 50.0,
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Spacer(),
+                _currentWordIndex == -1
+                    ? Text(
+                        _countdown.toString(),
+                        style: TextStyle(
+                          fontSize: 30.0,
                         ),
-        ),
-        Spacer(),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 4.0),
-                  child: AspectRatio(
-                    aspectRatio: 1.0,
-                    child: RaisedButton(
-                      child: Text(S.of(context).taskLexicalDecisionWord),
-                      onPressed: buttonsEnabled ? () => _onTap(true) : null,
-                    ),
+                      )
+                    : _feedback == null
+                        ? Text(
+                            _words[_currentWordIndex],
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 30.0,
+                            ),
+                          )
+                        : _feedback == true
+                            ? Icon(
+                                Icons.thumb_up,
+                                color: Colors.green,
+                                size: 50.0,
+                              )
+                            : Icon(
+                                Icons.thumb_down,
+                                color: Colors.red,
+                                size: 50.0,
+                              ),
+                Spacer(),
+                Flexible(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 4.0),
+                          child: RaisedButton(
+                            child: Text(S.of(context).taskLexicalDecisionWord),
+                            onPressed:
+                                buttonsEnabled ? () => _onTap(true) : null,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: RaisedButton(
+                            child:
+                                Text(S.of(context).taskLexicalDecisionNonword),
+                            onPressed:
+                                buttonsEnabled ? () => _onTap(false) : null,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 4.0),
-                  child: AspectRatio(
-                    aspectRatio: 1.0,
-                    child: RaisedButton(
-                      child: Text(S.of(context).taskLexicalDecisionNonword),
-                      onPressed: buttonsEnabled ? () => _onTap(false) : null,
-                    ),
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
-        AnimatedLinearProgressIndicator(_currentWordIndex / _words.length),
       ],
     );
   }

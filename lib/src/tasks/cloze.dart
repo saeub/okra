@@ -22,29 +22,34 @@ class Cloze extends Task {
   }
 
   @override
+  double getProgress() => _currentSegmentIndex / _segments.length;
+
+  @override
   Widget build(BuildContext context) {
     var segment = _segments[_currentSegmentIndex];
     return Column(
       children: [
         Expanded(
-          child: Center(
-            child: Text.rich(
-              TextSpan(children: [
-                TextSpan(text: segment.pre),
-                if (segment.options.isNotEmpty)
-                  WidgetSpan(
-                    alignment: PlaceholderAlignment.baseline,
-                    baseline: TextBaseline.alphabetic,
-                    child: ClozeGap(_chosenIndex != null
-                        ? segment.options[_chosenIndex]
-                        : null),
-                  ),
-                TextSpan(text: segment.post),
-              ]),
-              style: TextStyle(
-                fontSize: fontSize,
+          child: ReadingWidth(
+            Center(
+              child: Text.rich(
+                TextSpan(children: [
+                  TextSpan(text: segment.pre),
+                  if (segment.options.isNotEmpty)
+                    WidgetSpan(
+                      alignment: PlaceholderAlignment.baseline,
+                      baseline: TextBaseline.alphabetic,
+                      child: ClozeGap(_chosenIndex != null
+                          ? segment.options[_chosenIndex]
+                          : null),
+                    ),
+                  TextSpan(text: segment.post),
+                ]),
+                style: TextStyle(
+                  fontSize: fontSize,
+                ),
+                textAlign: TextAlign.center,
               ),
-              textAlign: TextAlign.center,
             ),
           ),
         ),
@@ -72,30 +77,31 @@ class Cloze extends Task {
             },
           ),
         ),
-        Row(
-          children: [
-            Expanded(
-              child: Wrap(
-                alignment: WrapAlignment.center,
-                children: [
-                  for (var i = 0; i < segment.options.length; i++)
-                    ClozeGap(
-                      segment.options[i],
-                      onTap: () {
-                        logger.log('chose option',
-                            {'segment': _currentSegmentIndex, 'option': i});
-                        setState(() {
-                          _chosenIndex = i;
-                        });
-                      },
-                    ),
-                ],
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  children: [
+                    for (var i = 0; i < segment.options.length; i++)
+                      ClozeGap(
+                        segment.options[i],
+                        onTap: () {
+                          logger.log('chose option',
+                              {'segment': _currentSegmentIndex, 'option': i});
+                          setState(() {
+                            _chosenIndex = i;
+                          });
+                        },
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-        AnimatedLinearProgressIndicator(
-            _currentSegmentIndex / _segments.length),
       ],
     );
   }

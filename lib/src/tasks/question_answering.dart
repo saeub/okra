@@ -15,16 +15,23 @@ class QuestionAnswering extends Task {
   Widget _readingWidget;
   List<Question> _questions;
   QuestionAnsweringMode _mode;
+  double _progress;
 
   @override
   void init(Map<String, dynamic> data) {
     String readingType = data['readingType'];
     String text = data['text'];
-    VoidCallback finishedReadingCallback = () {
+    var progressCallback = (progress) {
+      setState(() {
+        _progress = progress;
+      });
+    };
+    var finishedReadingCallback = () {
       logger.log('finished reading');
       if (_questions.isNotEmpty) {
         setState(() {
           _mode = QuestionAnsweringMode.questions;
+          _progress = null;
         });
         logger.log('started answering');
       } else {
@@ -33,11 +40,13 @@ class QuestionAnswering extends Task {
     };
     switch (readingType) {
       case 'normal':
-        _readingWidget = NormalReading(text, logger, finishedReadingCallback);
+        _readingWidget = NormalReading(
+            text, logger, progressCallback, finishedReadingCallback);
         break;
       case 'self-paced':
-        _readingWidget =
-            SelfPacedReading(text, logger, finishedReadingCallback);
+        _readingWidget = SelfPacedReading(
+            text, logger, progressCallback, finishedReadingCallback);
+        _progress = 0;
         break;
       default:
         throw ArgumentError('Unknown reading type "$readingType"');
@@ -56,6 +65,9 @@ class QuestionAnswering extends Task {
     logger.log('started reading');
     logger.stopwatch.start();
   }
+
+  @override
+  double getProgress() => _progress;
 
   @override
   // TODO: null safety
@@ -91,9 +103,12 @@ class Question {
 class NormalReading extends StatelessWidget {
   final String text;
   final TaskEventLogger logger;
+  final Function(double progress) onProgress;
   final VoidCallback onFinishedReading;
 
-  const NormalReading(this.text, this.logger, this.onFinishedReading, {Key key})
+  const NormalReading(
+      this.text, this.logger, this.onProgress, this.onFinishedReading,
+      {Key key})
       : super(key: key);
 
   @override
@@ -101,15 +116,19 @@ class NormalReading extends StatelessWidget {
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            MarkdownBody(data: text),
-            AccentButton(
-              Icons.arrow_forward,
-              S.of(context).taskAdvance,
-              onPressed: onFinishedReading,
+        child: Center(
+          child: ReadingWidth(
+            Column(
+              children: [
+                MarkdownBody(data: text),
+                AccentButton(
+                  Icons.arrow_forward,
+                  S.of(context).taskAdvance,
+                  onPressed: onFinishedReading,
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -119,9 +138,11 @@ class NormalReading extends StatelessWidget {
 class SelfPacedReading extends StatefulWidget {
   final String text;
   final TaskEventLogger logger;
+  final Function(double progress) onProgress;
   final VoidCallback onFinishedReading;
 
-  const SelfPacedReading(this.text, this.logger, this.onFinishedReading,
+  const SelfPacedReading(
+      this.text, this.logger, this.onProgress, this.onFinishedReading,
       {Key key})
       : super(key: key);
 
@@ -147,24 +168,24 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: ColoredBox(
-        color: Colors.white,
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: [
             Spacer(),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: AnimatedSegments(
-                _currentSegmentIndex > 0
-                    ? _segments[_currentSegmentIndex - 1]
-                    : '',
-                _currentSegmentIndex < _segments.length
-                    ? _segments[_currentSegmentIndex]
-                    : '',
+              child: ReadingWidth(
+                AnimatedSegments(
+                  _currentSegmentIndex > 0
+                      ? _segments[_currentSegmentIndex - 1]
+                      : '',
+                  _currentSegmentIndex < _segments.length
+                      ? _segments[_currentSegmentIndex]
+                      : '',
+                ),
               ),
             ),
             Spacer(),
-            AnimatedLinearProgressIndicator(
-                _currentSegmentIndex / _segments.length),
           ],
         ),
       ),
@@ -179,6 +200,7 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
               if (_currentSegmentIndex < _segments.length) _currentSegmentIndex,
             ]
           });
+          widget.onProgress(_currentSegmentIndex / _segments.length);
         } else {
           widget.onFinishedReading();
         }
@@ -321,66 +343,68 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Center(
-        child: Column(
-          children: [
-            for (var i = 0; i < widget.questions.length; i++)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.questions[i].question,
-                      style: Theme.of(context).textTheme.headline6,
-                    ),
-                    Column(
-                      children: [
-                        for (var j = 0;
-                            j < widget.questions[i].answers.length;
-                            j++)
-                          Row(
-                            children: [
-                              Radio(
-                                value: j,
-                                groupValue: _answers[i],
-                                onChanged: (value) {
-                                  widget.logger.log('chose answer',
-                                      {'question': i, 'answer': j});
-                                  setState(() {
-                                    _answers[i] = j;
-                                  });
-                                },
-                              ),
-                              Expanded(
-                                child: GestureDetector(
-                                    child: Text(
-                                      widget.questions[i].answers[j],
-                                    ),
-                                    onTap: () {
-                                      widget.logger.log('chose answer',
-                                          {'question': i, 'answer': j});
-                                      setState(() {
-                                        _answers[i] = j;
-                                      });
-                                    }),
-                              ),
-                            ],
-                          ),
-                      ],
-                    ),
-                  ],
+        child: ReadingWidth(
+          Column(
+            children: [
+              for (var i = 0; i < widget.questions.length; i++)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.questions[i].question,
+                        style: Theme.of(context).textTheme.headline6,
+                      ),
+                      Column(
+                        children: [
+                          for (var j = 0;
+                              j < widget.questions[i].answers.length;
+                              j++)
+                            Row(
+                              children: [
+                                Radio(
+                                  value: j,
+                                  groupValue: _answers[i],
+                                  onChanged: (value) {
+                                    widget.logger.log('chose answer',
+                                        {'question': i, 'answer': j});
+                                    setState(() {
+                                      _answers[i] = j;
+                                    });
+                                  },
+                                ),
+                                Expanded(
+                                  child: GestureDetector(
+                                      child: Text(
+                                        widget.questions[i].answers[j],
+                                      ),
+                                      onTap: () {
+                                        widget.logger.log('chose answer',
+                                            {'question': i, 'answer': j});
+                                        setState(() {
+                                          _answers[i] = j;
+                                        });
+                                      }),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+              AccentButton(
+                Icons.arrow_forward,
+                S.of(context).taskFinish,
+                onPressed: !_answers.contains(null)
+                    ? () {
+                        widget.onFinishedAnswering(_answers);
+                      }
+                    : null,
               ),
-            AccentButton(
-              Icons.arrow_forward,
-              S.of(context).taskFinish,
-              onPressed: !_answers.contains(null)
-                  ? () {
-                      widget.onFinishedAnswering(_answers);
-                    }
-                  : null,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

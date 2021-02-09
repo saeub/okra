@@ -316,33 +316,35 @@ class InstructionsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
         child: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 10.0),
-                child: Text(
-                  S.of(context).instructionsTitle,
-                  style: Theme.of(context).textTheme.headline4,
+          child: ReadingWidth(
+            Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: Text(
+                    S.of(context).instructionsTitle,
+                    style: Theme.of(context).textTheme.headline4,
+                  ),
                 ),
-              ),
-              if (audioUrl != null) ReadAloudWidget(audioUrl),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 12.0),
-                child: MarkdownBody(
-                  data: text,
-                  fitContent: false,
+                if (audioUrl != null) ReadAloudWidget(audioUrl),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: MarkdownBody(
+                    data: text,
+                    fitContent: false,
+                  ),
                 ),
-              ),
-              AccentButton(
-                Icons.arrow_forward,
-                S.of(context).instructionsStartTask,
-                onPressed: onStartPressed,
-              ),
-            ],
+                AccentButton(
+                  Icons.arrow_forward,
+                  S.of(context).instructionsStartTask,
+                  onPressed: onStartPressed,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -377,7 +379,13 @@ class _TaskWidgetState extends State<TaskWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return _task.build(context);
+    var progress = _task.getProgress();
+    return Column(
+      children: [
+        if (progress != null) AnimatedLinearProgressIndicator(progress),
+        Flexible(child: _task.build(context)),
+      ],
+    );
   }
 }
 
@@ -418,87 +426,96 @@ class _RatingsWidgetState extends State<RatingsWidget> {
   Widget build(BuildContext context) {
     var rating = widget.ratings[_currentRatingIndex];
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        Spacer(flex: 2),
         Padding(
           padding: EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Text(
-                rating.question,
-                style: Theme.of(context).textTheme.headline6,
-                textAlign: TextAlign.center,
-              ),
-              if (rating.type == TaskRatingType.emoticon)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < TaskRating.emoticons.length; i++)
-                      IconButton(
-                        icon: DecoratedBox(
-                          decoration: _answers[_currentRatingIndex] == i
-                              ? BoxDecoration(
-                                  border: Border.all(
-                                      color: getEmoticonColor(i, 900),
-                                      width: 4.0),
-                                  borderRadius: BorderRadius.circular(20.0),
-                                  color: getEmoticonColor(i, 200),
-                                )
-                              : BoxDecoration(),
-                          child: Icon(TaskRating.emoticons[i]),
-                        ),
-                        iconSize: 40.0,
-                        color: getEmoticonColor(
-                            i, _answers[_currentRatingIndex] == i ? 900 : 700),
-                        onPressed: () {
-                          setState(() {
-                            _answers[_currentRatingIndex] = i;
-                          });
-                        },
-                      ),
-                  ],
-                )
-              else if (rating.type == TaskRatingType.radio)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    for (var i = 0; i < TaskRating.radioLevels; i++)
-                      Radio(
-                        value: i,
-                        groupValue: _answers[_currentRatingIndex],
-                        onChanged: (value) {
-                          setState(() {
-                            _answers[_currentRatingIndex] = value;
-                          });
-                        },
-                      ),
-                  ],
-                )
-              else if (rating.type == TaskRatingType.slider)
-                Slider(
-                  value: _answers[_currentRatingIndex],
-                  onChanged: (value) {
-                    setState(() {
-                      _answers[_currentRatingIndex] = value;
-                    });
-                  },
-                ),
-              if (rating.lowExtreme != null || rating.highExtreme != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(rating.lowExtreme ?? ''),
-                      Text(rating.highExtreme ?? ''),
-                    ],
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 500.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Text(
+                      rating.question,
+                      style: Theme.of(context).textTheme.headline6,
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
-            ],
+                  if (rating.type == TaskRatingType.emoticon)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (var i = 0; i < TaskRating.emoticons.length; i++)
+                          IconButton(
+                            icon: DecoratedBox(
+                              decoration: _answers[_currentRatingIndex] == i
+                                  ? BoxDecoration(
+                                      border: Border.all(
+                                          color: getEmoticonColor(i, 900),
+                                          width: 6.0),
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      color: getEmoticonColor(i, 200),
+                                    )
+                                  : BoxDecoration(),
+                              child: Icon(TaskRating.emoticons[i]),
+                            ),
+                            iconSize: 40.0,
+                            color: getEmoticonColor(i,
+                                _answers[_currentRatingIndex] == i ? 900 : 700),
+                            onPressed: () {
+                              setState(() {
+                                _answers[_currentRatingIndex] = i;
+                              });
+                            },
+                          ),
+                      ],
+                    )
+                  else if (rating.type == TaskRatingType.radio)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (var i = 0; i < TaskRating.radioLevels; i++)
+                          Radio(
+                            value: i,
+                            groupValue: _answers[_currentRatingIndex],
+                            onChanged: (value) {
+                              setState(() {
+                                _answers[_currentRatingIndex] = value;
+                              });
+                            },
+                          ),
+                      ],
+                    )
+                  else if (rating.type == TaskRatingType.slider)
+                    Slider(
+                      value: _answers[_currentRatingIndex],
+                      onChanged: (value) {
+                        setState(() {
+                          _answers[_currentRatingIndex] = value;
+                        });
+                      },
+                    ),
+                  if (rating.lowExtreme != null || rating.highExtreme != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(rating.lowExtreme ?? ''),
+                          Text(rating.highExtreme ?? ''),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         ),
+        Spacer(flex: 1),
         AccentButton(
           Icons.arrow_forward,
           S.of(context).taskAdvance,
@@ -514,6 +531,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                 }
               : null,
         ),
+        Spacer(flex: 1),
       ],
     );
   }
@@ -587,18 +605,24 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                           style: Theme.of(context).textTheme.headline6,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            AccentButton(
-                              Icons.schedule,
-                              S.of(context).taskResultsNoNextTask,
-                              color: Colors.grey,
-                              onPressed: Navigator.of(context).pop,
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: AccentButton(
+                                Icons.schedule,
+                                S.of(context).taskResultsNoNextTask,
+                                color: Colors.grey,
+                                onPressed: Navigator.of(context).pop,
+                              ),
                             ),
-                            AccentButton(
-                              Icons.arrow_forward,
-                              S.of(context).taskResultsNextTask,
-                              onPressed: widget.onContinuePressed,
+                            Padding(
+                              padding: const EdgeInsets.all(4.0),
+                              child: AccentButton(
+                                Icons.arrow_forward,
+                                S.of(context).taskResultsNextTask,
+                                onPressed: widget.onContinuePressed,
+                              ),
                             ),
                           ],
                         ),
