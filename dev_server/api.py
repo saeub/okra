@@ -115,6 +115,7 @@ EXPERIMENTS_TASKS = [
                 {
                     "question": "Question",
                     "answers": ["Answer 1", "Answer 2", "Answer 3"],
+                    "correctAnswer": 1,
                 },
             ],
         },

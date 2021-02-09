@@ -100,15 +100,17 @@ A text is presented, and after reading, several single-answer multiple-choice qu
               "answers": [
                   "Answer 1",
                   "Answer 2",
-              ]
+              ],
+              "correctAnswerIndex": 0
           },
           ...
       ]
   }
   ```
-  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment.
+  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment.`correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness of their answers.
+- Results data structure:
   ```json
   {
-      "chosenIndices": [0, -1, ...]
+      "chosenAnswerIndices": [0, -1, ...]
   }
   ```

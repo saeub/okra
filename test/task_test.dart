@@ -45,7 +45,7 @@ class LoggerTester {
 
 void main() {
   group('Cloze', () {
-    testWidgets('can be completed', (WidgetTester tester) async {
+    testWidgets('can be completed', (tester) async {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -107,7 +107,7 @@ void main() {
   });
 
   group('Lexical decision', () {
-    testWidgets('can be completed', (WidgetTester tester) async {
+    testWidgets('can be completed', (tester) async {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -155,7 +155,7 @@ void main() {
       l.expectDoneLogging();
     });
 
-    testWidgets('supports feedback', (WidgetTester tester) async {
+    testWidgets('supports feedback', (tester) async {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -235,7 +235,7 @@ void main() {
   });
 
   group('Picture naming', () {
-    testWidgets('can be completed', (WidgetTester tester) async {
+    testWidgets('can be completed', (tester) async {
       // TODO: Make the task screen size independent, remove this setup
       tester.binding.window.physicalSizeTestValue = Size(600, 1100);
       addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
@@ -323,7 +323,7 @@ void main() {
   });
 
   group('Question answering', () {
-    testWidgets('can be completed', (WidgetTester tester) async {
+    testWidgets('can be completed', (tester) async {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -346,7 +346,7 @@ void main() {
         logger,
         ({data, message}) {
           expect(data, {
-            'chosenIndices': [2, 0]
+            'chosenAnswerIndices': [2, 0]
           });
           expect(message, null);
         },
@@ -389,8 +389,73 @@ void main() {
       l.expectDoneLogging();
     });
 
+    testWidgets('supports feedback', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.questionAnswering,
+        {
+          'readingType': 'normal',
+          'text': 'This is an example text.',
+          'questions': [
+            {
+              'question': 'Is this a question?',
+              'answers': ['Yes', 'No', 'Maybe'],
+              'correctAnswerIndex': 2,
+            },
+            {
+              'question': 'What about this?',
+              'answers': ['Definitely'],
+              'correctAnswerIndex': 0,
+            },
+          ],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {
+            'chosenAnswerIndices': [1, 0]
+          });
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started reading');
+      expect(find.byType(MarkdownBody), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished reading');
+
+      l.expectLogged('started answering');
+      await tester.ensureVisible(find.text('No', skipOffstage: false));
+      await tester.tap(find.text('No'));
+      l.expectLogged('chose answer', {'question': 0, 'answer': 1});
+
+      await tester
+          .ensureVisible(find.text('What about this?', skipOffstage: false));
+      expect(find.text('What about this?'), findsOneWidget);
+      expect(find.text('Definitely'), findsOneWidget);
+      await tester.tap(find.text('Definitely'));
+      l.expectLogged('chose answer', {'question': 1, 'answer': 0});
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('FINISH', skipOffstage: false));
+      await tester.tap(find.text('FINISH'));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started feedback');
+      expect(find.byIcon(Icons.arrow_forward, skipOffstage: false),
+          findsNWidgets(2)); // feedback + "FINISH" button
+      expect(find.byIcon(Icons.check, skipOffstage: false), findsOneWidget);
+      await tester.tap(find.text('FINISH'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished answering');
+
+      l.expectDoneLogging();
+    });
+
     testWidgets('supports self-paced reading without questions',
-        (WidgetTester tester) async {
+        (tester) async {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -402,7 +467,7 @@ void main() {
         },
         logger,
         ({data, message}) {
-          expect(data, {'chosenIndices': []});
+          expect(data, {'chosenAnswerIndices': []});
           expect(message, null);
         },
       ));
