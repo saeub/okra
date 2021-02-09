@@ -15,6 +15,8 @@ abstract class Task {
 
   void init(Map<String, dynamic> data);
 
+  double getProgress();
+
   Widget build(BuildContext context);
 
   /// Inject dependencies after constructor call and before `init`.

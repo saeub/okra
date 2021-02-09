@@ -28,6 +28,9 @@ class PictureNaming extends Task {
   }
 
   @override
+  double getProgress() => _currentSubtaskIndex / _subtasks.length;
+
+  @override
   Widget build(BuildContext context) {
     var subtask = _subtasks[_currentSubtaskIndex];
     var nCards = subtask.pictures.length;
@@ -128,8 +131,6 @@ class PictureNaming extends Task {
           ),
         ),
         Spacer(flex: 1),
-        AnimatedLinearProgressIndicator(
-            _currentSubtaskIndex / _subtasks.length),
       ],
     );
   }

@@ -22,6 +22,9 @@ class Cloze extends Task {
   }
 
   @override
+  double getProgress() => _currentSegmentIndex / _segments.length;
+
+  @override
   Widget build(BuildContext context) {
     var segment = _segments[_currentSegmentIndex];
     return Column(
@@ -99,8 +102,6 @@ class Cloze extends Task {
             ],
           ),
         ),
-        AnimatedLinearProgressIndicator(
-            _currentSegmentIndex / _segments.length),
       ],
     );
   }

@@ -4,7 +4,6 @@ import 'package:flutter/widgets.dart';
 import 'package:okra/src/tasks/task.dart';
 
 import '../../generated/l10n.dart';
-import '../util.dart';
 
 class LexicalDecision extends Task {
   List<String> _words;
@@ -32,6 +31,11 @@ class LexicalDecision extends Task {
       logger.log('started word', {'word': _currentWordIndex});
     });
   }
+
+  @override
+  double getProgress() => _feedback == null
+      ? _currentWordIndex / _words.length
+      : (_currentWordIndex + 1) / _words.length;
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +107,6 @@ class LexicalDecision extends Task {
             ),
           ),
         ),
-        AnimatedLinearProgressIndicator(_currentWordIndex / _words.length),
       ],
     );
   }

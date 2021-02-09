@@ -379,7 +379,13 @@ class _TaskWidgetState extends State<TaskWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return _task.build(context);
+    var progress = _task.getProgress();
+    return Column(
+      children: [
+        if (progress != null) AnimatedLinearProgressIndicator(progress),
+        Flexible(child: _task.build(context)),
+      ],
+    );
   }
 }
 

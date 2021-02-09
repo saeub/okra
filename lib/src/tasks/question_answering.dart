@@ -15,16 +15,23 @@ class QuestionAnswering extends Task {
   Widget _readingWidget;
   List<Question> _questions;
   QuestionAnsweringMode _mode;
+  double _progress;
 
   @override
   void init(Map<String, dynamic> data) {
     String readingType = data['readingType'];
     String text = data['text'];
-    VoidCallback finishedReadingCallback = () {
+    var progressCallback = (progress) {
+      setState(() {
+        _progress = progress;
+      });
+    };
+    var finishedReadingCallback = () {
       logger.log('finished reading');
       if (_questions.isNotEmpty) {
         setState(() {
           _mode = QuestionAnsweringMode.questions;
+          _progress = null;
         });
         logger.log('started answering');
       } else {
@@ -33,11 +40,13 @@ class QuestionAnswering extends Task {
     };
     switch (readingType) {
       case 'normal':
-        _readingWidget = NormalReading(text, logger, finishedReadingCallback);
+        _readingWidget = NormalReading(
+            text, logger, progressCallback, finishedReadingCallback);
         break;
       case 'self-paced':
-        _readingWidget =
-            SelfPacedReading(text, logger, finishedReadingCallback);
+        _readingWidget = SelfPacedReading(
+            text, logger, progressCallback, finishedReadingCallback);
+        _progress = 0;
         break;
       default:
         throw ArgumentError('Unknown reading type "$readingType"');
@@ -56,6 +65,9 @@ class QuestionAnswering extends Task {
     logger.log('started reading');
     logger.stopwatch.start();
   }
+
+  @override
+  double getProgress() => _progress;
 
   @override
   // TODO: null safety
@@ -91,9 +103,12 @@ class Question {
 class NormalReading extends StatelessWidget {
   final String text;
   final TaskEventLogger logger;
+  final Function(double progress) onProgress;
   final VoidCallback onFinishedReading;
 
-  const NormalReading(this.text, this.logger, this.onFinishedReading, {Key key})
+  const NormalReading(
+      this.text, this.logger, this.onProgress, this.onFinishedReading,
+      {Key key})
       : super(key: key);
 
   @override
@@ -123,9 +138,11 @@ class NormalReading extends StatelessWidget {
 class SelfPacedReading extends StatefulWidget {
   final String text;
   final TaskEventLogger logger;
+  final Function(double progress) onProgress;
   final VoidCallback onFinishedReading;
 
-  const SelfPacedReading(this.text, this.logger, this.onFinishedReading,
+  const SelfPacedReading(
+      this.text, this.logger, this.onProgress, this.onFinishedReading,
       {Key key})
       : super(key: key);
 
@@ -169,8 +186,6 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
               ),
             ),
             Spacer(),
-            AnimatedLinearProgressIndicator(
-                _currentSegmentIndex / _segments.length),
           ],
         ),
       ),
@@ -185,6 +200,7 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
               if (_currentSegmentIndex < _segments.length) _currentSegmentIndex,
             ]
           });
+          widget.onProgress(_currentSegmentIndex / _segments.length);
         } else {
           widget.onFinishedReading();
         }
