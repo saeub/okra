@@ -78,7 +78,6 @@ class QuestionAnswering extends Task {
         return _readingWidget;
       case QuestionAnsweringMode.questions:
         return QuestionsWidget(_questions, logger, (answers) {
-          logger.log('finished answering');
           finish(data: {'chosenAnswerIndices': answers});
         });
     }
@@ -105,7 +104,7 @@ class Question {
 class NormalReading extends StatelessWidget {
   final String text;
   final TaskEventLogger logger;
-  final Function(double progress) onProgress;
+  final void Function(double progress) onProgress;
   final VoidCallback onFinishedReading;
 
   const NormalReading(
@@ -140,7 +139,7 @@ class NormalReading extends StatelessWidget {
 class SelfPacedReading extends StatefulWidget {
   final String text;
   final TaskEventLogger logger;
-  final Function(double progress) onProgress;
+  final void Function(double progress) onProgress;
   final VoidCallback onFinishedReading;
 
   const SelfPacedReading(
@@ -413,6 +412,11 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                 S.of(context).taskFinish,
                 onPressed: !_chosenAnswerIndices.contains(null)
                     ? () {
+                        if (_feedbacking) {
+                          widget.logger.log('finished feedback');
+                        } else {
+                          widget.logger.log('finished answering');
+                        }
                         if (!_feedbacking) {
                           for (var i = 0; i < widget.questions.length; i++) {
                             if (widget.questions[i].correctAnswerIndex !=

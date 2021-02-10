@@ -86,14 +86,17 @@ EXPERIMENTS_TASKS = [
                 {
                     "text": "Example",
                     "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
+                    "correctPictureIndex": 0
                 },
                 {
                     "text": "Example",
                     "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
+                    "correctPictureIndex": 1
                 },
                 {
                     "text": "Example",
                     "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
+                    "correctPictureIndex": 2
                 },
             ],
         },

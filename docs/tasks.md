@@ -68,13 +68,14 @@ A textual stimulus is shown above a number of pictures. One of the pictures (or 
                   "base64-encoded image",
                   "base64-encoded image",
                   "base64-encoded image"
-              ]
+              ],
+              "correctPictureIndex": 0
           },
           ...
       ]
   }
   ```
-  **NOTE:** The image should be adequately resized and compressed before encoding, especially for large numbers of subtasks, to keep HTTP response sizes low.
+  **NOTE:** The image should be adequately resized and compressed before encoding, especially for large numbers of subtasks, to keep HTTP response sizes low. `correctPictureIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
 - Results data structure:
   ```json
   {
@@ -107,7 +108,7 @@ A text is presented, and after reading, several single-answer multiple-choice qu
       ]
   }
   ```
-  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment.`correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness of their answers.
+  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment. `correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
 - Results data structure:
   ```json
   {

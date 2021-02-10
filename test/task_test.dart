@@ -235,6 +235,9 @@ void main() {
   });
 
   group('Picture naming', () {
+    const dummyPicture =
+        '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5/ooooA//2Q==';
+
     testWidgets('can be completed', (tester) async {
       // TODO: Make the task screen size independent, remove this setup
       tester.binding.window.physicalSizeTestValue = Size(600, 1100);
@@ -243,8 +246,6 @@ void main() {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
-      const dummyPicture =
-          '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5/ooooA//2Q==';
       await tester.pumpWidget(getTaskApp(
         TaskType.pictureNaming,
         {
@@ -317,6 +318,100 @@ void main() {
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
       l.expectLogged('finished subtask', {'subtask': 2});
+
+      l.expectDoneLogging();
+    });
+
+    testWidgets('supports feedback', (tester) async {
+      // TODO: Make the task screen size independent, remove this setup
+      tester.binding.window.physicalSizeTestValue = Size(600, 1100);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.pictureNaming,
+        {
+          'showQuestionMark': true,
+          'subtasks': [
+            {
+              'text': 'First subtask',
+              'pictures': [
+                dummyPicture,
+                dummyPicture,
+                dummyPicture,
+              ],
+              'correctPictureIndex': 1
+            },
+            {
+              'text': 'Second subtask',
+              'pictures': [
+                dummyPicture,
+              ],
+              'correctPictureIndex': 0
+            },
+            {
+              'text': 'Third subtask',
+              'pictures': [
+                dummyPicture,
+                dummyPicture,
+              ],
+              'correctPictureIndex': 0
+            },
+          ],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {
+            'chosenPictureIndices': [1, -1, 1]
+          });
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started subtask', {'subtask': 0});
+      await tester.tap(find.byType(Card).at(1));
+      l.expectLogged('chose picture', {'subtask': 0, 'picture': 1});
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished subtask', {'subtask': 0});
+      l.expectLogged('started feedback', {'subtask': 0});
+      await tester.tap(find.text('CONTINUE')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished feedback', {'subtask': 0});
+
+      l.expectLogged('started subtask', {'subtask': 1});
+      expect(find.text('Second subtask'), findsOneWidget);
+      expect(find.byType(Image), findsNWidgets(1));
+      expect(find.text('?'), findsOneWidget);
+      await tester.tap(find.text('?'));
+      l.expectLogged('chose picture', {'subtask': 1, 'picture': -1});
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished subtask', {'subtask': 1});
+      l.expectLogged('started feedback', {'subtask': 1});
+      await tester.tap(find.text('CONTINUE')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished feedback', {'subtask': 1});
+
+      l.expectLogged('started subtask', {'subtask': 2});
+      expect(find.text('Third subtask'), findsOneWidget);
+      expect(find.byType(Image), findsNWidgets(2));
+      expect(find.text('?'), findsOneWidget);
+      await tester.tap(find.byType(Card).at(1));
+      l.expectLogged('chose picture', {'subtask': 2, 'picture': 1});
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished subtask', {'subtask': 2});
+      l.expectLogged('started feedback', {'subtask': 2});
+      await tester.tap(find.text('CONTINUE')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished feedback', {'subtask': 2});
 
       l.expectDoneLogging();
     });
@@ -442,14 +537,15 @@ void main() {
       await tester.ensureVisible(find.text('FINISH', skipOffstage: false));
       await tester.tap(find.text('FINISH'));
       await tester.pumpAndSettle();
+      l.expectLogged('finished answering');
 
       l.expectLogged('started feedback');
       expect(find.byIcon(Icons.arrow_forward, skipOffstage: false),
           findsNWidgets(2)); // feedback + "FINISH" button
       expect(find.byIcon(Icons.check, skipOffstage: false), findsOneWidget);
-      await tester.tap(find.text('FINISH'));
+      await tester.tap(find.text('FINISH')); // disabled
+      l.expectLogged('finished feedback');
       await tester.pumpAndSettle();
-      l.expectLogged('finished answering');
 
       l.expectDoneLogging();
     });
