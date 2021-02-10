@@ -61,7 +61,7 @@ void main() {
         logger,
         ({data, message}) {
           expect(data, {
-            'chosenIndices': [2, null, 0]
+            'chosenOptionIndices': [2, null, 0]
           });
           expect(message, null);
         },
@@ -191,7 +191,7 @@ void main() {
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', {'word': 0, 'answer': true});
-      l.expectLogged('started feedback', {'word': 0, 'feedback': true});
+      l.expectLogged('started feedback', {'word': 0});
       expect(find.byIcon(Icons.thumb_up), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.pump(Duration(seconds: 1));
@@ -202,7 +202,7 @@ void main() {
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', {'word': 1, 'answer': false});
-      l.expectLogged('started feedback', {'word': 1, 'feedback': false});
+      l.expectLogged('started feedback', {'word': 1});
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.pump(Duration(seconds: 1));
@@ -213,7 +213,7 @@ void main() {
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', {'word': 2, 'answer': true});
-      l.expectLogged('started feedback', {'word': 2, 'feedback': false});
+      l.expectLogged('started feedback', {'word': 2});
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.pump(Duration(seconds: 1));
@@ -224,7 +224,7 @@ void main() {
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', {'word': 3, 'answer': false});
-      l.expectLogged('started feedback', {'word': 3, 'feedback': true});
+      l.expectLogged('started feedback', {'word': 3});
       expect(find.byIcon(Icons.thumb_up), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.pump(Duration(seconds: 1));
@@ -276,7 +276,7 @@ void main() {
         logger,
         ({data, message}) {
           expect(data, {
-            'chosenIndices': [2, 0, -1]
+            'chosenPictureIndices': [2, 0, -1]
           });
           expect(message, null);
         },

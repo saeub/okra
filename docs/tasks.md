@@ -23,7 +23,7 @@ One segment of text is shown at a time, with a blank which has to be filled in b
 - Results data structure:
   ```json
   {
-      "chosenIndices": [0, null, ...]
+      "chosenOptionIndices": [0, null, ...]
   }
   ```
   **NOTE:** An index of `null` means that there was no blank in this segment.
@@ -78,7 +78,7 @@ A textual stimulus is shown above a number of pictures. One of the pictures (or 
 - Results data structure:
   ```json
   {
-      "chosenIndices": [0, -1, ...]
+      "chosenPictureIndices": [0, -1, ...]
   }
   ```
   **NOTE:** An index of `-1` means the question mark.

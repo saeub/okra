@@ -92,7 +92,7 @@ void main() {
       await tester.pumpAndSettle();
       // Results
       expect(testApi.taskResults.data, {
-        'chosenIndices': [1],
+        'chosenOptionIndices': [1],
       });
       expect(testApi.taskResults.ratingAnswers, [0.5]);
       expect(testApi.taskResults.events.length, 3);

@@ -13,8 +13,8 @@ class PictureNaming extends Task {
   List<Subtask> _subtasks;
   int _currentSubtaskIndex;
   bool _showQuestionMark;
-  int _chosenIndex;
-  List<int> _chosenIndices;
+  int _chosenPictureIndex;
+  List<int> _chosenPictureIndices;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -23,7 +23,7 @@ class PictureNaming extends Task {
     _subtasks = subtaskData.map(Subtask.fromJson).toList();
     _currentSubtaskIndex = 0;
     _showQuestionMark = data['showQuestionMark'];
-    _chosenIndices = [];
+    _chosenPictureIndices = [];
     logger.log('started subtask', {'subtask': _currentSubtaskIndex});
   }
 
@@ -53,7 +53,7 @@ class PictureNaming extends Task {
             children: [
               for (var i = 0; i < subtask.pictures.length; i++)
                 Card(
-                  margin: _chosenIndex == i
+                  margin: _chosenPictureIndex == i
                       ? EdgeInsets.all(chosenCardMargin)
                       : null,
                   clipBehavior: Clip.antiAlias,
@@ -81,7 +81,7 @@ class PictureNaming extends Task {
                 ),
               if (_showQuestionMark)
                 Card(
-                  margin: _chosenIndex == -1
+                  margin: _chosenPictureIndex == -1
                       ? EdgeInsets.all(chosenCardMargin)
                       : null,
                   child: InkWell(
@@ -93,7 +93,7 @@ class PictureNaming extends Task {
                       child: Text(
                         '?',
                         style: TextStyle(
-                          fontSize: _chosenIndex == -1
+                          fontSize: _chosenPictureIndex == -1
                               ? 70.0 - chosenCardMargin
                               : 70.0,
                           fontWeight: FontWeight.bold,
@@ -107,7 +107,7 @@ class PictureNaming extends Task {
         ),
         Spacer(flex: 1),
         Visibility(
-          visible: _chosenIndex != null,
+          visible: _chosenPictureIndex != null,
           maintainSize: true,
           maintainAnimation: true,
           maintainState: true,
@@ -116,8 +116,8 @@ class PictureNaming extends Task {
             S.of(context).taskAdvance,
             onPressed: () {
               logger.log('finished subtask', {'subtask': _currentSubtaskIndex});
-              _chosenIndices.add(_chosenIndex);
-              _chosenIndex = null;
+              _chosenPictureIndices.add(_chosenPictureIndex);
+              _chosenPictureIndex = null;
               if (_currentSubtaskIndex < _subtasks.length - 1) {
                 setState(() {
                   _currentSubtaskIndex++;
@@ -125,7 +125,7 @@ class PictureNaming extends Task {
                 logger
                     .log('started subtask', {'subtask': _currentSubtaskIndex});
               } else {
-                finish(data: {'chosenIndices': _chosenIndices});
+                finish(data: {'chosenPictureIndices': _chosenPictureIndices});
               }
             },
           ),
@@ -139,7 +139,7 @@ class PictureNaming extends Task {
     logger.log('chose picture',
         {'subtask': _currentSubtaskIndex, 'picture': pictureIndex});
     setState(() {
-      _chosenIndex = pictureIndex;
+      _chosenPictureIndex = pictureIndex;
     });
   }
 }

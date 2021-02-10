@@ -9,15 +9,15 @@ class Cloze extends Task {
 
   List<Segment> _segments;
   int _currentSegmentIndex;
-  int _chosenIndex;
-  List<int> _chosenIndices;
+  int _chosenOptionIndex;
+  List<int> _chosenOptionIndices;
 
   @override
   void init(Map<String, dynamic> data) {
     List<String> segmentsData = data['segments'].cast<String>();
     _segments = segmentsData.map(Segment.fromString).toList();
     _currentSegmentIndex = 0;
-    _chosenIndices = [];
+    _chosenOptionIndices = [];
     logger.log('started segment', {'segment': _currentSegmentIndex});
   }
 
@@ -39,8 +39,8 @@ class Cloze extends Task {
                     WidgetSpan(
                       alignment: PlaceholderAlignment.baseline,
                       baseline: TextBaseline.alphabetic,
-                      child: ClozeGap(_chosenIndex != null
-                          ? segment.options[_chosenIndex]
+                      child: ClozeBlank(_chosenOptionIndex != null
+                          ? segment.options[_chosenOptionIndex]
                           : null),
                     ),
                   TextSpan(text: segment.post),
@@ -54,7 +54,7 @@ class Cloze extends Task {
           ),
         ),
         Visibility(
-          visible: _chosenIndex != null || segment.options.isEmpty,
+          visible: _chosenOptionIndex != null || segment.options.isEmpty,
           maintainAnimation: true,
           maintainSize: true,
           maintainState: true,
@@ -63,8 +63,8 @@ class Cloze extends Task {
             S.of(context).taskAdvance,
             onPressed: () {
               logger.log('finished segment', {'segment': _currentSegmentIndex});
-              _chosenIndices.add(_chosenIndex);
-              _chosenIndex = null;
+              _chosenOptionIndices.add(_chosenOptionIndex);
+              _chosenOptionIndex = null;
               if (_currentSegmentIndex < _segments.length - 1) {
                 setState(() {
                   _currentSegmentIndex++;
@@ -72,7 +72,7 @@ class Cloze extends Task {
                 logger
                     .log('started segment', {'segment': _currentSegmentIndex});
               } else {
-                finish(data: {'chosenIndices': _chosenIndices});
+                finish(data: {'chosenOptionIndices': _chosenOptionIndices});
               }
             },
           ),
@@ -86,13 +86,13 @@ class Cloze extends Task {
                   alignment: WrapAlignment.center,
                   children: [
                     for (var i = 0; i < segment.options.length; i++)
-                      ClozeGap(
+                      ClozeBlank(
                         segment.options[i],
                         onTap: () {
                           logger.log('chose option',
                               {'segment': _currentSegmentIndex, 'option': i});
                           setState(() {
-                            _chosenIndex = i;
+                            _chosenOptionIndex = i;
                           });
                         },
                       ),
@@ -107,12 +107,12 @@ class Cloze extends Task {
   }
 }
 
-class ClozeGap extends StatelessWidget {
+class ClozeBlank extends StatelessWidget {
   final String text;
   final double fontSize;
   final VoidCallback onTap;
 
-  const ClozeGap(this.text,
+  const ClozeBlank(this.text,
       {this.fontSize = Cloze.fontSize, this.onTap, Key key})
       : super(key: key);
 
@@ -146,12 +146,12 @@ class Segment {
   final String pre, post;
   final List<String> options;
 
-  static final RegExp gapPattern = RegExp(r'\{\{(.+?)\}\}');
+  static final RegExp blankPattern = RegExp(r'\{\{(.+?)\}\}');
 
   Segment(this.pre, this.post, this.options);
 
   static Segment fromString(String segment) {
-    var match = gapPattern.firstMatch(segment);
+    var match = blankPattern.firstMatch(segment);
     if (match == null) {
       return Segment(segment, null, []);
     }
