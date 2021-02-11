@@ -104,6 +104,56 @@ void main() {
 
       l.expectDoneLogging();
     });
+
+    testWidgets('supports feedback', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.cloze,
+        {
+          'segments': [
+            'This is a {{test|example|_pineapple}} and it is interesting.',
+            'This one has {{_only one}} option.',
+          ],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {
+            'chosenOptionIndices': [0, 0]
+          });
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started segment', {'segment': 0});
+      await tester.tap(find.text('test'));
+      l.expectLogged('chose option', {'segment': 0, 'option': 0});
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished segment', {'segment': 0});
+      l.expectLogged('started feedback', {'segment': 0});
+      await tester.tap(find.text('CONTINUE')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished feedback', {'segment': 0});
+
+      l.expectLogged('started segment', {'segment': 1});
+      expect(find.text('only one'), findsOneWidget);
+      await tester.tap(find.text('only one'));
+      l.expectLogged('chose option', {'segment': 1, 'option': 0});
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished segment', {'segment': 1});
+      l.expectLogged('started feedback', {'segment': 1});
+      await tester.tap(find.text('CONTINUE')); // disabled
+      await tester.pump(Duration(seconds: 1));
+      l.expectLogged('finished feedback', {'segment': 1});
+
+      l.expectDoneLogging();
+    });
   });
 
   group('Lexical decision', () {

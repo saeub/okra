@@ -49,9 +49,9 @@ EXPERIMENTS_TASKS = [
         },
         {
             "segments": [
-                "This is a {{test|example}}.",
-                "This is a {{test|example}}.",
-                "This is a {{test|example}}.",
+                "This is a {{_test|example}}.",
+                "This is a {{test|_example}}.",
+                "This is a {{_test|example}}.",
             ],
         },
     ),
