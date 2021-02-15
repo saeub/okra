@@ -15,7 +15,8 @@ class Cloze extends Task {
 
   @override
   void init(Map<String, dynamic> data) {
-    List<Map<String, dynamic>> segmentsData = data['segments'].cast<Map<String, dynamic>>();
+    List<Map<String, dynamic>> segmentsData =
+        data['segments'].cast<Map<String, dynamic>>();
     _segments = segmentsData.map(Segment.fromJson).toList();
     _currentSegmentIndex = 0;
     _feedbacking = false;
