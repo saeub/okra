@@ -127,10 +127,9 @@ class LexicalDecision extends Task {
     logger.log('finished word', {'word': _currentWordIndex, 'answer': answer});
     _answers.add(answer);
     if (_correctAnswers != null) {
+      logger.log('started feedback', {'word': _currentWordIndex});
       setState(() {
         _feedback = answer == _correctAnswers[_currentWordIndex];
-        logger.log('started feedback',
-            {'word': _currentWordIndex, 'feedback': _feedback});
       });
       await Future.delayed(Duration(milliseconds: 600));
       logger.log('finished feedback', {'word': _currentWordIndex});

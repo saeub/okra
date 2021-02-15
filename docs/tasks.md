@@ -13,17 +13,23 @@ One segment of text is shown at a time, with a blank which has to be filled in b
   {% raw %}```json
   {
       "segments": [
-          "This is an {{example|test|pineapple}}.",
+          {
+              "text": "This is an .",
+              "blankPosition": 11,
+              "options": ["example", "text", "pineapple"]
+              "correctOptionIndex": 0
+          }
+          
           "Segment without blanks.",
           ...
       ]
   }
   ```{% endraw %}
-  **NOTE:** There can be at most one blank per segment. Only the first double brackets in the segment will replaced by the blank.
+  **NOTE:** There can be at most one blank per segment. Only the first double brackets in the segment will replaced by the blank. `correctOptionIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
 - Results data structure:
   ```json
   {
-      "chosenIndices": [0, null, ...]
+      "chosenOptionIndices": [0, null, ...]
   }
   ```
   **NOTE:** An index of `null` means that there was no blank in this segment.
@@ -68,17 +74,18 @@ A textual stimulus is shown above a number of pictures. One of the pictures (or 
                   "base64-encoded image",
                   "base64-encoded image",
                   "base64-encoded image"
-              ]
+              ],
+              "correctPictureIndex": 0
           },
           ...
       ]
   }
   ```
-  **NOTE:** The image should be adequately resized and compressed before encoding, especially for large numbers of subtasks, to keep HTTP response sizes low.
+  **NOTE:** The image should be adequately resized and compressed before encoding, especially for large numbers of subtasks, to keep HTTP response sizes low. `correctPictureIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
 - Results data structure:
   ```json
   {
-      "chosenIndices": [0, -1, ...]
+      "chosenPictureIndices": [0, -1, ...]
   }
   ```
   **NOTE:** An index of `-1` means the question mark.
@@ -100,15 +107,17 @@ A text is presented, and after reading, several single-answer multiple-choice qu
               "answers": [
                   "Answer 1",
                   "Answer 2",
-              ]
+              ],
+              "correctAnswerIndex": 0
           },
           ...
       ]
   }
   ```
-  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment.
+  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment. `correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
+- Results data structure:
   ```json
   {
-      "chosenIndices": [0, -1, ...]
+      "chosenAnswerIndices": [0, -1, ...]
   }
   ```

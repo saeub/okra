@@ -35,7 +35,7 @@ class QuestionAnswering extends Task {
         });
         logger.log('started answering');
       } else {
-        finish(data: {'chosenIndices': []});
+        finish(data: {'chosenAnswerIndices': []});
       }
     };
     switch (readingType) {
@@ -78,8 +78,7 @@ class QuestionAnswering extends Task {
         return _readingWidget;
       case QuestionAnsweringMode.questions:
         return QuestionsWidget(_questions, logger, (answers) {
-          logger.log('finished answering');
-          finish(data: {'chosenIndices': answers});
+          finish(data: {'chosenAnswerIndices': answers});
         });
     }
   }
@@ -89,13 +88,15 @@ class QuestionAnswering extends Task {
 class Question {
   final String question;
   final List<String> answers;
+  final int correctAnswerIndex;
 
-  Question(this.question, this.answers);
+  Question(this.question, this.answers, [this.correctAnswerIndex]);
 
   static Question fromJson(Map<String, dynamic> json) {
     return Question(
       json['question'],
       json['answers'].cast<String>(),
+      json['correctAnswerIndex'],
     );
   }
 }
@@ -103,7 +104,7 @@ class Question {
 class NormalReading extends StatelessWidget {
   final String text;
   final TaskEventLogger logger;
-  final Function(double progress) onProgress;
+  final void Function(double progress) onProgress;
   final VoidCallback onFinishedReading;
 
   const NormalReading(
@@ -138,7 +139,7 @@ class NormalReading extends StatelessWidget {
 class SelfPacedReading extends StatefulWidget {
   final String text;
   final TaskEventLogger logger;
-  final Function(double progress) onProgress;
+  final void Function(double progress) onProgress;
   final VoidCallback onFinishedReading;
 
   const SelfPacedReading(
@@ -331,12 +332,14 @@ class QuestionsWidget extends StatefulWidget {
 }
 
 class _QuestionsWidgetState extends State<QuestionsWidget> {
-  List<int> _answers;
+  List<int> _chosenAnswerIndices;
+  bool _feedbacking;
 
   @override
   void initState() {
     super.initState();
-    _answers = [for (Question _ in widget.questions) null];
+    _chosenAnswerIndices = [for (Question _ in widget.questions) null];
+    _feedbacking = false;
   }
 
   @override
@@ -365,27 +368,37 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                               children: [
                                 Radio(
                                   value: j,
-                                  groupValue: _answers[i],
-                                  onChanged: (value) {
-                                    widget.logger.log('chose answer',
-                                        {'question': i, 'answer': j});
-                                    setState(() {
-                                      _answers[i] = j;
-                                    });
-                                  },
+                                  groupValue: _chosenAnswerIndices[i],
+                                  onChanged: !_feedbacking
+                                      ? (_) => _chooseAnswer(i, j)
+                                      : null,
                                 ),
+                                if (_feedbacking &&
+                                    j ==
+                                        widget
+                                            .questions[i].correctAnswerIndex &&
+                                    j == _chosenAnswerIndices[i])
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child:
+                                        Icon(Icons.check, color: Colors.green),
+                                  )
+                                else if (_feedbacking &&
+                                    j == widget.questions[i].correctAnswerIndex)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Icon(Icons.arrow_forward,
+                                        color: Colors.red),
+                                  ),
                                 Expanded(
                                   child: GestureDetector(
-                                      child: Text(
-                                        widget.questions[i].answers[j],
-                                      ),
-                                      onTap: () {
-                                        widget.logger.log('chose answer',
-                                            {'question': i, 'answer': j});
-                                        setState(() {
-                                          _answers[i] = j;
-                                        });
-                                      }),
+                                    child: Text(
+                                      widget.questions[i].answers[j],
+                                    ),
+                                    onTap: !_feedbacking
+                                        ? () => _chooseAnswer(i, j)
+                                        : null,
+                                  ),
                                 ),
                               ],
                             ),
@@ -397,9 +410,29 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
               AccentButton(
                 Icons.arrow_forward,
                 S.of(context).taskFinish,
-                onPressed: !_answers.contains(null)
+                onPressed: !_chosenAnswerIndices.contains(null)
                     ? () {
-                        widget.onFinishedAnswering(_answers);
+                        if (_feedbacking) {
+                          widget.logger.log('finished feedback');
+                        } else {
+                          widget.logger.log('finished answering');
+                        }
+                        if (!_feedbacking) {
+                          for (var i = 0; i < widget.questions.length; i++) {
+                            if (widget.questions[i].correctAnswerIndex !=
+                                null) {
+                              _feedbacking = true;
+                              widget.logger.log('started feedback');
+                              break;
+                            }
+                          }
+                          setState(() {});
+                          if (!_feedbacking) {
+                            widget.onFinishedAnswering(_chosenAnswerIndices);
+                          }
+                        } else {
+                          widget.onFinishedAnswering(_chosenAnswerIndices);
+                        }
                       }
                     : null,
               ),
@@ -408,5 +441,13 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
         ),
       ),
     );
+  }
+
+  void _chooseAnswer(int questionIndex, int answerIndex) {
+    widget.logger.log(
+        'chose answer', {'question': questionIndex, 'answer': answerIndex});
+    setState(() {
+      _chosenAnswerIndices[questionIndex] = answerIndex;
+    });
   }
 }

@@ -60,7 +60,11 @@ class TestApi extends Api {
   Future<TaskData> startTask(String experimentId) async {
     return TaskData('test', {
       'segments': [
-        'This is a {{test|example}}.',
+        {
+          'text': 'This is a .',
+          'blankPosition': 10,
+          'options': ['test', 'example'],
+        },
       ],
     });
   }
@@ -92,7 +96,7 @@ void main() {
       await tester.pumpAndSettle();
       // Results
       expect(testApi.taskResults.data, {
-        'chosenIndices': [1],
+        'chosenOptionIndices': [1],
       });
       expect(testApi.taskResults.ratingAnswers, [0.5]);
       expect(testApi.taskResults.events.length, 3);

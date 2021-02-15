@@ -42,16 +42,16 @@ EXPERIMENTS_TASKS = [
             "id": "1",
             "type": "cloze",
             "title": "Cloze task",
-            "instructions": "Fill in the gaps.",
+            "instructions": "Fill in the blanks.",
             "nTasks": 3,
             "nTasksDone": 2,
             "ratings": [example_rating("emoticon")],
         },
         {
             "segments": [
-                "This is a {{test|example}}.",
-                "This is a {{test|example}}.",
-                "This is a {{test|example}}.",
+                "This is a {{_test|example}}.",
+                "This is a {{test|_example}}.",
+                "This is a {{_test|example}}.",
             ],
         },
     ),
@@ -86,14 +86,17 @@ EXPERIMENTS_TASKS = [
                 {
                     "text": "Example",
                     "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
+                    "correctPictureIndex": 0
                 },
                 {
                     "text": "Example",
                     "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
+                    "correctPictureIndex": 1
                 },
                 {
                     "text": "Example",
                     "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
+                    "correctPictureIndex": 2
                 },
             ],
         },
@@ -115,6 +118,7 @@ EXPERIMENTS_TASKS = [
                 {
                     "question": "Question",
                     "answers": ["Answer 1", "Answer 2", "Answer 3"],
+                    "correctAnswer": 1,
                 },
             ],
         },

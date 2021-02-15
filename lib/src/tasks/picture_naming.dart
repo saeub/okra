@@ -13,8 +13,9 @@ class PictureNaming extends Task {
   List<Subtask> _subtasks;
   int _currentSubtaskIndex;
   bool _showQuestionMark;
-  int _chosenIndex;
-  List<int> _chosenIndices;
+  bool _feedbacking;
+  int _chosenPictureIndex;
+  List<int> _chosenPictureIndices;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -23,18 +24,24 @@ class PictureNaming extends Task {
     _subtasks = subtaskData.map(Subtask.fromJson).toList();
     _currentSubtaskIndex = 0;
     _showQuestionMark = data['showQuestionMark'];
-    _chosenIndices = [];
+    _feedbacking = false;
+    _chosenPictureIndices = [];
     logger.log('started subtask', {'subtask': _currentSubtaskIndex});
   }
 
   @override
-  double getProgress() => _currentSubtaskIndex / _subtasks.length;
+  double getProgress() => !_feedbacking
+      ? _currentSubtaskIndex / _subtasks.length
+      : (_currentSubtaskIndex + 1) / _subtasks.length;
 
   @override
   Widget build(BuildContext context) {
     var subtask = _subtasks[_currentSubtaskIndex];
     var nCards = subtask.pictures.length;
     if (_showQuestionMark) nCards++;
+    var feedback = _feedbacking
+        ? _chosenPictureIndex == subtask.correctPictureIndex
+        : null;
     return Column(
       children: [
         Spacer(flex: 2),
@@ -52,82 +59,67 @@ class PictureNaming extends Task {
             shrinkWrap: true,
             children: [
               for (var i = 0; i < subtask.pictures.length; i++)
-                Card(
-                  margin: _chosenIndex == i
-                      ? EdgeInsets.all(chosenCardMargin)
-                      : null,
-                  clipBehavior: Clip.antiAlias,
-                  child: Stack(
-                    children: [
-                      SizedBox.expand(
-                        child: FittedBox(
-                          child: subtask.pictures[i],
-                          fit: BoxFit.contain,
-                        ),
-                      ),
-                      Positioned.fill(
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            highlightColor: Colors.transparent,
-                            onTap: () {
-                              _onTap(i);
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                PictureCard(
+                  subtask.pictures[i],
+                  i,
+                  _chosenPictureIndex,
+                  (_) {
+                    _onTap(i);
+                  },
+                  feedback: subtask.correctPictureIndex == i ? feedback : null,
                 ),
               if (_showQuestionMark)
-                Card(
-                  margin: _chosenIndex == -1
-                      ? EdgeInsets.all(chosenCardMargin)
-                      : null,
-                  child: InkWell(
-                    highlightColor: Colors.transparent,
-                    onTap: () {
-                      _onTap(-1);
-                    },
-                    child: Center(
-                      child: Text(
-                        '?',
-                        style: TextStyle(
-                          fontSize: _chosenIndex == -1
-                              ? 70.0 - chosenCardMargin
-                              : 70.0,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
+                PictureCard(
+                  null,
+                  -1,
+                  _chosenPictureIndex,
+                  (_) {
+                    _onTap(-1);
+                  },
+                  feedback: subtask.correctPictureIndex == -1 ? feedback : null,
                 ),
             ],
           ),
         ),
         Spacer(flex: 1),
         Visibility(
-          visible: _chosenIndex != null,
+          visible: _chosenPictureIndex != null,
           maintainSize: true,
           maintainAnimation: true,
           maintainState: true,
           child: AccentButton(
             Icons.arrow_forward,
             S.of(context).taskAdvance,
-            onPressed: () {
-              logger.log('finished subtask', {'subtask': _currentSubtaskIndex});
-              _chosenIndices.add(_chosenIndex);
-              _chosenIndex = null;
-              if (_currentSubtaskIndex < _subtasks.length - 1) {
-                setState(() {
-                  _currentSubtaskIndex++;
-                });
-                logger
-                    .log('started subtask', {'subtask': _currentSubtaskIndex});
-              } else {
-                finish(data: {'chosenIndices': _chosenIndices});
-              }
-            },
+            onPressed: !_feedbacking
+                ? () async {
+                    logger.log(
+                        'finished subtask', {'subtask': _currentSubtaskIndex});
+                    _chosenPictureIndices.add(_chosenPictureIndex);
+                    if (subtask.correctPictureIndex != null) {
+                      logger.log('started feedback',
+                          {'subtask': _currentSubtaskIndex});
+                      setState(() {
+                        _feedbacking = true;
+                      });
+                      await Future.delayed(Duration(milliseconds: 600));
+                      logger.log('finished feedback',
+                          {'subtask': _currentSubtaskIndex});
+                      _feedbacking = false;
+                    }
+                    _chosenPictureIndex = null;
+                    if (_currentSubtaskIndex < _subtasks.length - 1) {
+                      setState(() {
+                        _currentSubtaskIndex++;
+                      });
+                      logger.log(
+                          'started subtask', {'subtask': _currentSubtaskIndex});
+                    } else {
+                      finish(data: {
+                        'chosenPictureIndices': _chosenPictureIndices
+                      });
+                    }
+                  }
+                : null,
           ),
         ),
         Spacer(flex: 1),
@@ -139,8 +131,71 @@ class PictureNaming extends Task {
     logger.log('chose picture',
         {'subtask': _currentSubtaskIndex, 'picture': pictureIndex});
     setState(() {
-      _chosenIndex = pictureIndex;
+      _chosenPictureIndex = pictureIndex;
     });
+  }
+}
+
+class PictureCard<T> extends StatelessWidget {
+  static const double chosenMargin = 16.0;
+
+  final Image picture;
+  final T value;
+  final T chosenValue;
+  final void Function(T value) onTap;
+  final bool feedback;
+
+  const PictureCard(this.picture, this.value, this.chosenValue, this.onTap,
+      {this.feedback, Key key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    var card = Card(
+      margin: chosenValue == value || feedback != null
+          ? EdgeInsets.all(chosenMargin)
+          : null,
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          if (picture != null)
+            SizedBox.expand(
+              child: FittedBox(
+                child: picture,
+                fit: BoxFit.contain,
+              ),
+            )
+          else
+            Center(
+              child: Text(
+                '?',
+                style: TextStyle(
+                  fontSize: chosenValue == value ? 70.0 - chosenMargin : 70.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          Positioned.fill(
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                highlightColor: Colors.transparent,
+                onTap: () {
+                  onTap(value);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (feedback == null) {
+      return card;
+    }
+    return ColoredBox(
+      color: feedback ? Colors.green : Colors.red,
+      child: card,
+    );
   }
 }
 
@@ -148,14 +203,16 @@ class PictureNaming extends Task {
 class Subtask {
   final String text;
   final List<Image> pictures;
+  final int correctPictureIndex;
 
-  Subtask(this.text, this.pictures);
+  Subtask(this.text, this.pictures, [this.correctPictureIndex]);
 
   static Subtask fromJson(Map<String, dynamic> json) {
     List<String> pictures = json['pictures'].cast<String>();
     return Subtask(
       json['text'],
       pictures.map(_imageFromBase64).toList(),
+      json['correctPictureIndex'],
     );
   }
 
