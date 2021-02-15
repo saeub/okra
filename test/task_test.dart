@@ -53,9 +53,19 @@ void main() {
         TaskType.cloze,
         {
           'segments': [
-            'This is a {{test|example|pineapple}} and it is interesting.',
-            'This is a segment without gaps.',
-            'This one has {{only one}} option.',
+            {
+              'text': 'This is a  and it is interesting.',
+              'blankPosition': 10,
+              'options': ['test', 'example', 'pineapple'],
+            },
+            {
+              'text': 'This is a segment without blanks.',
+            },
+            {
+              'text': 'This one has  option.',
+              'blankPosition': 13,
+              'options': ['only one'],
+            },
           ],
         },
         logger,
@@ -84,7 +94,7 @@ void main() {
       l.expectLogged('finished segment', {'segment': 0});
 
       l.expectLogged('started segment', {'segment': 1});
-      expect(find.textContaining('This is a segment without gaps.'),
+      expect(find.textContaining('This is a segment without blanks.'),
           findsOneWidget);
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
@@ -113,8 +123,18 @@ void main() {
         TaskType.cloze,
         {
           'segments': [
-            'This is a {{test|example|_pineapple}} and it is interesting.',
-            'This one has {{_only one}} option.',
+            {
+              'text': 'This is a  and it is interesting.',
+              'blankPosition': 10,
+              'options': ['test', 'example', 'pineapple'],
+              'correctOptionIndex': 3,
+            },
+            {
+              'text': 'This one has  option.',
+              'blankPosition': 13,
+              'options': ['only one'],
+              'correctOptionIndex': 0,
+            },
           ],
         },
         logger,

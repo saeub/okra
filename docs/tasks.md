@@ -13,13 +13,19 @@ One segment of text is shown at a time, with a blank which has to be filled in b
   {% raw %}```json
   {
       "segments": [
-          "This is an {{example|test|pineapple}}.",
+          {
+              "text": "This is an .",
+              "blankPosition": 11,
+              "options": ["example", "text", "pineapple"]
+              "correctOptionIndex": 0
+          }
+          
           "Segment without blanks.",
           ...
       ]
   }
   ```{% endraw %}
-  **NOTE:** There can be at most one blank per segment. Only the first double brackets in the segment will replaced by the blank.
+  **NOTE:** There can be at most one blank per segment. Only the first double brackets in the segment will replaced by the blank. `correctOptionIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
 - Results data structure:
   ```json
   {

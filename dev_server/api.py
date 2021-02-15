@@ -42,7 +42,7 @@ EXPERIMENTS_TASKS = [
             "id": "1",
             "type": "cloze",
             "title": "Cloze task",
-            "instructions": "Fill in the gaps.",
+            "instructions": "Fill in the blanks.",
             "nTasks": 3,
             "nTasksDone": 2,
             "ratings": [example_rating("emoticon")],

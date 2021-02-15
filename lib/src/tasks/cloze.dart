@@ -15,8 +15,8 @@ class Cloze extends Task {
 
   @override
   void init(Map<String, dynamic> data) {
-    List<String> segmentsData = data['segments'].cast<String>();
-    _segments = segmentsData.map(Segment.fromString).toList();
+    List<Map<String, dynamic>> segmentsData = data['segments'].cast<Map<String, dynamic>>();
+    _segments = segmentsData.map(Segment.fromJson).toList();
     _currentSegmentIndex = 0;
     _feedbacking = false;
     _chosenOptionIndices = [];
@@ -188,28 +188,19 @@ class Segment {
 
   Segment(this.pre, this.post, this.options, [this.correctOptionIndex]);
 
-  static Segment fromString(String segment) {
-    // TODO: More strictly structured format (e.g. blank position + options)
-    var match = blankPattern.firstMatch(segment);
-    if (match == null) {
-      return Segment(segment, null, []);
+  static Segment fromJson(Map<String, dynamic> json) {
+    var text = json['text'];
+    var blankPosition = json['blankPosition'];
+    if (blankPosition == null) {
+      return Segment(text, null, []);
     }
-    var pre = segment.substring(0, match.start);
-    var post = segment.substring(match.end);
-    var options = match.group(1).split('|');
-    int correctOptionIndex;
-    for (var i = 0; i < options.length; i++) {
-      if (options[i].startsWith('_')) {
-        correctOptionIndex = i;
-        options[i] = options[i].substring(1);
-        break;
-      }
-    }
+    var pre = text.substring(0, blankPosition);
+    var post = text.substring(blankPosition);
     return Segment(
       pre,
       post,
-      options,
-      correctOptionIndex,
+      json['options'],
+      json['correctOptionIndex'],
     );
   }
 }

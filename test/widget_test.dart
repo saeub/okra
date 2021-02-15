@@ -60,7 +60,11 @@ class TestApi extends Api {
   Future<TaskData> startTask(String experimentId) async {
     return TaskData('test', {
       'segments': [
-        'This is a {{test|example}}.',
+        {
+          'text': 'This is a .',
+          'blankPosition': 10,
+          'options': ['test', 'example'],
+        },
       ],
     });
   }
