@@ -16,11 +16,12 @@ One segment of text is shown at a time, with a blank which has to be filled in b
           {
               "text": "This is an .",
               "blankPosition": 11,
-              "options": ["example", "text", "pineapple"]
+              "options": ["example", "text", "pineapple"],
               "correctOptionIndex": 0
-          }
-          
-          "Segment without blanks.",
+          },
+          {
+              "text": "Segment without blanks.",
+          },
           ...
       ]
   }

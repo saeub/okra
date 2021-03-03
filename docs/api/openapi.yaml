@@ -26,7 +26,7 @@ paths:
             schema:
               type: "object"
               properties:
-                participantID:
+                participantId:
                   type: "string"
                   description: "Participant ID"
                 registrationKey:
@@ -43,10 +43,10 @@ paths:
                   name:
                     type: "string"
                     description: "API name"
-                  iconURL:
+                  iconUrl:
                     type: "string"
                     description: "URL to API icon image"
-                  participantID:
+                  participantId:
                     type: "string"
                     description: "Participant ID"
                   deviceKey:
@@ -62,7 +62,7 @@ paths:
       tags:
         - "experiments"
       security:
-        - participantID: []
+        - participantId: []
         - deviceKey: []
       responses:
         "200":
@@ -70,27 +70,30 @@ paths:
           content:
             "application/json":
               schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Experiment"
+                type: "object"
+                properties:
+                  experiments:
+                    type: "array"
+                    items:
+                      $ref: "#/components/schemas/Experiment"
         "401":
           $ref: "#/components/responses/InvalidCredentials"
         default:
           $ref: "#/components/responses/UnknownError"
-  "/experiments/{experimentID}":
+  "/experiments/{experimentId}":
     get:
       summary: "Information about an experiment"
       tags:
         - "experiments"
       parameters:
-        - name: "experimentID"
+        - name: "experimentId"
           in: "path"
           description: "Experiment ID"
           required: true
           schema:
             type: "string"
       security:
-        - participantID: []
+        - participantId: []
         - deviceKey: []
       responses:
         "200":
@@ -103,20 +106,20 @@ paths:
           $ref: "#/components/responses/InvalidCredentials"
         default:
           $ref: "#/components/responses/UnknownError"
-  "/experiments/{experimentID}/start":
+  "/experiments/{experimentId}/start":
     post:
       summary: "Start a task in an experiment"
       tags:
         - "experiments"
       parameters:
-        - name: "experimentID"
+        - name: "experimentId"
           in: "path"
           description: "Experiment ID"
           required: true
           schema:
             type: "string"
       security:
-        - participantID: []
+        - participantId: []
         - deviceKey: []
       responses:
         "200":
@@ -129,20 +132,20 @@ paths:
           $ref: "#/components/responses/InvalidCredentials"
         default:
           $ref: "#/components/responses/UnknownError"
-  "/tasks/{taskID}/finish":
+  "/tasks/{taskId}/finish":
     post:
       summary: "Finish a previously started task"
       tags:
         - "experiments"
       parameters:
-        - name: "taskID"
+        - name: "taskId"
           in: "path"
           description: "Task ID"
           required: true
           schema:
             type: "string"
       security:
-        - participantID: []
+        - participantId: []
         - deviceKey: []
       requestBody:
         content:
@@ -171,7 +174,7 @@ components:
         title:
           type: "string"
           description: "Experiment title"
-        coverImageURL:
+        coverImageUrl:
           type: "string"
           description: "URL to experiment cover image"
         instructions:
@@ -254,7 +257,7 @@ components:
           type: "string"
           description: "Error message"
   securitySchemes:
-    participantID:
+    participantId:
       type: "apiKey"
       name: "X-Participant-ID"
       in: "header"
