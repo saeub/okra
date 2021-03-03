@@ -51,6 +51,18 @@ class _TaskPageState extends State<TaskPage> {
     });
   }
 
+  void startPracticeTask() {
+    setState(() {
+      _mode = TaskPageMode.task;
+      _taskId = null;
+      _logger = TaskEventLogger();
+      _results = null;
+      _taskFuture =
+          widget.experiment.api.startTask(widget.experiment.id, practice: true);
+      _taskFinishedFuture = null;
+    });
+  }
+
   void startRatings() {
     setState(() {
       _mode = TaskPageMode.ratings;
@@ -77,9 +89,9 @@ class _TaskPageState extends State<TaskPage> {
     switch (_mode) {
       case TaskPageMode.instructions:
         content = InstructionsWidget(
-          text: widget.experiment.instructions,
-          audioUrl: widget.experiment.instructionsAudioUrl,
+          experiment: widget.experiment,
           onStartPressed: startTask,
+          onStartPracticePressed: startPracticeTask,
         );
         break;
 
@@ -306,12 +318,14 @@ class _ReadAloudWidgetState extends State<ReadAloudWidget> {
 }
 
 class InstructionsWidget extends StatelessWidget {
-  final String text;
-  final String audioUrl;
-  final VoidCallback onStartPressed;
+  final Experiment experiment;
+  final VoidCallback onStartPressed, onStartPracticePressed;
 
   const InstructionsWidget(
-      {this.text, this.audioUrl, this.onStartPressed, Key key})
+      {this.experiment,
+      this.onStartPressed,
+      this.onStartPracticePressed,
+      Key key})
       : super(key: key);
 
   @override
@@ -330,19 +344,43 @@ class InstructionsWidget extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
-                if (audioUrl != null) ReadAloudWidget(audioUrl),
+                if (experiment.instructionsAudioUrl != null)
+                  ReadAloudWidget(experiment.instructionsAudioUrl),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                   child: MarkdownBody(
-                    data: text,
+                    data: experiment.instructions,
                     fitContent: false,
                   ),
                 ),
-                AccentButton(
-                  Icons.arrow_forward,
-                  S.of(context).instructionsStartTask,
-                  onPressed: onStartPressed,
-                ),
+                if (experiment.hasPracticeTask && experiment.nTasksDone == 0)
+                  AccentButton(
+                    Icons.sports_tennis,
+                    S.of(context).instructionsStartPracticeTask,
+                    onPressed: onStartPracticePressed,
+                  )
+                else if (experiment.hasPracticeTask)
+                  Column(
+                    children: [
+                      AccentButton(
+                        Icons.sports_tennis,
+                        S.of(context).instructionsRestartPracticeTask,
+                        color: Colors.grey,
+                        onPressed: onStartPracticePressed,
+                      ),
+                      AccentButton(
+                        Icons.arrow_forward,
+                        S.of(context).instructionsStartTask,
+                        onPressed: onStartPressed,
+                      ),
+                    ],
+                  )
+                else
+                  AccentButton(
+                    Icons.arrow_forward,
+                    S.of(context).instructionsStartTask,
+                    onPressed: onStartPressed,
+                  ),
               ],
             ),
           ),

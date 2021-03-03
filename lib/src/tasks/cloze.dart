@@ -200,7 +200,7 @@ class Segment {
     return Segment(
       pre,
       post,
-      json['options'],
+      json['options'].cast<String>(),
       json['correctOptionIndex'],
     );
   }

@@ -118,6 +118,12 @@ paths:
           required: true
           schema:
             type: "string"
+        - name: "practice"
+          in: "query"
+          description: "Whether to start a practice task"
+          schema:
+            type: "boolean"
+            default: false
       security:
         - participantId: []
         - deviceKey: []
@@ -186,6 +192,9 @@ components:
         nTasksDone:
           type: "integer"
           description: "Number of tasks already completed in the experiment"
+        hasPracticeTask:
+          type: "boolean"
+          description: "Whether the experiment provides a practice task"
         ratings:
           type: "array"
           description: "Rating questions presented after each task"
