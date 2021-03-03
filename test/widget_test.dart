@@ -124,6 +124,8 @@ void main() {
       await tester.tap(find.text('START PRACTICE TASK'));
       await tester.pumpAndSettle();
       // Task
+      expect(find.text('PRACTICE'), findsOneWidget);
+      expect(find.text('This trial does not count'), findsOneWidget);
       await tester.tap(find.text('practice'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));

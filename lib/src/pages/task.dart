@@ -31,6 +31,7 @@ class _TaskPageState extends State<TaskPage> {
   String _taskId;
   TaskEventLogger _logger;
   TaskResults _results;
+  bool _practicing;
   Future<TaskData> _taskFuture;
   Future<void> _taskFinishedFuture;
 
@@ -40,25 +41,15 @@ class _TaskPageState extends State<TaskPage> {
     _mode = TaskPageMode.instructions;
   }
 
-  void startTask() {
+  void startTask(bool practicing) {
     setState(() {
       _mode = TaskPageMode.task;
       _taskId = null;
       _logger = TaskEventLogger();
       _results = null;
-      _taskFuture = widget.experiment.api.startTask(widget.experiment.id);
-      _taskFinishedFuture = null;
-    });
-  }
-
-  void startPracticeTask() {
-    setState(() {
-      _mode = TaskPageMode.task;
-      _taskId = null;
-      _logger = TaskEventLogger();
-      _results = null;
-      _taskFuture =
-          widget.experiment.api.startTask(widget.experiment.id, practice: true);
+      _practicing = practicing;
+      _taskFuture = widget.experiment.api
+          .startTask(widget.experiment.id, practice: _practicing);
       _taskFinishedFuture = null;
     });
   }
@@ -90,8 +81,12 @@ class _TaskPageState extends State<TaskPage> {
       case TaskPageMode.instructions:
         content = InstructionsWidget(
           experiment: widget.experiment,
-          onStartPressed: startTask,
-          onStartPracticePressed: startPracticeTask,
+          onStartPressed: () {
+            startTask(false);
+          },
+          onStartPracticePressed: () {
+            startTask(true);
+          },
         );
         break;
 
@@ -120,6 +115,7 @@ class _TaskPageState extends State<TaskPage> {
                       finishTask();
                     }
                   },
+                  practice: _practicing,
                 );
               } else {
                 return Center(child: CircularProgressIndicator());
@@ -128,12 +124,7 @@ class _TaskPageState extends State<TaskPage> {
               return Center(
                 child: ErrorMessage(
                   S.of(context).errorGeneric(snapshot.error),
-                  retry: () {
-                    setState(() {
-                      _taskFuture =
-                          widget.experiment.api.startTask(widget.experiment.id);
-                    });
-                  },
+                  retry: () => startTask(_practicing),
                 ),
               );
             } else {
@@ -157,7 +148,7 @@ class _TaskPageState extends State<TaskPage> {
         content = ResultsWidget(
           experiment: widget.experiment,
           message: _results.message,
-          onContinuePressed: startTask,
+          onContinuePressed: () => startTask(false),
         );
         break;
     }
@@ -395,9 +386,10 @@ class TaskWidget extends StatefulWidget {
   final Map<String, dynamic> data;
   final TaskEventLogger logger;
   final FinishCallback onFinished;
+  final bool practice;
 
   const TaskWidget(this.taskFactory, this.data, this.logger, this.onFinished,
-      {Key key})
+      {this.practice = false, Key key})
       : super(key: key);
 
   @override
@@ -421,6 +413,42 @@ class _TaskWidgetState extends State<TaskWidget> {
     return Column(
       children: [
         if (progress != null) AnimatedLinearProgressIndicator(progress),
+        if (widget.practice)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Icon(
+                        Icons.sports_tennis,
+                        size: 30.0,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    Text(
+                      'PRACTICE',
+                      style: TextStyle(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'This trial does not count',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
         Flexible(child: _task.build(context)),
       ],
     );
