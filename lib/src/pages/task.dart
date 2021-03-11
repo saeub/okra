@@ -31,6 +31,7 @@ class _TaskPageState extends State<TaskPage> {
   String _taskId;
   TaskEventLogger _logger;
   TaskResults _results;
+  bool _practicing;
   Future<TaskData> _taskFuture;
   Future<void> _taskFinishedFuture;
 
@@ -40,13 +41,15 @@ class _TaskPageState extends State<TaskPage> {
     _mode = TaskPageMode.instructions;
   }
 
-  void startTask() {
+  void startTask(bool practicing) {
     setState(() {
       _mode = TaskPageMode.task;
       _taskId = null;
       _logger = TaskEventLogger();
       _results = null;
-      _taskFuture = widget.experiment.api.startTask(widget.experiment.id);
+      _practicing = practicing;
+      _taskFuture = widget.experiment.api
+          .startTask(widget.experiment.id, practice: _practicing);
       _taskFinishedFuture = null;
     });
   }
@@ -77,9 +80,13 @@ class _TaskPageState extends State<TaskPage> {
     switch (_mode) {
       case TaskPageMode.instructions:
         content = InstructionsWidget(
-          text: widget.experiment.instructions,
-          audioUrl: widget.experiment.instructionsAudioUrl,
-          onStartPressed: startTask,
+          experiment: widget.experiment,
+          onStartPressed: () {
+            startTask(false);
+          },
+          onStartPracticePressed: () {
+            startTask(true);
+          },
         );
         break;
 
@@ -108,6 +115,7 @@ class _TaskPageState extends State<TaskPage> {
                       finishTask();
                     }
                   },
+                  practice: _practicing,
                 );
               } else {
                 return Center(child: CircularProgressIndicator());
@@ -116,12 +124,7 @@ class _TaskPageState extends State<TaskPage> {
               return Center(
                 child: ErrorMessage(
                   S.of(context).errorGeneric(snapshot.error),
-                  retry: () {
-                    setState(() {
-                      _taskFuture =
-                          widget.experiment.api.startTask(widget.experiment.id);
-                    });
-                  },
+                  retry: () => startTask(_practicing),
                 ),
               );
             } else {
@@ -145,7 +148,7 @@ class _TaskPageState extends State<TaskPage> {
         content = ResultsWidget(
           experiment: widget.experiment,
           message: _results.message,
-          onContinuePressed: startTask,
+          onContinuePressed: () => startTask(false),
         );
         break;
     }
@@ -306,12 +309,14 @@ class _ReadAloudWidgetState extends State<ReadAloudWidget> {
 }
 
 class InstructionsWidget extends StatelessWidget {
-  final String text;
-  final String audioUrl;
-  final VoidCallback onStartPressed;
+  final Experiment experiment;
+  final VoidCallback onStartPressed, onStartPracticePressed;
 
   const InstructionsWidget(
-      {this.text, this.audioUrl, this.onStartPressed, Key key})
+      {this.experiment,
+      this.onStartPressed,
+      this.onStartPracticePressed,
+      Key key})
       : super(key: key);
 
   @override
@@ -321,7 +326,7 @@ class InstructionsWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Center(
           child: ReadingWidth(
-            Column(
+            child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
@@ -330,19 +335,43 @@ class InstructionsWidget extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
-                if (audioUrl != null) ReadAloudWidget(audioUrl),
+                if (experiment.instructionsAudioUrl != null)
+                  ReadAloudWidget(experiment.instructionsAudioUrl),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
                   child: MarkdownBody(
-                    data: text,
+                    data: experiment.instructions,
                     fitContent: false,
                   ),
                 ),
-                AccentButton(
-                  Icons.arrow_forward,
-                  S.of(context).instructionsStartTask,
-                  onPressed: onStartPressed,
-                ),
+                if (experiment.hasPracticeTask && experiment.nTasksDone == 0)
+                  AccentButton(
+                    Icons.sports_tennis,
+                    S.of(context).instructionsStartPracticeTask,
+                    onPressed: onStartPracticePressed,
+                  )
+                else if (experiment.hasPracticeTask)
+                  Column(
+                    children: [
+                      AccentButton(
+                        Icons.sports_tennis,
+                        S.of(context).instructionsRestartPracticeTask,
+                        color: Colors.grey,
+                        onPressed: onStartPracticePressed,
+                      ),
+                      AccentButton(
+                        Icons.arrow_forward,
+                        S.of(context).instructionsStartTask,
+                        onPressed: onStartPressed,
+                      ),
+                    ],
+                  )
+                else
+                  AccentButton(
+                    Icons.arrow_forward,
+                    S.of(context).instructionsStartTask,
+                    onPressed: onStartPressed,
+                  ),
               ],
             ),
           ),
@@ -357,9 +386,10 @@ class TaskWidget extends StatefulWidget {
   final Map<String, dynamic> data;
   final TaskEventLogger logger;
   final FinishCallback onFinished;
+  final bool practice;
 
   const TaskWidget(this.taskFactory, this.data, this.logger, this.onFinished,
-      {Key key})
+      {this.practice = false, Key key})
       : super(key: key);
 
   @override
@@ -383,6 +413,42 @@ class _TaskWidgetState extends State<TaskWidget> {
     return Column(
       children: [
         if (progress != null) AnimatedLinearProgressIndicator(progress),
+        if (widget.practice)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Icon(
+                        Icons.sports_tennis,
+                        size: 30.0,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    Text(
+                      'PRACTICE',
+                      style: TextStyle(
+                        fontSize: 25.0,
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  'This trial does not count',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
         Flexible(child: _task.build(context)),
       ],
     );

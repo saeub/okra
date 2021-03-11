@@ -35,6 +35,7 @@ class _TutorialExperiment {
       instructionsAudioUrl: null,
       nTasks: tasks.length,
       nTasksDone: progress,
+      hasPracticeTask: false,
       ratings: ratings,
     );
   }
@@ -190,7 +191,8 @@ to the next sentence.**
   }
 
   @override
-  Future<TaskData> startTask(String experimentId) async {
+  Future<TaskData> startTask(String experimentId,
+      {bool practice = false}) async {
     var taskId = _experiments[experimentId].progress;
     return _experiments[experimentId].tasks[taskId];
   }

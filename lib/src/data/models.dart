@@ -11,6 +11,7 @@ class Experiment {
   final TaskType type;
   final String title, coverImageUrl, instructions, instructionsAudioUrl;
   final int nTasks, nTasksDone;
+  final bool hasPracticeTask;
   final List<TaskRating> ratings;
 
   Experiment(this.api, this.id,
@@ -21,6 +22,7 @@ class Experiment {
       this.instructionsAudioUrl,
       @required this.nTasks,
       @required this.nTasksDone,
+      @required this.hasPracticeTask,
       this.ratings});
 
   static Experiment fromJson(Api api, Map<String, dynamic> json) {
@@ -36,6 +38,7 @@ class Experiment {
       instructionsAudioUrl: json['instructionsAudioUrl'],
       nTasks: json['nTasks'],
       nTasksDone: json['nTasksDone'],
+      hasPracticeTask: json['hasPracticeTask'],
       ratings: ratingsData?.map(TaskRating.fromJson)?.toList(),
     );
   }

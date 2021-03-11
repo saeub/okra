@@ -119,7 +119,7 @@ class NormalReading extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Center(
           child: ReadingWidth(
-            Column(
+            child: Column(
               children: [
                 MarkdownBody(data: text),
                 AccentButton(
@@ -176,7 +176,7 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ReadingWidth(
-                AnimatedSegments(
+                child: AnimatedSegments(
                   _currentSegmentIndex > 0
                       ? _segments[_currentSegmentIndex - 1]
                       : '',
@@ -347,7 +347,7 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
     return SingleChildScrollView(
       child: Center(
         child: ReadingWidth(
-          Column(
+          child: Column(
             children: [
               for (var i = 0; i < widget.questions.length; i++)
                 Padding(

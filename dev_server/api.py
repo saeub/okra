@@ -45,13 +45,25 @@ EXPERIMENTS_TASKS = [
             "instructions": "Fill in the blanks.",
             "nTasks": 3,
             "nTasksDone": 2,
+            "hasPracticeTask": True,
             "ratings": [example_rating("emoticon")],
         },
         {
             "segments": [
-                "This is a {{_test|example}}.",
-                "This is a {{test|_example}}.",
-                "This is a {{_test|example}}.",
+                {
+                    "text": "This is an .",
+                    "blankPosition": 11,
+                    "options": ["example", "text", "pineapple"],
+                    "correctOptionIndex": 0,
+                },
+                {
+                    "text": "This is an .",
+                    "blankPosition": 11,
+                    "options": ["example", "text", "pineapple"],
+                },
+                {
+                    "text": "This is an example.",
+                },
             ],
         },
     ),
@@ -63,6 +75,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "Is it a word?",
             "nTasks": 5,
             "nTasksDone": 0,
+            "hasPracticeTask": True,
             "ratings": [example_rating("radio")],
         },
         {
@@ -78,6 +91,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "Choose the matching picture.",
             "nTasks": 4,
             "nTasksDone": 3,
+            "hasPracticeTask": False,
             "ratings": [example_rating("slider")],
         },
         {
@@ -86,17 +100,17 @@ EXPERIMENTS_TASKS = [
                 {
                     "text": "Example",
                     "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
-                    "correctPictureIndex": 0
+                    "correctPictureIndex": 0,
                 },
                 {
                     "text": "Example",
                     "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
-                    "correctPictureIndex": 1
+                    "correctPictureIndex": 1,
                 },
                 {
                     "text": "Example",
                     "pictures": [EXAMPLE_IMAGE, EXAMPLE_IMAGE, EXAMPLE_IMAGE],
-                    "correctPictureIndex": 2
+                    "correctPictureIndex": 2,
                 },
             ],
         },
@@ -109,6 +123,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "Answer the questions.",
             "nTasks": 3,
             "nTasksDone": 1,
+            "hasPracticeTask": False,
             "ratings": [example_rating("emoticon"), example_rating("slider")],
         },
         {
@@ -131,6 +146,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "Answer the questions.",
             "nTasks": 7,
             "nTasksDone": 2,
+            "hasPracticeTask": False,
         },
         {
             "readingType": "self-paced",

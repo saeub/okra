@@ -19,7 +19,7 @@ abstract class Api {
 
   Future<Experiment> getExperiment(String experimentId);
 
-  Future<TaskData> startTask(String experimentId);
+  Future<TaskData> startTask(String experimentId, {bool practice = false});
 
   Future<void> finishTask(String taskId, TaskResults results);
 }
@@ -143,8 +143,10 @@ class WebApi extends Api {
   }
 
   @override
-  Future<TaskData> startTask(String experimentId) async {
-    Map<String, dynamic> data = await post('experiments/$experimentId/start');
+  Future<TaskData> startTask(String experimentId,
+      {bool practice = false}) async {
+    Map<String, dynamic> data =
+        await post('experiments/$experimentId/start?practice=$practice');
     return TaskData.fromJson(data);
   }
 

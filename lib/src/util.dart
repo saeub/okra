@@ -117,7 +117,7 @@ class _AnimatedLinearProgressIndicatorState
 class ReadingWidth extends StatelessWidget {
   final Widget child;
 
-  const ReadingWidth(this.child, {Key key}) : super(key: key);
+  const ReadingWidth({@required this.child, Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -197,6 +197,16 @@ class S {
     );
   }
 
+  /// `RESTART PRACTICE TASK`
+  String get instructionsRestartPracticeTask {
+    return Intl.message(
+      'RESTART PRACTICE TASK',
+      name: 'instructionsRestartPracticeTask',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Read aloud`
   String get instructionsStartAudio {
     return Intl.message(
@@ -207,10 +217,20 @@ class S {
     );
   }
 
-  /// `START`
+  /// `START PRACTICE TASK`
+  String get instructionsStartPracticeTask {
+    return Intl.message(
+      'START PRACTICE TASK',
+      name: 'instructionsStartPracticeTask',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `START TASK`
   String get instructionsStartTask {
     return Intl.message(
-      'START',
+      'START TASK',
       name: 'instructionsStartTask',
       desc: '',
       args: [],

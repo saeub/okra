@@ -50,6 +50,7 @@ class TestApi extends Api {
       instructions: 'Test instructions',
       nTasks: 1,
       nTasksDone: 0,
+      hasPracticeTask: experimentId == 'test-practice',
       ratings: [
         TaskRating('Question?', TaskRatingType.slider),
       ],
@@ -57,16 +58,29 @@ class TestApi extends Api {
   }
 
   @override
-  Future<TaskData> startTask(String experimentId) async {
-    return TaskData('test', {
-      'segments': [
-        {
-          'text': 'This is a .',
-          'blankPosition': 10,
-          'options': ['test', 'example'],
-        },
-      ],
-    });
+  Future<TaskData> startTask(String experimentId,
+      {bool practice = false}) async {
+    if (practice) {
+      return TaskData('test', {
+        'segments': [
+          {
+            'text': 'This is .',
+            'blankPosition': 8,
+            'options': ['madness', 'practice'],
+          },
+        ],
+      });
+    } else {
+      return TaskData('test', {
+        'segments': [
+          {
+            'text': 'This is a .',
+            'blankPosition': 10,
+            'options': ['test', 'example'],
+          },
+        ],
+      });
+    }
   }
 
   @override
@@ -84,10 +98,35 @@ void main() {
           .pumpWidget(getApp(TaskPage(await testApi.getExperiment('test'))));
       await tester.pumpAndSettle();
       // Instructions
-      await tester.tap(find.text('START'));
+      await tester.tap(find.text('START TASK'));
       await tester.pumpAndSettle();
       // Task
       await tester.tap(find.text('example'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      // Ratings
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      // Results
+      expect(testApi.taskResults.data, {
+        'chosenOptionIndices': [1],
+      });
+      expect(testApi.taskResults.ratingAnswers, [0.5]);
+      expect(testApi.taskResults.events.length, 3);
+    });
+
+    testWidgets('supports practice tasks', (WidgetTester tester) async {
+      await tester.pumpWidget(
+          getApp(TaskPage(await testApi.getExperiment('test-practice'))));
+      await tester.pumpAndSettle();
+      // Instructions
+      await tester.tap(find.text('START PRACTICE TASK'));
+      await tester.pumpAndSettle();
+      // Task
+      expect(find.text('PRACTICE'), findsOneWidget);
+      expect(find.text('This trial does not count'), findsOneWidget);
+      await tester.tap(find.text('practice'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
