@@ -44,85 +44,105 @@ class PictureNaming extends Task {
         : null;
     return Column(
       children: [
-        Spacer(flex: 2),
-        Text(
-          subtask.text,
-          style: TextStyle(
-            fontSize: 30.0,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            subtask.text,
+            style: TextStyle(
+              fontSize: 30.0,
+            ),
           ),
         ),
-        Spacer(flex: 1),
-        // TODO: guarantee no overflow
-        ReadingWidth(
-          GridView.count(
-            crossAxisCount: sqrt(nCards).ceil(),
-            shrinkWrap: true,
-            children: [
-              for (var i = 0; i < subtask.pictures.length; i++)
-                PictureCard(
-                  subtask.pictures[i],
-                  i,
-                  _chosenPictureIndex,
-                  (_) {
-                    _onTap(i);
-                  },
-                  feedback: subtask.correctPictureIndex == i ? feedback : null,
-                ),
-              if (_showQuestionMark)
-                PictureCard(
-                  null,
-                  -1,
-                  _chosenPictureIndex,
-                  (_) {
-                    _onTap(-1);
-                  },
-                  feedback: subtask.correctPictureIndex == -1 ? feedback : null,
-                ),
-            ],
-          ),
-        ),
-        Spacer(flex: 1),
-        Visibility(
-          visible: _chosenPictureIndex != null,
-          maintainSize: true,
-          maintainAnimation: true,
-          maintainState: true,
-          child: AccentButton(
-            Icons.arrow_forward,
-            S.of(context).taskAdvance,
-            onPressed: !_feedbacking
-                ? () async {
-                    logger.log(
-                        'finished subtask', {'subtask': _currentSubtaskIndex});
-                    _chosenPictureIndices.add(_chosenPictureIndex);
-                    if (subtask.correctPictureIndex != null) {
-                      logger.log('started feedback',
-                          {'subtask': _currentSubtaskIndex});
-                      setState(() {
-                        _feedbacking = true;
-                      });
-                      await Future.delayed(Duration(milliseconds: 600));
-                      logger.log('finished feedback',
-                          {'subtask': _currentSubtaskIndex});
-                      _feedbacking = false;
-                    }
-                    _chosenPictureIndex = null;
-                    if (_currentSubtaskIndex < _subtasks.length - 1) {
-                      setState(() {
-                        _currentSubtaskIndex++;
-                      });
-                      logger.log(
-                          'started subtask', {'subtask': _currentSubtaskIndex});
-                    } else {
-                      finish(data: {
-                        'chosenPictureIndices': _chosenPictureIndices
-                      });
-                    }
+        Flexible(
+          child: ReadingWidth(
+            child: Center(
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  var gridView = GridView.count(
+                    crossAxisCount: sqrt(nCards).ceil(),
+                    shrinkWrap: true,
+                    children: [
+                      for (var i = 0; i < subtask.pictures.length; i++)
+                        PictureCard(
+                          subtask.pictures[i],
+                          i,
+                          _chosenPictureIndex,
+                          (_) {
+                            _onTap(i);
+                          },
+                          feedback: subtask.correctPictureIndex == i
+                              ? feedback
+                              : null,
+                        ),
+                      if (_showQuestionMark)
+                        PictureCard(
+                          null,
+                          -1,
+                          _chosenPictureIndex,
+                          (_) {
+                            _onTap(-1);
+                          },
+                          feedback: subtask.correctPictureIndex == -1
+                              ? feedback
+                              : null,
+                        ),
+                    ],
+                  );
+                  if (constraints.maxHeight < constraints.maxWidth) {
+                    return SizedBox(
+                      width: constraints.maxHeight,
+                      child: gridView,
+                    );
                   }
-                : null,
+                  return gridView;
+                },
+              ),
+            ),
           ),
         ),
-        Spacer(flex: 1),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Visibility(
+            visible: _chosenPictureIndex != null,
+            maintainSize: true,
+            maintainAnimation: true,
+            maintainState: true,
+            child: AccentButton(
+              Icons.arrow_forward,
+              S.of(context).taskAdvance,
+              onPressed: !_feedbacking
+                  ? () async {
+                      logger.log('finished subtask',
+                          {'subtask': _currentSubtaskIndex});
+                      _chosenPictureIndices.add(_chosenPictureIndex);
+                      if (subtask.correctPictureIndex != null) {
+                        logger.log('started feedback',
+                            {'subtask': _currentSubtaskIndex});
+                        setState(() {
+                          _feedbacking = true;
+                        });
+                        await Future.delayed(Duration(milliseconds: 600));
+                        logger.log('finished feedback',
+                            {'subtask': _currentSubtaskIndex});
+                        _feedbacking = false;
+                      }
+                      _chosenPictureIndex = null;
+                      if (_currentSubtaskIndex < _subtasks.length - 1) {
+                        setState(() {
+                          _currentSubtaskIndex++;
+                        });
+                        logger.log('started subtask',
+                            {'subtask': _currentSubtaskIndex});
+                      } else {
+                        finish(data: {
+                          'chosenPictureIndices': _chosenPictureIndices
+                        });
+                      }
+                    }
+                  : null,
+            ),
+          ),
+        ),
       ],
     );
   }

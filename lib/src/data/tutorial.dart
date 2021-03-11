@@ -191,7 +191,8 @@ to the next sentence.**
   }
 
   @override
-  Future<TaskData> startTask(String experimentId, {bool practice = false}) async {
+  Future<TaskData> startTask(String experimentId,
+      {bool practice = false}) async {
     var taskId = _experiments[experimentId].progress;
     return _experiments[experimentId].tasks[taskId];
   }

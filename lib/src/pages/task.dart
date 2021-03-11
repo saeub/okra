@@ -326,7 +326,7 @@ class InstructionsWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Center(
           child: ReadingWidth(
-            Column(
+            child: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),

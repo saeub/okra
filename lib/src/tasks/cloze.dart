@@ -38,7 +38,7 @@ class Cloze extends Task {
       children: [
         Expanded(
           child: ReadingWidth(
-            Center(
+            child: Center(
               child: Text.rich(
                 TextSpan(children: [
                   TextSpan(text: segment.pre),
