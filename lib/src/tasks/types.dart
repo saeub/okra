@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:okra/src/tasks/lexical_decision.dart';
+import 'package:okra/src/tasks/reaction_time.dart';
 
 import 'cloze.dart';
 import 'picture_naming.dart';
@@ -33,6 +34,11 @@ class TaskType {
     Icons.question_answer,
     () => QuestionAnswering(),
   );
+  static final TaskType reactionTime = TaskType(
+    Icons.offline_bolt,
+    () => ReactionTime(),
+    forceOrientation: Orientation.portrait,
+  );
 
   static TaskType fromString(String identifier) {
     switch (identifier) {
@@ -44,6 +50,8 @@ class TaskType {
         return pictureNaming;
       case 'question-answering':
         return questionAnswering;
+      case 'reaction-time':
+        return reactionTime;
       default:
         throw ArgumentError('Task type "$identifier" is not implemented');
     }

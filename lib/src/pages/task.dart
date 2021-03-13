@@ -413,7 +413,8 @@ class _TaskWidgetState extends State<TaskWidget> {
     return FutureBuilder(
       future: _taskInitFuture,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError) {
+        if (snapshot.connectionState == ConnectionState.done &&
+            !snapshot.hasError) {
           var progress = _task.getProgress();
           return Column(
             children: [
