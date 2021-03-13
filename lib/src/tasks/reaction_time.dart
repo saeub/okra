@@ -110,7 +110,8 @@ class ReactionTime extends Task {
               _reactionTimes.add(DateTime.now().difference(_stimulusStart));
               _stimulusStart = null;
             }
-            logger.log('tapped stimulus', {'stimulus': _starting ? null : _nStimuliDone});
+            logger.log('tapped stimulus',
+                {'stimulus': _starting ? null : _nStimuliDone});
             setState(() {
               _stimulusTapped = true;
               if (_starting) {
