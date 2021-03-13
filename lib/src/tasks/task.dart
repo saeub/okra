@@ -13,7 +13,7 @@ abstract class Task {
   StateSetter _setState;
   FinishCallback _finish;
 
-  void init(Map<String, dynamic> data);
+  Future<void> init(Map<String, dynamic> data);
 
   double getProgress();
 

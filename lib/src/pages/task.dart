@@ -398,59 +398,77 @@ class TaskWidget extends StatefulWidget {
 
 class _TaskWidgetState extends State<TaskWidget> {
   Task _task;
+  Future<void> _taskInitFuture;
 
   @override
   void initState() {
     super.initState();
     _task = widget.taskFactory();
     _task.injectDependencies(widget.logger, setState, widget.onFinished);
-    _task.init(widget.data);
+    _taskInitFuture = _task.init(widget.data);
   }
 
   @override
   Widget build(BuildContext context) {
-    var progress = _task.getProgress();
-    return Column(
-      children: [
-        if (progress != null) AnimatedLinearProgressIndicator(progress),
-        if (widget.practice)
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0),
-                      child: Icon(
-                        Icons.sports_tennis,
-                        size: 30.0,
-                        color: Theme.of(context).primaryColor,
+    return FutureBuilder(
+      future: _taskInitFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.done && !snapshot.hasError) {
+          var progress = _task.getProgress();
+          return Column(
+            children: [
+              if (progress != null) AnimatedLinearProgressIndicator(progress),
+              if (widget.practice)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: Icon(
+                              Icons.sports_tennis,
+                              size: 30.0,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                          Text(
+                            'PRACTICE',
+                            style: TextStyle(
+                              fontSize: 25.0,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    Text(
-                      'PRACTICE',
-                      style: TextStyle(
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
+                      Text(
+                        'This trial does not count',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                Text(
-                  'This trial does not count',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).primaryColor,
+                    ],
                   ),
                 ),
-              ],
+              Flexible(child: _task.build(context)),
+            ],
+          );
+        } else if (snapshot.hasError) {
+          return Center(
+            child: ErrorMessage(
+              S.of(context).errorGeneric(snapshot.error),
             ),
-          ),
-        Flexible(child: _task.build(context)),
-      ],
+          );
+        } else {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+      },
     );
   }
 }
