@@ -20,7 +20,7 @@ One segment of text is shown at a time, with a blank which has to be filled in b
               "correctOptionIndex": 0
           },
           {
-              "text": "Segment without blanks.",
+              "text": "Segment without blanks."
           },
           ...
       ]
@@ -53,10 +53,10 @@ One word is shown at a time. The task is to determine whether it is a real word 
   ```json
   {
       "answers": [true, false, ...],
-      "durations": [123, 234, ...]
+      "durations": [0.123, 1.234, ...]
   }
   ```
-  **NOTE:** Durations are in milliseconds.
+  **NOTE:** Durations are in seconds.
 
 ### Picture naming
 
@@ -122,3 +122,26 @@ A text is presented, and after reading, several single-answer multiple-choice qu
       "chosenAnswerIndices": [0, -1, ...]
   }
   ```
+
+### Reaction time
+
+A single picture of a red balloon is shown at a time, which disappears with a popping animation as soon as it is being touched. A new one then appears in a (uniformly distributed) random location after a configurable amount of time.
+
+- Identifier: `reaction-time`
+- Implementation: [`lib/src/tasks/reaction_time.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/reaction_time.dart)
+- Data structure:
+  ```json
+  {
+      "nStimuli": 20,
+      "minSecondsBetweenStimuli": 0,
+      "maxSecondsBetweenStimuli": 1.5,
+  }
+  ```
+  **NOTE:** `nStimuli` does not include an introductory stimuli, which is already shown when starting the task. If `minSecondsBetweenStimuli` is smaller than `maxSecondsBetweenStimuli`, a (uniformly distributed) random number between them is generated after each stimulus.
+- Results data structure:
+  ```json
+  {
+      "reactionTimes": [0.123, 1.234, ...]
+  }
+  ```
+  **NOTE:** Reaction times are in seconds. The reaction time for the introductory stimulus is not included.
