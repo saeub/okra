@@ -18,7 +18,7 @@ class PictureNaming extends Task {
   List<int> _chosenPictureIndices;
 
   @override
-  Future<void> init(Map<String, dynamic> data) async {
+  void init(Map<String, dynamic> data) {
     List<Map<String, dynamic>> subtaskData =
         data['subtasks'].cast<Map<String, dynamic>>();
     _subtasks = subtaskData.map(Subtask.fromJson).toList();

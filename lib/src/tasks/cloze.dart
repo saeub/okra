@@ -14,7 +14,7 @@ class Cloze extends Task {
   List<int> _chosenOptionIndices;
 
   @override
-  Future<void> init(Map<String, dynamic> data) async {
+  void init(Map<String, dynamic> data) {
     List<Map<String, dynamic>> segmentsData =
         data['segments'].cast<Map<String, dynamic>>();
     _segments = segmentsData.map(Segment.fromJson).toList();

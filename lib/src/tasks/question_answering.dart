@@ -18,7 +18,7 @@ class QuestionAnswering extends Task {
   double _progress;
 
   @override
-  Future<void> init(Map<String, dynamic> data) async {
+  void init(Map<String, dynamic> data) {
     String readingType = data['readingType'];
     String text = data['text'];
     var progressCallback = (progress) {

@@ -16,14 +16,13 @@ class LexicalDecision extends Task {
   List<Duration> _answerDurations;
 
   @override
-  Future<void> init(Map<String, dynamic> data) async {
+  void init(Map<String, dynamic> data) {
     _words = data['words'].cast<String>();
     _currentWordIndex = -1;
     _correctAnswers = data['correctAnswers']?.cast<bool>();
     _answers = [];
     _answerDurations = [];
-    _startCountdown() // ignore: unawaited_futures
-        .then((_) {
+    _startCountdown().then((_) {
       logger.log('finished countdown');
       setState(() {
         _currentWordIndex = 0;

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../generated/l10n.dart';
+import '../../main.dart';
 import '../tasks/task.dart';
 
 class ReactionTime extends Task {
@@ -20,19 +21,7 @@ class ReactionTime extends Task {
   List<Duration> _reactionTimes;
 
   @override
-  Future<void> init(Map<String, dynamic> data) async {
-    var balloon = await loadImage('assets/images/balloon.png');
-    var balloonPopped = await loadImage('assets/images/balloon_popped.png');
-    var stimulusWidth = 100.0;
-    var scale = stimulusWidth / balloon.width;
-    _stimulus = Stimulus(
-      balloon,
-      balloonPopped,
-      hitbox: Rect.fromLTWH(99 * scale, 34 * scale, 312 * scale, 393 * scale),
-      width: stimulusWidth,
-      centerOffset: Offset(50, 40),
-    );
-
+  void init(Map<String, dynamic> data) {
     _stimulusTapped = false;
     _nStimuli = data['nStimuli'];
     _nStimuliDone = 0;
@@ -46,7 +35,26 @@ class ReactionTime extends Task {
     _random = Random();
     _reactionTimes = [];
 
-    logger.log('started introductory stimulus');
+    logger.log('started stimulus', {'stimulus': null});
+  }
+
+  @override
+  Future<void> loadAssets() async {
+    if (testMode) {
+      _stimulus = Stimulus(null, null, width: 100, height: 100);
+    } else {
+      var balloon = await loadImage('assets/images/balloon.png');
+      var balloonPopped = await loadImage('assets/images/balloon_popped.png');
+      var stimulusWidth = 100.0;
+      var scale = stimulusWidth / balloon.width;
+      _stimulus = Stimulus(
+        balloon,
+        balloonPopped,
+        width: stimulusWidth,
+        centerOffset: Offset(50, 40),
+        hitbox: Rect.fromLTWH(99 * scale, 34 * scale, 312 * scale, 393 * scale),
+      );
+    }
   }
 
   @override
@@ -94,7 +102,7 @@ class ReactionTime extends Task {
               'x': details.localPosition.dx,
               'y': details.localPosition.dy,
             },
-            'nStimuliDone': _nStimuliDone,
+            'stimulus': _starting ? null : _nStimuliDone,
           });
           var hitbox = getStimulusHitbox();
           if (hitbox.contains(details.localPosition)) {
@@ -102,7 +110,7 @@ class ReactionTime extends Task {
               _reactionTimes.add(DateTime.now().difference(_stimulusStart));
               _stimulusStart = null;
             }
-            logger.log('tapped stimulus', {'stimulus': _nStimuliDone});
+            logger.log('tapped stimulus', {'stimulus': _starting ? null : _nStimuliDone});
             setState(() {
               _stimulusTapped = true;
               if (_starting) {
@@ -217,8 +225,9 @@ class StimulusPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var topLeft = position - stimulus.centerOffset;
-    canvas.drawImageRect(
+    if (stimulus.image != null) {
+      var topLeft = position - stimulus.centerOffset;
+      canvas.drawImageRect(
         tapped ? stimulus.tappedImage : stimulus.image,
         Rect.fromLTWH(
           0,
@@ -232,7 +241,9 @@ class StimulusPainter extends CustomPainter {
           stimulus.width,
           stimulus.height,
         ),
-        Paint());
+        Paint(),
+      );
+    }
   }
 
   @override

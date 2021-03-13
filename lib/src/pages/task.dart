@@ -398,20 +398,21 @@ class TaskWidget extends StatefulWidget {
 
 class _TaskWidgetState extends State<TaskWidget> {
   Task _task;
-  Future<void> _taskInitFuture;
+  Future<void> _taskLoadingFuture;
 
   @override
   void initState() {
     super.initState();
     _task = widget.taskFactory();
     _task.injectDependencies(widget.logger, setState, widget.onFinished);
-    _taskInitFuture = _task.init(widget.data);
+    _task.init(widget.data);
+    _taskLoadingFuture = _task.loadAssets();
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _taskInitFuture,
+      future: _taskLoadingFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done &&
             !snapshot.hasError) {

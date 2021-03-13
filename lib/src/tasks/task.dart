@@ -13,7 +13,9 @@ abstract class Task {
   StateSetter _setState;
   FinishCallback _finish;
 
-  Future<void> init(Map<String, dynamic> data);
+  void init(Map<String, dynamic> data);
+
+  Future<void> loadAssets() async {}
 
   double getProgress();
 

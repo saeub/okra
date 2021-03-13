@@ -6,6 +6,7 @@ import 'package:okra/generated/l10n.dart';
 import 'package:okra/src/pages/task.dart';
 import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
+import 'package:okra/main.dart' as okra;
 
 MaterialApp getTaskApp(TaskType type, Map<String, dynamic> data,
     TaskEventLogger logger, FinishCallback onFinished) {
@@ -30,10 +31,17 @@ class LoggerTester {
     _eventIndex = 0;
   }
 
-  void expectLogged(String label, [Map<String, dynamic> data]) {
+  void expectLogged(String label,
+      {Map<String, dynamic> data, bool allowAdditionalKeys = false}) {
     expect(logger.events[_eventIndex].label, label);
     if (data != null) {
-      expect(logger.events[_eventIndex].data, data);
+      if (allowAdditionalKeys) {
+        for (var key in data.keys) {
+          expect(logger.events[_eventIndex].data[key], data[key]);
+        }
+      } else {
+        expect(logger.events[_eventIndex].data, data);
+      }
     }
     _eventIndex++;
   }
@@ -44,6 +52,8 @@ class LoggerTester {
 }
 
 void main() {
+  okra.testMode = true;
+
   group('Cloze', () {
     testWidgets('can be completed', (tester) async {
       var logger = TaskEventLogger();
@@ -78,39 +88,39 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started segment', {'segment': 0});
+      l.expectLogged('started segment', data: {'segment': 0});
       expect(find.textContaining('This is a '), findsOneWidget);
       expect(find.textContaining(' and it is interesting.'), findsOneWidget);
       expect(find.text('test'), findsOneWidget);
       expect(find.text('example'), findsOneWidget);
       expect(find.text('pineapple'), findsOneWidget);
       await tester.tap(find.text('test'));
-      l.expectLogged('chose option', {'segment': 0, 'option': 0});
+      l.expectLogged('chose option', data: {'segment': 0, 'option': 0});
       await tester.tap(find.text('pineapple'));
-      l.expectLogged('chose option', {'segment': 0, 'option': 2});
+      l.expectLogged('chose option', data: {'segment': 0, 'option': 2});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished segment', {'segment': 0});
+      l.expectLogged('finished segment', data: {'segment': 0});
 
-      l.expectLogged('started segment', {'segment': 1});
+      l.expectLogged('started segment', data: {'segment': 1});
       expect(find.textContaining('This is a segment without blanks.'),
           findsOneWidget);
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished segment', {'segment': 1});
+      l.expectLogged('finished segment', data: {'segment': 1});
 
-      l.expectLogged('started segment', {'segment': 2});
+      l.expectLogged('started segment', data: {'segment': 2});
       expect(find.textContaining('This one has '), findsOneWidget);
       expect(find.textContaining(' option.'), findsOneWidget);
       expect(find.text('only one'), findsOneWidget);
       await tester.tap(find.text('only one'));
-      l.expectLogged('chose option', {'segment': 2, 'option': 0});
+      l.expectLogged('chose option', data: {'segment': 2, 'option': 0});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished segment', {'segment': 2});
+      l.expectLogged('finished segment', data: {'segment': 2});
 
       l.expectDoneLogging();
     });
@@ -147,30 +157,30 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started segment', {'segment': 0});
+      l.expectLogged('started segment', data: {'segment': 0});
       await tester.tap(find.text('test'));
-      l.expectLogged('chose option', {'segment': 0, 'option': 0});
+      l.expectLogged('chose option', data: {'segment': 0, 'option': 0});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished segment', {'segment': 0});
-      l.expectLogged('started feedback', {'segment': 0});
+      l.expectLogged('finished segment', data: {'segment': 0});
+      l.expectLogged('started feedback', data: {'segment': 0});
       await tester.tap(find.text('CONTINUE')); // disabled
       await tester.pump(Duration(seconds: 1));
-      l.expectLogged('finished feedback', {'segment': 0});
+      l.expectLogged('finished feedback', data: {'segment': 0});
 
-      l.expectLogged('started segment', {'segment': 1});
+      l.expectLogged('started segment', data: {'segment': 1});
       expect(find.text('only one'), findsOneWidget);
       await tester.tap(find.text('only one'));
-      l.expectLogged('chose option', {'segment': 1, 'option': 0});
+      l.expectLogged('chose option', data: {'segment': 1, 'option': 0});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished segment', {'segment': 1});
-      l.expectLogged('started feedback', {'segment': 1});
+      l.expectLogged('finished segment', data: {'segment': 1});
+      l.expectLogged('started feedback', data: {'segment': 1});
       await tester.tap(find.text('CONTINUE')); // disabled
       await tester.pump(Duration(seconds: 1));
-      l.expectLogged('finished feedback', {'segment': 1});
+      l.expectLogged('finished feedback', data: {'segment': 1});
 
       l.expectDoneLogging();
     });
@@ -210,17 +220,17 @@ void main() {
       await tester.pump(Duration(seconds: 1));
       l.expectLogged('finished countdown');
 
-      l.expectLogged('started word', {'word': 0});
+      l.expectLogged('started word', data: {'word': 0});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', {'word': 0, 'answer': true});
+      l.expectLogged('finished word', data: {'word': 0, 'answer': true});
 
-      l.expectLogged('started word', {'word': 1});
+      l.expectLogged('started word', data: {'word': 1});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', {'word': 1, 'answer': false});
+      l.expectLogged('finished word', data: {'word': 1, 'answer': false});
 
       l.expectDoneLogging();
     });
@@ -256,49 +266,49 @@ void main() {
       await tester.pump(Duration(seconds: 1));
       l.expectLogged('finished countdown');
 
-      l.expectLogged('started word', {'word': 0});
+      l.expectLogged('started word', data: {'word': 0});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', {'word': 0, 'answer': true});
-      l.expectLogged('started feedback', {'word': 0});
+      l.expectLogged('finished word', data: {'word': 0, 'answer': true});
+      l.expectLogged('started feedback', data: {'word': 0});
       expect(find.byIcon(Icons.thumb_up), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.pump(Duration(seconds: 1));
-      l.expectLogged('finished feedback', {'word': 0});
+      l.expectLogged('finished feedback', data: {'word': 0});
 
-      l.expectLogged('started word', {'word': 1});
+      l.expectLogged('started word', data: {'word': 1});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', {'word': 1, 'answer': false});
-      l.expectLogged('started feedback', {'word': 1});
+      l.expectLogged('finished word', data: {'word': 1, 'answer': false});
+      l.expectLogged('started feedback', data: {'word': 1});
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.pump(Duration(seconds: 1));
-      l.expectLogged('finished feedback', {'word': 1});
+      l.expectLogged('finished feedback', data: {'word': 1});
 
-      l.expectLogged('started word', {'word': 2});
+      l.expectLogged('started word', data: {'word': 2});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', {'word': 2, 'answer': true});
-      l.expectLogged('started feedback', {'word': 2});
+      l.expectLogged('finished word', data: {'word': 2, 'answer': true});
+      l.expectLogged('started feedback', data: {'word': 2});
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.pump(Duration(seconds: 1));
-      l.expectLogged('finished feedback', {'word': 2});
+      l.expectLogged('finished feedback', data: {'word': 2});
 
-      l.expectLogged('started word', {'word': 3});
+      l.expectLogged('started word', data: {'word': 3});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', {'word': 3, 'answer': false});
-      l.expectLogged('started feedback', {'word': 3});
+      l.expectLogged('finished word', data: {'word': 3, 'answer': false});
+      l.expectLogged('started feedback', data: {'word': 3});
       expect(find.byIcon(Icons.thumb_up), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.pump(Duration(seconds: 1));
-      l.expectLogged('finished feedback', {'word': 3});
+      l.expectLogged('finished feedback', data: {'word': 3});
 
       l.expectDoneLogging();
     });
@@ -350,40 +360,40 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started subtask', {'subtask': 0});
+      l.expectLogged('started subtask', data: {'subtask': 0});
       expect(find.text('First subtask'), findsOneWidget);
       expect(find.byType(Image), findsNWidgets(3));
       expect(find.text('?'), findsOneWidget);
       await tester.tap(find.byType(Card).at(0));
-      l.expectLogged('chose picture', {'subtask': 0, 'picture': 0});
+      l.expectLogged('chose picture', data: {'subtask': 0, 'picture': 0});
       await tester.tap(find.byType(Card).at(2));
-      l.expectLogged('chose picture', {'subtask': 0, 'picture': 2});
+      l.expectLogged('chose picture', data: {'subtask': 0, 'picture': 2});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished subtask', {'subtask': 0});
+      l.expectLogged('finished subtask', data: {'subtask': 0});
 
-      l.expectLogged('started subtask', {'subtask': 1});
+      l.expectLogged('started subtask', data: {'subtask': 1});
       expect(find.text('Second subtask'), findsOneWidget);
       expect(find.byType(Image), findsNWidgets(1));
       expect(find.text('?'), findsOneWidget);
       await tester.tap(find.byType(Card).at(0));
-      l.expectLogged('chose picture', {'subtask': 1, 'picture': 0});
+      l.expectLogged('chose picture', data: {'subtask': 1, 'picture': 0});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished subtask', {'subtask': 1});
+      l.expectLogged('finished subtask', data: {'subtask': 1});
 
-      l.expectLogged('started subtask', {'subtask': 2});
+      l.expectLogged('started subtask', data: {'subtask': 2});
       expect(find.text('Third subtask'), findsOneWidget);
       expect(find.byType(Image), findsNWidgets(2));
       expect(find.text('?'), findsOneWidget);
       await tester.tap(find.text('?'));
-      l.expectLogged('chose picture', {'subtask': 2, 'picture': -1});
+      l.expectLogged('chose picture', data: {'subtask': 2, 'picture': -1});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished subtask', {'subtask': 2});
+      l.expectLogged('finished subtask', data: {'subtask': 2});
 
       l.expectDoneLogging();
     });
@@ -437,47 +447,47 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started subtask', {'subtask': 0});
+      l.expectLogged('started subtask', data: {'subtask': 0});
       await tester.tap(find.byType(Card).at(1));
-      l.expectLogged('chose picture', {'subtask': 0, 'picture': 1});
+      l.expectLogged('chose picture', data: {'subtask': 0, 'picture': 1});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished subtask', {'subtask': 0});
-      l.expectLogged('started feedback', {'subtask': 0});
+      l.expectLogged('finished subtask', data: {'subtask': 0});
+      l.expectLogged('started feedback', data: {'subtask': 0});
       await tester.tap(find.text('CONTINUE')); // disabled
       await tester.pump(Duration(seconds: 1));
-      l.expectLogged('finished feedback', {'subtask': 0});
+      l.expectLogged('finished feedback', data: {'subtask': 0});
 
-      l.expectLogged('started subtask', {'subtask': 1});
+      l.expectLogged('started subtask', data: {'subtask': 1});
       expect(find.text('Second subtask'), findsOneWidget);
       expect(find.byType(Image), findsNWidgets(1));
       expect(find.text('?'), findsOneWidget);
       await tester.tap(find.text('?'));
-      l.expectLogged('chose picture', {'subtask': 1, 'picture': -1});
+      l.expectLogged('chose picture', data: {'subtask': 1, 'picture': -1});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished subtask', {'subtask': 1});
-      l.expectLogged('started feedback', {'subtask': 1});
+      l.expectLogged('finished subtask', data: {'subtask': 1});
+      l.expectLogged('started feedback', data: {'subtask': 1});
       await tester.tap(find.text('CONTINUE')); // disabled
       await tester.pump(Duration(seconds: 1));
-      l.expectLogged('finished feedback', {'subtask': 1});
+      l.expectLogged('finished feedback', data: {'subtask': 1});
 
-      l.expectLogged('started subtask', {'subtask': 2});
+      l.expectLogged('started subtask', data: {'subtask': 2});
       expect(find.text('Third subtask'), findsOneWidget);
       expect(find.byType(Image), findsNWidgets(2));
       expect(find.text('?'), findsOneWidget);
       await tester.tap(find.byType(Card).at(1));
-      l.expectLogged('chose picture', {'subtask': 2, 'picture': 1});
+      l.expectLogged('chose picture', data: {'subtask': 2, 'picture': 1});
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished subtask', {'subtask': 2});
-      l.expectLogged('started feedback', {'subtask': 2});
+      l.expectLogged('finished subtask', data: {'subtask': 2});
+      l.expectLogged('started feedback', data: {'subtask': 2});
       await tester.tap(find.text('CONTINUE')); // disabled
       await tester.pump(Duration(seconds: 1));
-      l.expectLogged('finished feedback', {'subtask': 2});
+      l.expectLogged('finished feedback', data: {'subtask': 2});
 
       l.expectDoneLogging();
     });
@@ -529,9 +539,9 @@ void main() {
       await tester.tap(find.text('FINISH')); // disabled
       await tester.ensureVisible(find.text('Yes', skipOffstage: false));
       await tester.tap(find.text('Yes'));
-      l.expectLogged('chose answer', {'question': 0, 'answer': 0});
+      l.expectLogged('chose answer', data: {'question': 0, 'answer': 0});
       await tester.tap(find.text('Maybe'));
-      l.expectLogged('chose answer', {'question': 0, 'answer': 2});
+      l.expectLogged('chose answer', data: {'question': 0, 'answer': 2});
       await tester.ensureVisible(find.text('FINISH', skipOffstage: false));
       await tester.tap(find.text('FINISH')); // disabled
 
@@ -540,7 +550,7 @@ void main() {
       expect(find.text('What about this?'), findsOneWidget);
       expect(find.text('Definitely'), findsOneWidget);
       await tester.tap(find.text('Definitely'));
-      l.expectLogged('chose answer', {'question': 1, 'answer': 0});
+      l.expectLogged('chose answer', data: {'question': 1, 'answer': 0});
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('FINISH', skipOffstage: false));
       await tester.tap(find.text('FINISH'));
@@ -591,14 +601,14 @@ void main() {
       l.expectLogged('started answering');
       await tester.ensureVisible(find.text('No', skipOffstage: false));
       await tester.tap(find.text('No'));
-      l.expectLogged('chose answer', {'question': 0, 'answer': 1});
+      l.expectLogged('chose answer', data: {'question': 0, 'answer': 1});
 
       await tester
           .ensureVisible(find.text('What about this?', skipOffstage: false));
       expect(find.text('What about this?'), findsOneWidget);
       expect(find.text('Definitely'), findsOneWidget);
       await tester.tap(find.text('Definitely'));
-      l.expectLogged('chose answer', {'question': 1, 'answer': 0});
+      l.expectLogged('chose answer', data: {'question': 1, 'answer': 0});
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('FINISH', skipOffstage: false));
       await tester.tap(find.text('FINISH'));
@@ -637,14 +647,14 @@ void main() {
 
       l.expectLogged('started reading');
 
-      l.expectLogged('started segment', {
+      l.expectLogged('started segment', data: {
         'segments': [0]
       });
       expect(find.text('First segment.'), findsOneWidget);
       await tester.tap(find.text('First segment.'));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started segment', {
+      l.expectLogged('started segment', data: {
         'segments': [0, 1]
       });
       expect(find.text('First segment.'), findsOneWidget);
@@ -652,7 +662,7 @@ void main() {
       await tester.tap(find.text('Second segment.'));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started segment', {
+      l.expectLogged('started segment', data: {
         'segments': [1, 2]
       });
       expect(find.text('Second segment.'), findsOneWidget);
@@ -660,7 +670,7 @@ void main() {
       await tester.tap(find.text('Third segment.'));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started segment', {
+      l.expectLogged('started segment', data: {
         'segments': [2]
       });
       expect(find.text('Third segment.'), findsOneWidget);
@@ -668,6 +678,59 @@ void main() {
       await tester.pumpAndSettle();
 
       l.expectLogged('finished reading');
+      l.expectDoneLogging();
+    });
+  });
+
+  group('Reaction time', () {
+    testWidgets('can be completed', (tester) async {
+      // Reduce screen size to restrict stimulus positions
+      tester.binding.window.physicalSizeTestValue = Size(100, 100);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.reactionTime,
+        {
+          'nStimuli': 3,
+          'minSecondsBetweenStimuli': 0,
+          'maxSecondsBetweenStimuli': 0,
+        },
+        logger,
+        ({data, message}) {
+          for (var reactionTime in data['reactionTimes']) {
+            expect(reactionTime >= 0 && reactionTime < 0.5, true);
+          }
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started stimulus', data: {'stimulus': null});
+      expect(find.text('Pop the balloon!'), findsOneWidget);
+      await tester.tapAt(Offset(20, 20));
+      await tester.pumpAndSettle();
+      l.expectLogged('tapped screen', data: {
+        'stimulus': null,
+        'position': {'x': 20.0, 'y': 12.0}
+      });
+      l.expectLogged('tapped stimulus', data: {'stimulus': null});
+
+      for (var i = 0; i < 3; i++) {
+        l.expectLogged('started stimulus',
+            data: {'stimulus': i}, allowAdditionalKeys: true);
+        expect(find.text('Tap the balloon!'), findsNothing);
+        await tester.tapAt(Offset(20, 20));
+        await tester.pumpAndSettle();
+        l.expectLogged('tapped screen', data: {
+          'stimulus': i,
+          'position': {'x': 20.0, 'y': 12.0}
+        });
+        l.expectLogged('tapped stimulus', data: {'stimulus': i});
+      }
+
       l.expectDoneLogging();
     });
   });
