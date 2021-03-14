@@ -4,6 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:okra/generated/l10n.dart';
 import 'package:okra/src/pages/task.dart';
+import 'package:okra/src/tasks/n_back.dart';
 import 'package:okra/src/tasks/reaction_time.dart';
 import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
@@ -793,6 +794,34 @@ void main() {
         var delay = task.generateRandomStimulusDelay();
         expect(delay.inMilliseconds, 500);
       }
+    });
+  });
+
+  group('n-back', () {
+    test('generates valid stimulus sequences', () {
+      int numberOfPositiveStimuli(List<String> stimuli, int n) {
+        var count = 0;
+        for (var i = n; i < stimuli.length; i++) {
+          if (stimuli[i] == stimuli[i - n]) {
+            count++;
+          }
+        }
+        return count;
+      }
+
+      var nStimuli = 10;
+      for (var n = 1; n <= nStimuli; n++) {
+        for (var p = 0; p <= nStimuli - n; p++) {
+          var stimuli = NBack.generateStimuli(['A', 'B'], nStimuli, p, n);
+          var nPositiveStimuli = numberOfPositiveStimuli(stimuli, n);
+          expect(nPositiveStimuli, p,
+              reason:
+                  '${stimuli} (n = ${n}) has ${nPositiveStimuli} positive stimuli, should be ${p}');
+        }
+      }
+
+      expect(() => NBack.generateStimuli(['A'], 10, 3, 2), throwsArgumentError);
+      expect(() => NBack.generateStimuli(['A', 'B'], 3, 2, 2), throwsArgumentError);
     });
   });
 }
