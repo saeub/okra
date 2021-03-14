@@ -58,6 +58,7 @@ class NBack extends Task {
                 child: Icon(
                   _feedback == true ? Icons.thumb_up : Icons.thumb_down,
                   color: _feedback == true ? Colors.green : Colors.red,
+                  size: 50.0,
                 ),
               ),
               Spacer(flex: 1),
