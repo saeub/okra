@@ -527,6 +527,16 @@ class S {
     );
   }
 
+  /// `Pop the balloon!`
+  String get taskReactionTimeIntro {
+    return Intl.message(
+      'Pop the balloon!',
+      name: 'taskReactionTimeIntro',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `FINISH EXPERIMENT`
   String get taskResultsFinishExperiment {
     return Intl.message(

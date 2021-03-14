@@ -145,7 +145,7 @@ class LexicalDecision extends Task {
       finish(data: {
         'answers': _answers,
         'durations': _answerDurations
-            .map((duration) => duration.inMilliseconds)
+            .map((duration) => duration.inMilliseconds / 1000)
             .toList(),
       });
     }

@@ -15,6 +15,8 @@ abstract class Task {
 
   void init(Map<String, dynamic> data);
 
+  Future<void> loadAssets() async {}
+
   double getProgress();
 
   Widget build(BuildContext context);
