@@ -4,6 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:okra/generated/l10n.dart';
 import 'package:okra/src/pages/task.dart';
+import 'package:okra/src/tasks/reaction_time.dart';
 import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
 import 'package:okra/main.dart' as okra;
@@ -732,6 +733,66 @@ void main() {
       }
 
       l.expectDoneLogging();
+    });
+
+    test('generates stimulus positions within visible area', () async {
+      var logger = TaskEventLogger();
+      var task = ReactionTime()
+        ..logger = logger
+        ..init({
+          'nStimuli': 1,
+          'minSecondsBetweenStimuli': 0,
+          'maxSecondsBetweenStimuli': 1.5,
+        });
+      await task.loadAssets();
+
+      for (var i = 0; i < 10000; i++) {
+        task.randomizeStimulusPosition(
+            BoxConstraints(maxWidth: 800, maxHeight: 300));
+        var hitbox = task.getStimulusHitbox();
+        expect(hitbox.left >= 0, true);
+        expect(hitbox.top >= 0, true);
+        expect(hitbox.right < 800, true);
+        expect(hitbox.bottom < 300, true);
+      }
+    });
+
+    test('generates stimulus delays within configured range', () async {
+      var logger = TaskEventLogger();
+      var task = ReactionTime()
+        ..logger = logger
+        ..init({
+          'nStimuli': 1,
+          'minSecondsBetweenStimuli': 0.005,
+          'maxSecondsBetweenStimuli': 0.995,
+        });
+      await task.loadAssets();
+
+      for (var i = 0; i < 10000; i++) {
+        var delay = task.generateRandomStimulusDelay();
+        expect(delay.inMilliseconds >= 5, true);
+        expect(delay.inMilliseconds < 995, true);
+      }
+
+      task.init({
+        'nStimuli': 1,
+        'minSecondsBetweenStimuli': 0.5,
+        'maxSecondsBetweenStimuli': 0.5,
+      });
+      for (var i = 0; i < 10000; i++) {
+        var delay = task.generateRandomStimulusDelay();
+        expect(delay.inMilliseconds, 500);
+      }
+
+      task.init({
+        'nStimuli': 1,
+        'minSecondsBetweenStimuli': 0.5,
+        'maxSecondsBetweenStimuli': 0,
+      });
+      for (var i = 0; i < 10000; i++) {
+        var delay = task.generateRandomStimulusDelay();
+        expect(delay.inMilliseconds, 500);
+      }
     });
   });
 }
