@@ -159,6 +159,22 @@ EXPERIMENTS_TASKS = [
             ],
         },
     ),
+    (
+        {
+            "id": "6",
+            "type": "reaction-time",
+            "title": "Reaction time task",
+            "instructions": "Pop the balloons as quickly as possible.",
+            "nTasks": 1,
+            "nTasksDone": 0,
+            "hasPracticeTask": False,
+        },
+        {
+            "nStimuli": 5,
+            "minSecondsBetweenStimuli": 0,
+            "maxSecondsBetweenStimuli": 1.5,
+        },
+    ),
 ]
 
 app = Flask(__name__)
