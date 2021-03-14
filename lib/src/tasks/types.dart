@@ -3,6 +3,7 @@ import 'package:okra/src/tasks/lexical_decision.dart';
 import 'package:okra/src/tasks/reaction_time.dart';
 
 import 'cloze.dart';
+import 'n_back.dart';
 import 'picture_naming.dart';
 import 'question_answering.dart';
 import 'task.dart';
@@ -25,6 +26,10 @@ class TaskType {
     Icons.spellcheck,
     () => LexicalDecision(),
   );
+  static final TaskType nBack = TaskType(
+    Icons.psychology,
+    () => NBack(),
+  );
   static final TaskType pictureNaming = TaskType(
     Icons.photo,
     () => PictureNaming(),
@@ -46,6 +51,8 @@ class TaskType {
         return cloze;
       case 'lexical-decision':
         return lexicalDecision;
+      case 'n-back':
+        return nBack;
       case 'picture-naming':
         return pictureNaming;
       case 'question-answering':

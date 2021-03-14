@@ -813,15 +813,16 @@ void main() {
       for (var n = 1; n <= nStimuli; n++) {
         for (var p = 0; p <= nStimuli - n; p++) {
           var stimuli = NBack.generateStimuli(['A', 'B'], nStimuli, p, n);
-          var nPositiveStimuli = numberOfPositiveStimuli(stimuli, n);
-          expect(nPositiveStimuli, p,
+          var nPositives = numberOfPositiveStimuli(stimuli, n);
+          expect(nPositives, p,
               reason:
-                  '${stimuli} (n = ${n}) has ${nPositiveStimuli} positive stimuli, should be ${p}');
+                  '${stimuli} (n = ${n}) has ${nPositives} positive stimuli, should be ${p}');
         }
       }
 
       expect(() => NBack.generateStimuli(['A'], 10, 3, 2), throwsArgumentError);
-      expect(() => NBack.generateStimuli(['A', 'B'], 3, 2, 2), throwsArgumentError);
+      expect(() => NBack.generateStimuli(['A', 'B'], 3, 2, 2),
+          throwsArgumentError);
     });
   });
 }

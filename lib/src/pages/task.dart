@@ -407,6 +407,8 @@ class _TaskWidgetState extends State<TaskWidget> {
     _task.injectDependencies(widget.logger, setState, widget.onFinished);
     _task.init(widget.data);
     _taskLoadingFuture = _task.loadAssets();
+    // TODO: Add a Task.start() method which is called as soon as everything is ready
+    // (and maybe replace Task.init()?)
   }
 
   @override

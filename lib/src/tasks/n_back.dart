@@ -1,21 +1,25 @@
 import 'dart:math';
 
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/widgets.dart';
 import 'package:okra/src/tasks/task.dart';
 
 class NBack extends Task {
   int _n;
-  List<String> _stimulusChoices;
   List<String> _stimuli;
   int _currentStimulusIndex;
+  bool _stimulusVisible;
 
   @override
   void init(Map<String, dynamic> data) {
     _n = data['n'];
-    _stimulusChoices = data['stimulusChoices'];
-    var nStimuli = data['nStimuli'];
-    var nPositives = data['nPositives'];
-    _stimuli = [];
+    List<String> stimulusChoices = data['stimulusChoices'].cast<String>();
+    int nStimuli = data['nStimuli'];
+    int nPositives = data['nPositives'];
+    _stimuli = generateStimuli(stimulusChoices, nStimuli, nPositives, _n);
+    _currentStimulusIndex = 0;
+    _stimulusVisible = false;
+    _nextStimulus();
   }
 
   @override
@@ -25,8 +29,34 @@ class NBack extends Task {
 
   @override
   Widget build(BuildContext context) {
-    // TODO
-    throw UnimplementedError();
+    return Center(
+      child: _stimulusVisible
+          ? Text(
+              _stimuli[_currentStimulusIndex],
+              style: TextStyle(
+                fontSize: 50.0,
+              ),
+            )
+          : null,
+    );
+  }
+
+  Future<void> _nextStimulus() async {
+    if (_currentStimulusIndex < _stimuli.length - 1) {
+      setState(() {
+        _currentStimulusIndex++;
+        _stimulusVisible = true;
+      });
+      await Future.delayed(Duration(milliseconds: 500));
+      setState(() {
+        _stimulusVisible = false;
+      });
+      await Future.delayed(Duration(milliseconds: 2500));
+      _nextStimulus(); // ignore: unawaited_futures
+    } else {
+      // TODO: Collect result data
+      finish();
+    }
   }
 
   static List<String> generateStimuli(
