@@ -1,14 +1,15 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/widgets.dart';
-import 'package:okra/src/tasks/task.dart';
+import 'task.dart';
 
 class NBack extends Task {
   int _n;
   List<String> _stimuli;
   int _currentStimulusIndex;
   bool _stimulusVisible;
+  bool _feedback;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -29,15 +30,60 @@ class NBack extends Task {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: _stimulusVisible
-          ? Text(
-              _stimuli[_currentStimulusIndex],
-              style: TextStyle(
-                fontSize: 50.0,
+    return GestureDetector(
+      child: ColoredBox(
+        color: _feedback == null
+            ? Theme.of(context).scaffoldBackgroundColor
+            : _feedback
+                ? Colors.green[100]
+                : Colors.red[100],
+        child: SizedBox.expand(
+          child: Column(
+            children: [
+              Spacer(flex: 1),
+              Visibility(
+                visible: _feedback != null,
+                maintainAnimation: true,
+                maintainSize: true,
+                maintainState: true,
+                child: Icon(
+                  _feedback == true ? Icons.thumb_up : Icons.thumb_down,
+                  color: _feedback == true ? Colors.green : Colors.red,
+                ),
               ),
-            )
-          : null,
+              Spacer(flex: 1),
+              Visibility(
+                visible: _stimulusVisible,
+                maintainAnimation: true,
+                maintainSize: true,
+                maintainState: true,
+                child: Text(
+                  _stimuli[_currentStimulusIndex],
+                  style: TextStyle(
+                    fontSize: 50.0,
+                  ),
+                ),
+              ),
+              Spacer(flex: 2),
+            ],
+          ),
+        ),
+      ),
+      onTapDown: (details) async {
+        setState(() {
+          if (_currentStimulusIndex >= _n &&
+              _stimuli[_currentStimulusIndex] ==
+                  _stimuli[_currentStimulusIndex - _n]) {
+            _feedback = true;
+          } else {
+            _feedback = false;
+          }
+        });
+        await Future.delayed(Duration(milliseconds: 500));
+        setState(() {
+          _feedback = null;
+        });
+      },
     );
   }
 

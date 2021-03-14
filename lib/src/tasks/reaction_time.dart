@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 
 import '../../generated/l10n.dart';
 import '../../main.dart';
-import '../tasks/task.dart';
+import 'task.dart';
 
 class ReactionTime extends Task {
   static const maxWidth = 400.0;

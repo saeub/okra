@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:okra/src/tasks/lexical_decision.dart';
-import 'package:okra/src/tasks/reaction_time.dart';
+import 'lexical_decision.dart';
+import 'reaction_time.dart';
 
 import 'cloze.dart';
 import 'n_back.dart';
