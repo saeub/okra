@@ -10,6 +10,9 @@ import '../../main.dart';
 import '../tasks/task.dart';
 
 class ReactionTime extends Task {
+  static const maxWidth = 400.0;
+  static const maxHeight = 600.0;
+
   Stimulus _stimulus;
   Offset _stimulusPosition;
   bool _stimulusTapped;
@@ -62,96 +65,101 @@ class ReactionTime extends Task {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      if (_starting) {
-        _stimulusPosition =
-            Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
-      }
-      return GestureDetector(
-        child: Stack(
-          children: [
-            if (_starting)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 120.0),
-                  child: Text(
-                    S.of(context).taskReactionTimeIntro,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 30.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red,
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
+        child: LayoutBuilder(builder: (context, constraints) {
+          if (_starting) {
+            _stimulusPosition =
+                Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
+          }
+          return GestureDetector(
+            child: Stack(
+              children: [
+                if (_starting)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 120.0),
+                      child: Text(
+                        S.of(context).taskReactionTimeIntro,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            if (_stimulusPosition != null)
-              CustomPaint(
-                painter: StimulusPainter(
-                  _stimulus,
-                  _stimulusPosition,
-                  tapped: _stimulusTapped,
-                ),
-                size: constraints.biggest,
-              ),
-          ],
-        ),
-        onTapDown: (details) async {
-          logger.log('tapped screen', {
-            'position': {
-              'x': details.localPosition.dx,
-              'y': details.localPosition.dy,
-            },
-            'stimulus': _starting ? null : _nStimuliDone,
-          });
-          var hitbox = getStimulusHitbox();
-          if (hitbox.contains(details.localPosition)) {
-            if (_stimulusStart != null) {
-              _reactionTimes.add(DateTime.now().difference(_stimulusStart));
-              _stimulusStart = null;
-            }
-            logger.log('tapped stimulus',
-                {'stimulus': _starting ? null : _nStimuliDone});
-            setState(() {
-              _stimulusTapped = true;
-              if (_starting) {
-                _starting = false;
-              } else {
-                _nStimuliDone++;
-              }
-            });
-            await Future.delayed(Duration(milliseconds: 100));
-            setState(() {
-              _stimulusTapped = false;
-              _stimulusPosition = null;
-            });
-            if (_nStimuliDone < _nStimuli) {
-              await Future.delayed(
-                  Duration(milliseconds: getRandomStimulusDelay()));
-              setState(() {
-                _stimulusPosition = getRandomStimulusPosition(constraints);
+                if (_stimulusPosition != null)
+                  CustomPaint(
+                    painter: StimulusPainter(
+                      _stimulus,
+                      _stimulusPosition,
+                      tapped: _stimulusTapped,
+                    ),
+                    size: constraints.biggest,
+                  ),
+              ],
+            ),
+            onTapDown: (details) async {
+              logger.log('tapped screen', {
+                'position': {
+                  'x': details.localPosition.dx,
+                  'y': details.localPosition.dy,
+                },
+                'stimulus': _starting ? null : _nStimuliDone,
               });
-              _stimulusStart = DateTime.now();
-              logger.log('started stimulus', {
-                'stimulus': _nStimuliDone,
-                'hitbox': {
-                  'left': hitbox.left,
-                  'top': hitbox.top,
-                  'right': hitbox.right,
-                  'bottom': hitbox.bottom,
+              var hitbox = getStimulusHitbox();
+              if (hitbox.contains(details.localPosition)) {
+                if (_stimulusStart != null) {
+                  _reactionTimes.add(DateTime.now().difference(_stimulusStart));
+                  _stimulusStart = null;
                 }
-              });
-            } else {
-              finish(data: {
-                'reactionTimes': _reactionTimes
-                    .map((duration) => duration.inMilliseconds / 1000)
-                    .toList(),
-              });
-            }
-          }
-        },
-      );
-    });
+                logger.log('tapped stimulus',
+                    {'stimulus': _starting ? null : _nStimuliDone});
+                setState(() {
+                  _stimulusTapped = true;
+                  if (_starting) {
+                    _starting = false;
+                  } else {
+                    _nStimuliDone++;
+                  }
+                });
+                await Future.delayed(Duration(milliseconds: 100));
+                setState(() {
+                  _stimulusTapped = false;
+                  _stimulusPosition = null;
+                });
+                if (_nStimuliDone < _nStimuli) {
+                  await Future.delayed(
+                      Duration(milliseconds: getRandomStimulusDelay()));
+                  setState(() {
+                    _stimulusPosition = getRandomStimulusPosition(constraints);
+                  });
+                  _stimulusStart = DateTime.now();
+                  logger.log('started stimulus', {
+                    'stimulus': _nStimuliDone,
+                    'hitbox': {
+                      'left': hitbox.left,
+                      'top': hitbox.top,
+                      'right': hitbox.right,
+                      'bottom': hitbox.bottom,
+                    }
+                  });
+                } else {
+                  finish(data: {
+                    'reactionTimes': _reactionTimes
+                        .map((duration) => duration.inMilliseconds / 1000)
+                        .toList(),
+                  });
+                }
+              }
+            },
+          );
+        }),
+      ),
+    );
   }
 
   Future<ui.Image> loadImage(String key) async {
