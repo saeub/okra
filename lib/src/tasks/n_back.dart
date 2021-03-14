@@ -9,17 +9,26 @@ class NBack extends Task {
   List<String> _stimuli;
   int _currentStimulusIndex;
   bool _stimulusVisible;
-  bool _feedback;
+  bool _feedback, _feedbacked;
+  int _nTruePositives, _nFalsePositives;
 
   @override
   void init(Map<String, dynamic> data) {
     _n = data['n'];
-    List<String> stimulusChoices = data['stimulusChoices'].cast<String>();
+    var stimulusChoices = Set<String>.from(data['stimulusChoices']).toList();
     int nStimuli = data['nStimuli'];
     int nPositives = data['nPositives'];
     _stimuli = generateStimuli(stimulusChoices, nStimuli, nPositives, _n);
-    _currentStimulusIndex = 0;
+    logger.log('generated stimuli', {
+      'stimuli': _stimuli,
+      'positive': [
+        for (int i = 0; i < _stimuli.length; i++) _isPositiveStimulus(i)
+      ],
+    });
+    _currentStimulusIndex = -1;
     _stimulusVisible = false;
+    _feedbacked = false;
+    _nTruePositives = _nFalsePositives = 0;
     _nextStimulus();
   }
 
@@ -70,39 +79,65 @@ class NBack extends Task {
         ),
       ),
       onTapDown: (details) async {
-        setState(() {
-          if (_currentStimulusIndex >= _n &&
-              _stimuli[_currentStimulusIndex] ==
-                  _stimuli[_currentStimulusIndex - _n]) {
-            _feedback = true;
-          } else {
-            _feedback = false;
-          }
+        logger.log('tapped screen', {
+          'stimulus': _currentStimulusIndex,
         });
-        await Future.delayed(Duration(milliseconds: 500));
-        setState(() {
-          _feedback = null;
-        });
+        if (!_feedbacked) {
+          setState(() {
+            if (_isPositiveStimulus(_currentStimulusIndex)) {
+              _feedback = true;
+              _nTruePositives++;
+            } else {
+              _feedback = false;
+              _nFalsePositives++;
+            }
+          });
+          _feedbacked = true;
+          logger.log('started feedback', {
+            'stimulus': _currentStimulusIndex,
+            'feedback': _feedback,
+          });
+          await Future.delayed(Duration(milliseconds: 500));
+          setState(() {
+            _feedback = null;
+          });
+          logger.log('stopped feedback', {
+            'stimulus': _currentStimulusIndex,
+          });
+        }
       },
     );
   }
 
   Future<void> _nextStimulus() async {
+    _feedbacked = false;
     if (_currentStimulusIndex < _stimuli.length - 1) {
       setState(() {
         _currentStimulusIndex++;
         _stimulusVisible = true;
       });
+      logger.log('started showing stimulus', {
+        'stimulus': _currentStimulusIndex,
+      });
       await Future.delayed(Duration(milliseconds: 500));
       setState(() {
         _stimulusVisible = false;
       });
+      logger.log('stopped showing stimulus', {
+        'stimulus': _currentStimulusIndex,
+      });
       await Future.delayed(Duration(milliseconds: 2500));
       _nextStimulus(); // ignore: unawaited_futures
     } else {
-      // TODO: Collect result data
-      finish();
+      finish(data: {
+        'nTruePositives': _nTruePositives,
+        'nFalsePositives': _nFalsePositives,
+      });
     }
+  }
+
+  bool _isPositiveStimulus(int index) {
+    return index >= _n && _stimuli[index] == _stimuli[index - _n];
   }
 
   static List<String> generateStimuli(
