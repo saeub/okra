@@ -175,6 +175,23 @@ EXPERIMENTS_TASKS = [
             "maxSecondsBetweenStimuli": 1.5,
         },
     ),
+    (
+        {
+            "id": "7",
+            "type": "n-back",
+            "title": "2-back task",
+            "instructions": "Tap the screen if you see the same letter you saw two letters ago.",
+            "nTasks": 3,
+            "nTasksDone": 2,
+            "hasPracticeTask": False,
+        },
+        {
+            "n": 2,
+            "stimulusChoices": ["A", "B", "C"],
+            "nStimuli": 20,
+            "nPositives": 5,
+        },
+    ),
 ]
 
 app = Flask(__name__)
