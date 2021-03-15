@@ -29,7 +29,9 @@ class NBack extends Task {
     _stimulusVisible = false;
     _feedbacked = false;
     _nTruePositives = _nFalsePositives = 0;
-    _nextStimulus();
+    Future.delayed(Duration(milliseconds: 500)).then((_) {
+      _nextStimulus();
+    });
   }
 
   @override
@@ -39,6 +41,23 @@ class NBack extends Task {
 
   @override
   Widget build(BuildContext context) {
+    Widget content;
+    if (_stimulusVisible &&
+        _currentStimulusIndex >= 0 &&
+        (_feedback == null || !_feedbacked)) {
+      content = Text(
+        _currentStimulusIndex >= 0 ? _stimuli[_currentStimulusIndex] : '',
+        style: TextStyle(
+          fontSize: 50.0,
+        ),
+      );
+    } else if (_feedback != null) {
+      content = Icon(
+        _feedback == true ? Icons.thumb_up : Icons.thumb_down,
+        color: _feedback == true ? Colors.green : Colors.red,
+        size: 50.0,
+      );
+    }
     return GestureDetector(
       child: ColoredBox(
         color: _feedback == null
@@ -46,44 +65,15 @@ class NBack extends Task {
             : _feedback
                 ? Colors.green[100]
                 : Colors.red[100],
-        child: SizedBox.expand(
-          child: Column(
-            children: [
-              Spacer(flex: 1),
-              Visibility(
-                visible: _feedback != null,
-                maintainAnimation: true,
-                maintainSize: true,
-                maintainState: true,
-                child: Icon(
-                  _feedback == true ? Icons.thumb_up : Icons.thumb_down,
-                  color: _feedback == true ? Colors.green : Colors.red,
-                  size: 50.0,
-                ),
-              ),
-              Spacer(flex: 1),
-              Visibility(
-                visible: _stimulusVisible,
-                maintainAnimation: true,
-                maintainSize: true,
-                maintainState: true,
-                child: Text(
-                  _stimuli[_currentStimulusIndex],
-                  style: TextStyle(
-                    fontSize: 50.0,
-                  ),
-                ),
-              ),
-              Spacer(flex: 2),
-            ],
-          ),
+        child: Center(
+          child: content,
         ),
       ),
       onTapDown: (details) async {
         logger.log('tapped screen', {
           'stimulus': _currentStimulusIndex,
         });
-        if (!_feedbacked) {
+        if (_currentStimulusIndex >= 0 && !_feedbacked) {
           setState(() {
             if (_isPositiveStimulus(_currentStimulusIndex)) {
               _feedback = true;

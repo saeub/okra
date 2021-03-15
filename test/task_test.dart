@@ -818,6 +818,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
       l.expectLogged('generated stimuli');
+      await tester.pump(Duration(milliseconds: 500));
 
       l.expectLogged('started showing stimulus', data: {'stimulus': 0});
       await tester.tapAt(Offset(100, 100));
