@@ -1,7 +1,7 @@
 ## Task specifications
 
 - TOC
-{:toc}
+  {:toc}
 
 ### Cloze test
 
@@ -10,27 +10,27 @@ One segment of text is shown at a time, with a blank which has to be filled in b
 - Identifier: `cloze`
 - Implementation: [`lib/src/tasks/cloze.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/cloze.dart)
 - Data structure:
-  {% raw %}```json
+  ```json
   {
-      "segments": [
-          {
-              "text": "This is an .",
-              "blankPosition": 11,
-              "options": ["example", "text", "pineapple"],
-              "correctOptionIndex": 0
-          },
-          {
-              "text": "Segment without blanks."
-          },
-          ...
-      ]
+    "segments": [
+      {
+        "text": "This is an .",
+        "blankPosition": 11,
+        "options": ["example", "text", "pineapple"],
+        "correctOptionIndex": 0
+      },
+      {
+        "text": "Segment without blanks."
+      },
+      ...
+    ]
   }
-  ```{% endraw %}
+  ```
   **NOTE:** There can be at most one blank per segment. Only the first double brackets in the segment will replaced by the blank. `correctOptionIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
 - Results data structure:
   ```json
   {
-      "chosenOptionIndices": [0, null, ...]
+    "chosenOptionIndices": [0, null, ...]
   }
   ```
   **NOTE:** An index of `null` means that there was no blank in this segment.
@@ -44,16 +44,16 @@ One word is shown at a time. The task is to determine whether it is a real word 
 - Data structure:
   ```json
   {
-      "words": ["WORD", "WROD", ...],
-      "correctAnswers": [true, false, ...]
+    "words": ["WORD", "WROD", ...],
+    "correctAnswers": [true, false, ...]
   }
   ```
   **NOTE:** `correctAnswers` is optional and must be the same length as `words`. If it is provided, the participant will get immediate feedback about the correctness of their answer.
 - Results data structure:
   ```json
   {
-      "answers": [true, false, ...],
-      "durations": [0.123, 1.234, ...]
+    "answers": [true, false, ...],
+    "durations": [0.123, 1.234, ...]
   }
   ```
   **NOTE:** Durations are in seconds.
@@ -67,26 +67,26 @@ A textual stimulus is shown above a number of pictures. One of the pictures (or 
 - Data structure:
   ```json
   {
-      "showQuestionMark": true,
-      "subtasks": [
-          {
-              "text": "Horse",
-              "pictures": [
-                  "base64-encoded image",
-                  "base64-encoded image",
-                  "base64-encoded image"
-              ],
-              "correctPictureIndex": 0
-          },
-          ...
-      ]
+    "showQuestionMark": true,
+    "subtasks": [
+      {
+        "text": "Horse",
+        "pictures": [
+          "base64-encoded image",
+          "base64-encoded image",
+          "base64-encoded image"
+        ],
+        "correctPictureIndex": 0
+      },
+      ...
+    ]
   }
   ```
   **NOTE:** The image should be adequately resized and compressed before encoding, especially for large numbers of subtasks, to keep HTTP response sizes low. `correctPictureIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
 - Results data structure:
   ```json
   {
-      "chosenPictureIndices": [0, -1, ...]
+    "chosenPictureIndices": [0, -1, ...]
   }
   ```
   **NOTE:** An index of `-1` means the question mark.
@@ -100,26 +100,26 @@ A text is presented, and after reading, several single-answer multiple-choice qu
 - Data structure:
   ```json
   {
-      "readingType": "self-paced",
-      "text": "First segment.\nSecond segment.",
-      "questions": [
-          {
-              "question": "Question?",
-              "answers": [
-                  "Answer 1",
-                  "Answer 2",
-              ],
-              "correctAnswerIndex": 0
-          },
-          ...
-      ]
+    "readingType": "self-paced",
+    "text": "First segment.\nSecond segment.",
+    "questions": [
+      {
+        "question": "Question?",
+        "answers": [
+          "Answer 1",
+          "Answer 2",
+        ],
+        "correctAnswerIndex": 0
+      },
+      ...
+    ]
   }
   ```
   **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment. `correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
 - Results data structure:
   ```json
   {
-      "chosenAnswerIndices": [0, -1, ...]
+    "chosenAnswerIndices": [0, -1, ...]
   }
   ```
 
@@ -132,16 +132,39 @@ A single picture of a red balloon is shown at a time, which disappears with a po
 - Data structure:
   ```json
   {
-      "nStimuli": 20,
-      "minSecondsBetweenStimuli": 0,
-      "maxSecondsBetweenStimuli": 1.5,
+    "nStimuli": 20,
+    "minSecondsBetweenStimuli": 0,
+    "maxSecondsBetweenStimuli": 1.5
   }
   ```
   **NOTE:** `nStimuli` does not include an introductory stimuli, which is already shown when starting the task. If `minSecondsBetweenStimuli` is smaller than `maxSecondsBetweenStimuli`, a (uniformly distributed) random number between them is generated after each stimulus.
 - Results data structure:
   ```json
   {
-      "reactionTimes": [0.123, 1.234, ...]
+    "reactionTimes": [0.123, 1.234, ...]
   }
   ```
   **NOTE:** Reaction times are in seconds. The reaction time for the introductory stimulus is not included.
+
+### _n_-back
+
+A single textual stimulus (usually a letter) is shown for 500 milliseconds every 3 seconds. The participant taps the screen whenever they see the same stimulus as _n_ stimuli back (a "positive" stimulus). Immediate positive or negative feedback is shown after each tap. The sequence of stimuli is randomly generated before each task.
+
+- Identifier: `n-back`
+- Implementation: [`lib/src/tasks/n_back.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/n_back.dart)
+- Data structure:
+  ```json
+  {
+    "n": 2,
+    "stimulusChoices": ["A", "B", "C", ...],
+    "nStimuli": 20,
+    "nPositives": 5
+  }
+  ```
+- Results data structure:
+  ```json
+  {
+    "nTruePositives": 3,
+    "nFalsePositives": 1
+  }
+  ```

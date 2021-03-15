@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/widgets.dart';
-import 'package:okra/src/tasks/task.dart';
+import 'task.dart';
 
 import '../../generated/l10n.dart';
 

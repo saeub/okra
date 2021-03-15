@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 
 import '../../generated/l10n.dart';
 import '../../main.dart';
-import '../tasks/task.dart';
+import 'task.dart';
 
 class ReactionTime extends Task {
   static const maxWidth = 400.0;
@@ -132,10 +132,9 @@ class ReactionTime extends Task {
                   _stimulusPosition = null;
                 });
                 if (_nStimuliDone < _nStimuli) {
-                  await Future.delayed(
-                      Duration(milliseconds: getRandomStimulusDelay()));
+                  await Future.delayed(generateRandomStimulusDelay());
                   setState(() {
-                    _stimulusPosition = getRandomStimulusPosition(constraints);
+                    randomizeStimulusPosition(constraints);
                   });
                   _stimulusStart = DateTime.now();
                   logger.log('started stimulus', {
@@ -178,8 +177,8 @@ class ReactionTime extends Task {
     );
   }
 
-  Offset getRandomStimulusPosition(BoxConstraints constraints) {
-    return Offset(
+  void randomizeStimulusPosition(BoxConstraints constraints) {
+    _stimulusPosition = Offset(
       _random.nextDouble() * (constraints.maxWidth - _stimulus.hitbox.width) +
           (_stimulus.centerOffset.dx - _stimulus.hitbox.left),
       _random.nextDouble() * (constraints.maxHeight - _stimulus.hitbox.height) +
@@ -187,14 +186,14 @@ class ReactionTime extends Task {
     );
   }
 
-  int getRandomStimulusDelay() {
-    if (_minMillisecondsBetweenStimuli == _maxMillisecondsBetweenStimuli) {
-      return _minMillisecondsBetweenStimuli;
+  Duration generateRandomStimulusDelay() {
+    if (_minMillisecondsBetweenStimuli >= _maxMillisecondsBetweenStimuli) {
+      return Duration(milliseconds: _minMillisecondsBetweenStimuli);
     }
-    // FIXME: This fails when _minMillisecondsBetweenStimuli > _maxMillisecondsBetweenStimuli
-    return _random.nextInt(
-            _maxMillisecondsBetweenStimuli - _minMillisecondsBetweenStimuli) +
-        _minMillisecondsBetweenStimuli;
+    return Duration(
+        milliseconds: _random.nextInt(_maxMillisecondsBetweenStimuli -
+                _minMillisecondsBetweenStimuli) +
+            _minMillisecondsBetweenStimuli);
   }
 }
 

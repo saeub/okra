@@ -4,6 +4,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:okra/generated/l10n.dart';
 import 'package:okra/src/pages/task.dart';
+import 'package:okra/src/tasks/n_back.dart';
+import 'package:okra/src/tasks/reaction_time.dart';
 import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
 import 'package:okra/main.dart' as okra;
@@ -732,6 +734,143 @@ void main() {
       }
 
       l.expectDoneLogging();
+    });
+
+    test('generates stimulus positions within visible area', () async {
+      var logger = TaskEventLogger();
+      var task = ReactionTime()
+        ..logger = logger
+        ..init({
+          'nStimuli': 1,
+          'minSecondsBetweenStimuli': 0,
+          'maxSecondsBetweenStimuli': 1.5,
+        });
+      await task.loadAssets();
+
+      for (var i = 0; i < 10000; i++) {
+        task.randomizeStimulusPosition(
+            BoxConstraints(maxWidth: 800, maxHeight: 300));
+        var hitbox = task.getStimulusHitbox();
+        expect(hitbox.left >= 0, true);
+        expect(hitbox.top >= 0, true);
+        expect(hitbox.right < 800, true);
+        expect(hitbox.bottom < 300, true);
+      }
+    });
+
+    test('generates stimulus delays within configured range', () async {
+      var logger = TaskEventLogger();
+      var task = ReactionTime()
+        ..logger = logger
+        ..init({
+          'nStimuli': 1,
+          'minSecondsBetweenStimuli': 0.005,
+          'maxSecondsBetweenStimuli': 0.995,
+        });
+      await task.loadAssets();
+
+      for (var i = 0; i < 10000; i++) {
+        var delay = task.generateRandomStimulusDelay();
+        expect(delay.inMilliseconds >= 5, true);
+        expect(delay.inMilliseconds < 995, true);
+      }
+
+      task.init({
+        'nStimuli': 1,
+        'minSecondsBetweenStimuli': 0.5,
+        'maxSecondsBetweenStimuli': 0.5,
+      });
+      for (var i = 0; i < 10000; i++) {
+        var delay = task.generateRandomStimulusDelay();
+        expect(delay.inMilliseconds, 500);
+      }
+
+      task.init({
+        'nStimuli': 1,
+        'minSecondsBetweenStimuli': 0.5,
+        'maxSecondsBetweenStimuli': 0,
+      });
+      for (var i = 0; i < 10000; i++) {
+        var delay = task.generateRandomStimulusDelay();
+        expect(delay.inMilliseconds, 500);
+      }
+    });
+  });
+
+  group('n-back', () {
+    testWidgets('can be completed', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.nBack,
+        {
+          'n': 1,
+          'stimulusChoices': ['A', 'B'],
+          'nStimuli': 2,
+          'nPositives': 1,
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {'nTruePositives': 1, 'nFalsePositives': 1});
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+      l.expectLogged('generated stimuli');
+      await tester.pump(Duration(milliseconds: 500));
+
+      l.expectLogged('started showing stimulus', data: {'stimulus': 0});
+      await tester.tapAt(Offset(100, 100));
+      l.expectLogged('tapped screen', data: {'stimulus': 0});
+      l.expectLogged('started feedback',
+          data: {'stimulus': 0}, allowAdditionalKeys: true);
+      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      l.expectLogged('tapped screen', data: {'stimulus': 0});
+      await tester.pump(Duration(milliseconds: 500));
+      l.expectLogged('stopped showing stimulus', data: {'stimulus': 0});
+      l.expectLogged('stopped feedback', data: {'stimulus': 0});
+      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      l.expectLogged('tapped screen', data: {'stimulus': 0});
+      await tester.pump(Duration(milliseconds: 2500));
+
+      l.expectLogged('started showing stimulus', data: {'stimulus': 1});
+      await tester.pump(Duration(milliseconds: 500));
+      l.expectLogged('stopped showing stimulus', data: {'stimulus': 1});
+      await tester.tapAt(Offset(100, 100));
+      l.expectLogged('tapped screen', data: {'stimulus': 1});
+      l.expectLogged('started feedback',
+          data: {'stimulus': 1}, allowAdditionalKeys: true);
+      await tester.pump(Duration(milliseconds: 2500));
+      l.expectLogged('stopped feedback', data: {'stimulus': 1});
+      l.expectDoneLogging();
+    });
+
+    test('generates valid stimulus sequences', () {
+      int numberOfPositiveStimuli(List<String> stimuli, int n) {
+        var count = 0;
+        for (var i = n; i < stimuli.length; i++) {
+          if (stimuli[i] == stimuli[i - n]) {
+            count++;
+          }
+        }
+        return count;
+      }
+
+      var nStimuli = 10;
+      for (var n = 1; n <= nStimuli; n++) {
+        for (var p = 0; p <= nStimuli - n; p++) {
+          var stimuli = NBack.generateStimuli(['A', 'B'], nStimuli, p, n);
+          var nPositives = numberOfPositiveStimuli(stimuli, n);
+          expect(nPositives, p,
+              reason:
+                  '${stimuli} (n = ${n}) has ${nPositives} positive stimuli, should be ${p}');
+        }
+      }
+
+      expect(() => NBack.generateStimuli(['A'], 10, 3, 2), throwsArgumentError);
+      expect(() => NBack.generateStimuli(['A', 'B'], 3, 2, 2),
+          throwsArgumentError);
     });
   });
 }
