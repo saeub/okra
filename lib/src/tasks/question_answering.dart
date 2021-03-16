@@ -101,7 +101,7 @@ class Question {
   }
 }
 
-class NormalReading extends StatelessWidget {
+class NormalReading extends StatefulWidget {
   final String text;
   final TaskEventLogger logger;
   final void Function(double progress) onProgress;
@@ -113,21 +113,58 @@ class NormalReading extends StatelessWidget {
       : super(key: key);
 
   @override
+  _NormalReadingState createState() => _NormalReadingState();
+}
+
+class _NormalReadingState extends State<NormalReading> {
+  static const logScrollDistanceThreshold = 50.0;
+
+  double _distanceScrolled;
+
+  @override
+  void initState() {
+    super.initState();
+    _distanceScrolled = 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: ReadingWidth(
-            child: Column(
-              children: [
-                MarkdownBody(data: text),
-                AccentButton(
-                  Icons.arrow_forward,
-                  S.of(context).taskAdvance,
-                  onPressed: onFinishedReading,
-                ),
-              ],
+    return NotificationListener<ScrollUpdateNotification>(
+      onNotification: (notification) {
+        _distanceScrolled += notification.scrollDelta.abs();
+        if (_distanceScrolled >= logScrollDistanceThreshold) {
+          widget.logger.log('scrolled text', {
+            'extentBefore': notification.metrics.extentBefore,
+            'extentInside': notification.metrics.extentInside,
+            'extentAfter': notification.metrics.extentAfter,
+          });
+          while (_distanceScrolled >= logScrollDistanceThreshold) {
+            _distanceScrolled -= logScrollDistanceThreshold;
+          }
+        }
+        return false;
+      },
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: ReadingWidth(
+              child: Column(
+                children: [
+                  MarkdownBody(
+                    data: widget.text,
+                    styleSheet: MarkdownStyleSheet(
+                      textScaleFactor: 1.3,
+                      p: TextStyle(height: 1.5),
+                    ),
+                  ),
+                  AccentButton(
+                    Icons.arrow_forward,
+                    S.of(context).taskAdvance,
+                    onPressed: widget.onFinishedReading,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
