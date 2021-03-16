@@ -316,6 +316,83 @@ void main() {
     });
   });
 
+  group('n-back', () {
+    testWidgets('can be completed', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.nBack,
+        {
+          'n': 1,
+          'stimulusChoices': ['A', 'B'],
+          'nStimuli': 2,
+          'nPositives': 1,
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {'nTruePositives': 1, 'nFalsePositives': 1});
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+      l.expectLogged('generated stimuli');
+      await tester.pump(Duration(milliseconds: 500));
+
+      l.expectLogged('started showing stimulus', data: {'stimulus': 0});
+      await tester.tapAt(Offset(100, 100));
+      l.expectLogged('tapped screen', data: {'stimulus': 0});
+      l.expectLogged('started feedback',
+          data: {'stimulus': 0}, allowAdditionalKeys: true);
+      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      l.expectLogged('tapped screen', data: {'stimulus': 0});
+      await tester.pump(Duration(milliseconds: 500));
+      l.expectLogged('stopped showing stimulus', data: {'stimulus': 0});
+      l.expectLogged('stopped feedback', data: {'stimulus': 0});
+      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      l.expectLogged('tapped screen', data: {'stimulus': 0});
+      await tester.pump(Duration(milliseconds: 2500));
+
+      l.expectLogged('started showing stimulus', data: {'stimulus': 1});
+      await tester.pump(Duration(milliseconds: 500));
+      l.expectLogged('stopped showing stimulus', data: {'stimulus': 1});
+      await tester.tapAt(Offset(100, 100));
+      l.expectLogged('tapped screen', data: {'stimulus': 1});
+      l.expectLogged('started feedback',
+          data: {'stimulus': 1}, allowAdditionalKeys: true);
+      await tester.pump(Duration(milliseconds: 2500));
+      l.expectLogged('stopped feedback', data: {'stimulus': 1});
+      l.expectDoneLogging();
+    });
+
+    test('generates valid stimulus sequences', () {
+      int numberOfPositiveStimuli(List<String> stimuli, int n) {
+        var count = 0;
+        for (var i = n; i < stimuli.length; i++) {
+          if (stimuli[i] == stimuli[i - n]) {
+            count++;
+          }
+        }
+        return count;
+      }
+
+      var nStimuli = 10;
+      for (var n = 1; n <= nStimuli; n++) {
+        for (var p = 0; p <= nStimuli - n; p++) {
+          var stimuli = NBack.generateStimuli(['A', 'B'], nStimuli, p, n);
+          var nPositives = numberOfPositiveStimuli(stimuli, n);
+          expect(nPositives, p,
+              reason:
+                  '${stimuli} (n = ${n}) has ${nPositives} positive stimuli, should be ${p}');
+        }
+      }
+
+      expect(() => NBack.generateStimuli(['A'], 10, 3, 2), throwsArgumentError);
+      expect(() => NBack.generateStimuli(['A', 'B'], 3, 2, 2),
+          throwsArgumentError);
+    });
+  });
+
   group('Picture naming', () {
     const dummyPicture =
         '/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5/ooooA//2Q==';
@@ -682,6 +759,35 @@ void main() {
       l.expectLogged('finished reading');
       l.expectDoneLogging();
     });
+
+    testWidgets('can be completed', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.questionAnswering,
+        {
+          'readingType': 'normal',
+          'text':
+              '# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget. Pharetra massa massa ultricies mi quis hendrerit dolor. Tellus cras adipiscing enim eu turpis egestas pretium aenean. Nisl condimentum id venenatis a condimentum. Vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor posuere. Nunc sed blandit libero volutpat sed. Blandit volutpat maecenas volutpat blandit aliquam etiam erat velit scelerisque. Elementum curabitur vitae nunc sed velit dignissim sodales ut. Nunc vel risus commodo viverra maecenas accumsan lacus vel facilisis. Aliquet bibendum enim facilisis gravida neque convallis a cras semper. Aliquam vestibulum morbi blandit cursus risus at. Eget sit amet tellus cras adipiscing enim. Dictum at tempor commodo ullamcorper a lacus vestibulum sed. Sed blandit libero volutpat sed.',
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {'chosenAnswerIndices': []});
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started reading');
+      await tester.scrollUntilVisible(find.text('CONTINUE'), 50.0);
+      l.expectLogged('scrolled text');
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished reading');
+
+      l.expectDoneLogging();
+    });
   });
 
   group('Reaction time', () {
@@ -794,83 +900,6 @@ void main() {
         var delay = task.generateRandomStimulusDelay();
         expect(delay.inMilliseconds, 500);
       }
-    });
-  });
-
-  group('n-back', () {
-    testWidgets('can be completed', (tester) async {
-      var logger = TaskEventLogger();
-      var l = LoggerTester(logger);
-
-      await tester.pumpWidget(getTaskApp(
-        TaskType.nBack,
-        {
-          'n': 1,
-          'stimulusChoices': ['A', 'B'],
-          'nStimuli': 2,
-          'nPositives': 1,
-        },
-        logger,
-        ({data, message}) {
-          expect(data, {'nTruePositives': 1, 'nFalsePositives': 1});
-          expect(message, null);
-        },
-      ));
-      await tester.pumpAndSettle();
-      l.expectLogged('generated stimuli');
-      await tester.pump(Duration(milliseconds: 500));
-
-      l.expectLogged('started showing stimulus', data: {'stimulus': 0});
-      await tester.tapAt(Offset(100, 100));
-      l.expectLogged('tapped screen', data: {'stimulus': 0});
-      l.expectLogged('started feedback',
-          data: {'stimulus': 0}, allowAdditionalKeys: true);
-      await tester.tapAt(Offset(100, 100)); // already feedbacked
-      l.expectLogged('tapped screen', data: {'stimulus': 0});
-      await tester.pump(Duration(milliseconds: 500));
-      l.expectLogged('stopped showing stimulus', data: {'stimulus': 0});
-      l.expectLogged('stopped feedback', data: {'stimulus': 0});
-      await tester.tapAt(Offset(100, 100)); // already feedbacked
-      l.expectLogged('tapped screen', data: {'stimulus': 0});
-      await tester.pump(Duration(milliseconds: 2500));
-
-      l.expectLogged('started showing stimulus', data: {'stimulus': 1});
-      await tester.pump(Duration(milliseconds: 500));
-      l.expectLogged('stopped showing stimulus', data: {'stimulus': 1});
-      await tester.tapAt(Offset(100, 100));
-      l.expectLogged('tapped screen', data: {'stimulus': 1});
-      l.expectLogged('started feedback',
-          data: {'stimulus': 1}, allowAdditionalKeys: true);
-      await tester.pump(Duration(milliseconds: 2500));
-      l.expectLogged('stopped feedback', data: {'stimulus': 1});
-      l.expectDoneLogging();
-    });
-
-    test('generates valid stimulus sequences', () {
-      int numberOfPositiveStimuli(List<String> stimuli, int n) {
-        var count = 0;
-        for (var i = n; i < stimuli.length; i++) {
-          if (stimuli[i] == stimuli[i - n]) {
-            count++;
-          }
-        }
-        return count;
-      }
-
-      var nStimuli = 10;
-      for (var n = 1; n <= nStimuli; n++) {
-        for (var p = 0; p <= nStimuli - n; p++) {
-          var stimuli = NBack.generateStimuli(['A', 'B'], nStimuli, p, n);
-          var nPositives = numberOfPositiveStimuli(stimuli, n);
-          expect(nPositives, p,
-              reason:
-                  '${stimuli} (n = ${n}) has ${nPositives} positive stimuli, should be ${p}');
-        }
-      }
-
-      expect(() => NBack.generateStimuli(['A'], 10, 3, 2), throwsArgumentError);
-      expect(() => NBack.generateStimuli(['A', 'B'], 3, 2, 2),
-          throwsArgumentError);
     });
   });
 }
