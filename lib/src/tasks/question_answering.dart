@@ -122,9 +122,9 @@ class NormalReading extends StatelessWidget {
             child: Column(
               children: [
                 MarkdownBody(data: text),
-                AccentButton(
-                  Icons.arrow_forward,
-                  S.of(context).taskAdvance,
+                ElevatedButton.icon(
+                  icon: Icon(Icons.arrow_forward),
+                  label: Text(S.of(context).taskAdvance),
                   onPressed: onFinishedReading,
                 ),
               ],
@@ -407,9 +407,9 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                     ],
                   ),
                 ),
-              AccentButton(
-                Icons.arrow_forward,
-                S.of(context).taskFinish,
+              ElevatedButton.icon(
+                icon: Icon(Icons.arrow_forward),
+                label: Text(S.of(context).taskFinish),
                 onPressed: !_chosenAnswerIndices.contains(null)
                     ? () {
                         if (_feedbacking) {

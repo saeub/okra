@@ -107,9 +107,9 @@ class PictureNaming extends Task {
             maintainSize: true,
             maintainAnimation: true,
             maintainState: true,
-            child: AccentButton(
-              Icons.arrow_forward,
-              S.of(context).taskAdvance,
+            child: ElevatedButton.icon(
+              icon: Icon(Icons.arrow_forward),
+              label: Text(S.of(context).taskAdvance),
               onPressed: !_feedbacking
                   ? () async {
                       logger.log('finished subtask',

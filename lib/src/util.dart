@@ -39,26 +39,6 @@ class ErrorMessage extends StatelessWidget {
   }
 }
 
-class AccentButton extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final Color color;
-  final VoidCallback onPressed;
-
-  const AccentButton(this.icon, this.text,
-      {this.color, this.onPressed, Key key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      icon: Icon(icon),
-      label: Text(text),
-      onPressed: onPressed,
-    );
-  }
-}
-
 class AnimatedLinearProgressIndicator extends StatefulWidget {
   final double progress;
   final Duration duration;

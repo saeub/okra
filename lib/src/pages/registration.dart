@@ -68,9 +68,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         child: CircularProgressIndicator(),
                       ),
                     ),
-                    AccentButton(
-                      Icons.check,
-                      S.of(context).registrationOk,
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.check),
+                      label: Text(S.of(context).registrationOk),
                       onPressed: _loading ? null : () => register(context),
                     ),
                   ],
