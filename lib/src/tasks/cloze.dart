@@ -71,9 +71,9 @@ class Cloze extends Task {
           maintainAnimation: true,
           maintainSize: true,
           maintainState: true,
-          child: AccentButton(
-            Icons.arrow_forward,
-            S.of(context).taskAdvance,
+          child: ElevatedButton.icon(
+            icon: Icon(Icons.arrow_forward),
+            label: Text(S.of(context).taskAdvance),
             onPressed: !_feedbacking
                 ? () async {
                     logger.log(
@@ -158,6 +158,7 @@ class ClozeBlank extends StatelessWidget {
               : Colors.red
           : null,
       child: InkWell(
+        onTap: onTap,
         child: Padding(
           padding: EdgeInsets.all(5.0),
           child: text != null
@@ -173,7 +174,6 @@ class ClozeBlank extends StatelessWidget {
                   ),
                 ),
         ),
-        onTap: onTap,
       ),
     );
   }

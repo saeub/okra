@@ -383,7 +383,7 @@ void main() {
           var nPositives = numberOfPositiveStimuli(stimuli, n);
           expect(nPositives, p,
               reason:
-                  '${stimuli} (n = ${n}) has ${nPositives} positive stimuli, should be ${p}');
+                  '$stimuli (n = $n) has $nPositives positive stimuli, should be $p');
         }
       }
 
