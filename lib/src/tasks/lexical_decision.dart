@@ -40,6 +40,7 @@ class LexicalDecision extends Task {
   @override
   Widget build(BuildContext context) {
     var buttonsEnabled = _currentWordIndex >= 0 && _feedback == null;
+    // TODO: Fix layout (buttons change size when feedback appears)
     return Column(
       children: [
         Expanded(
@@ -82,8 +83,13 @@ class LexicalDecision extends Task {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(right: 4.0),
-                          child: RaisedButton(
-                            child: Text(S.of(context).taskLexicalDecisionWord),
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.check),
+                            label: Text(S.of(context).taskLexicalDecisionWord),
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.green),
+                            ),
                             onPressed:
                                 buttonsEnabled ? () => _onTap(true) : null,
                           ),
@@ -92,9 +98,14 @@ class LexicalDecision extends Task {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 4.0),
-                          child: RaisedButton(
-                            child:
+                          child: ElevatedButton.icon(
+                            icon: Icon(Icons.clear),
+                            label:
                                 Text(S.of(context).taskLexicalDecisionNonword),
+                            style: ButtonStyle(
+                              backgroundColor:
+                                  MaterialStateProperty.all<Color>(Colors.red),
+                            ),
                             onPressed:
                                 buttonsEnabled ? () => _onTap(false) : null,
                           ),
