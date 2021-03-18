@@ -168,6 +168,22 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
+      onTap: () {
+        if (_currentSegmentIndex < _segments.length) {
+          setState(() {
+            _currentSegmentIndex++;
+          });
+          widget.logger.log('started segment', {
+            'segments': [
+              _currentSegmentIndex - 1,
+              if (_currentSegmentIndex < _segments.length) _currentSegmentIndex,
+            ]
+          });
+          widget.onProgress(_currentSegmentIndex / _segments.length);
+        } else {
+          widget.onFinishedReading();
+        }
+      },
       child: ColoredBox(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
@@ -190,22 +206,6 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
           ],
         ),
       ),
-      onTap: () {
-        if (_currentSegmentIndex < _segments.length) {
-          setState(() {
-            _currentSegmentIndex++;
-          });
-          widget.logger.log('started segment', {
-            'segments': [
-              _currentSegmentIndex - 1,
-              if (_currentSegmentIndex < _segments.length) _currentSegmentIndex,
-            ]
-          });
-          widget.onProgress(_currentSegmentIndex / _segments.length);
-        } else {
-          widget.onFinishedReading();
-        }
-      },
     );
   }
 }
@@ -392,12 +392,12 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                                   ),
                                 Expanded(
                                   child: GestureDetector(
-                                    child: Text(
-                                      widget.questions[i].answers[j],
-                                    ),
                                     onTap: !_feedbacking
                                         ? () => _chooseAnswer(i, j)
                                         : null,
+                                    child: Text(
+                                      widget.questions[i].answers[j],
+                                    ),
                                   ),
                                 ),
                               ],

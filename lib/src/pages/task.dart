@@ -156,6 +156,37 @@ class _TaskPageState extends State<TaskPage> {
     return Scaffold(
       body: SafeArea(
         child: WillPopScope(
+          onWillPop: () async {
+            if (_mode == TaskPageMode.task || _mode == TaskPageMode.ratings) {
+              _logger.log('aborting task');
+              return await showDialog<bool>(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(S.of(context).taskAbortDialogTitle),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        _logger.log('declined aborting task');
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text(S.of(context).dialogNo),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        _logger.log('confirmed aborting task');
+                        Navigator.of(context).pop(true);
+                        // TODO: Send aborted task
+                      },
+                      child: Text(S.of(context).dialogYes),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return true;
+            }
+          },
           child: OrientationBuilder(builder: (context, orientation) {
             var forceOrientation = widget.experiment.type.forceOrientation;
             if (forceOrientation != null && orientation != forceOrientation) {
@@ -179,37 +210,6 @@ class _TaskPageState extends State<TaskPage> {
             }
             return content;
           }),
-          onWillPop: () async {
-            if (_mode == TaskPageMode.task || _mode == TaskPageMode.ratings) {
-              _logger.log('aborting task');
-              return await showDialog<bool>(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(S.of(context).taskAbortDialogTitle),
-                  actions: [
-                    FlatButton(
-                      child: Text(S.of(context).dialogNo),
-                      onPressed: () {
-                        _logger.log('declined aborting task');
-                        Navigator.of(context).pop(false);
-                      },
-                    ),
-                    FlatButton(
-                      child: Text(S.of(context).dialogYes),
-                      onPressed: () {
-                        _logger.log('confirmed aborting task');
-                        Navigator.of(context).pop(true);
-                        // TODO: Send aborted task
-                      },
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return true;
-            }
-          },
         ),
       ),
     );
@@ -255,7 +255,7 @@ class _ReadAloudWidgetState extends State<ReadAloudWidget> {
       builder: (context, snapshot) {
         if (snapshot.hasData &&
             snapshot.connectionState == ConnectionState.done) {
-          return FlatButton.icon(
+          return TextButton.icon(
             icon: Icon(_playing ? Icons.stop : Icons.volume_up),
             label: Text(_playing
                 ? S.of(context).instructionsStopAudio
@@ -290,7 +290,7 @@ class _ReadAloudWidgetState extends State<ReadAloudWidget> {
             ),
           );
         } else {
-          return FlatButton.icon(
+          return TextButton.icon(
             icon: Container(
               height: 20,
               width: 20,

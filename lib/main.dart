@@ -74,11 +74,15 @@ class _StorageWrapperState extends State<StorageWrapper> {
                       'Delete all data now?',
                       style: Theme.of(context).textTheme.headline6,
                     ),
-                    RaisedButton.icon(
+                    ElevatedButton.icon(
                       icon: Icon(Icons.delete),
                       label: Text('YES, DELETE'),
-                      color: Colors.red,
-                      textColor: Colors.white,
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.red),
+                      ),
+                      // color: Colors.red,
+                      // textColor: Colors.white,
                       onPressed: () async {
                         await snapshot.data.clear();
                         setState(() {

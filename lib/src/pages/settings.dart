@@ -41,17 +41,17 @@ class _SettingsPageState extends State<SettingsPage> {
                     builder: (context) => AlertDialog(
                       title: Text(S.of(context).settingsDeleteApiDialogTitle),
                       actions: [
-                        FlatButton(
-                          child: Text(S.of(context).dialogNo),
+                        TextButton(
                           onPressed: () {
                             Navigator.of(context).pop(false);
                           },
+                          child: Text(S.of(context).dialogNo),
                         ),
-                        FlatButton(
-                          child: Text(S.of(context).dialogYes),
+                        TextButton(
                           onPressed: () {
                             Navigator.of(context).pop(true);
                           },
+                          child: Text(S.of(context).dialogYes),
                         ),
                       ],
                     ),
@@ -91,17 +91,17 @@ class _SettingsPageState extends State<SettingsPage> {
                 builder: (context) => AlertDialog(
                   title: Text(S.of(context).settingsResetTutorialDialogTitle),
                   actions: [
-                    FlatButton(
-                      child: Text(S.of(context).dialogNo),
+                    TextButton(
                       onPressed: () {
                         Navigator.of(context).pop(false);
                       },
+                      child: Text(S.of(context).dialogNo),
                     ),
-                    FlatButton(
-                      child: Text(S.of(context).dialogYes),
+                    TextButton(
                       onPressed: () {
                         Navigator.of(context).pop(true);
                       },
+                      child: Text(S.of(context).dialogYes),
                     ),
                   ],
                 ),

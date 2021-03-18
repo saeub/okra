@@ -181,8 +181,8 @@ class PictureCard<T> extends StatelessWidget {
           if (picture != null)
             SizedBox.expand(
               child: FittedBox(
-                child: picture,
                 fit: BoxFit.contain,
+                child: picture,
               ),
             )
           else

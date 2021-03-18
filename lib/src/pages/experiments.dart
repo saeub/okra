@@ -68,6 +68,12 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
         ],
       ),
       body: RefreshIndicator(
+        onRefresh: () async {
+          setState(() {
+            _experiments = loadExperiments();
+          });
+          await Future.wait(_experiments.values);
+        },
         child: ListView(
           children: [
             for (var api in _experiments.keys)
@@ -159,12 +165,6 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
               ),
           ],
         ),
-        onRefresh: () async {
-          setState(() {
-            _experiments = loadExperiments();
-          });
-          await Future.wait(_experiments.values);
-        },
       ),
     );
   }
@@ -182,8 +182,8 @@ class ApiTitle extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-            child: api.getIcon(),
             height: 40.0,
+            child: api.getIcon(),
           ),
           Flexible(
             child: Text(

@@ -60,13 +60,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Visibility(
+                      visible: _loading,
                       child: Container(
                         height: 40,
                         width: 40,
                         padding: EdgeInsets.all(8.0),
                         child: CircularProgressIndicator(),
                       ),
-                      visible: _loading,
                     ),
                     AccentButton(
                       Icons.check,

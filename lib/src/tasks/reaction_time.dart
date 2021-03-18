@@ -74,34 +74,6 @@ class ReactionTime extends Task {
                 Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
           }
           return GestureDetector(
-            child: Stack(
-              children: [
-                if (_starting)
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 120.0),
-                      child: Text(
-                        S.of(context).taskReactionTimeIntro,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 30.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                        ),
-                      ),
-                    ),
-                  ),
-                if (_stimulusPosition != null)
-                  CustomPaint(
-                    painter: StimulusPainter(
-                      _stimulus,
-                      _stimulusPosition,
-                      tapped: _stimulusTapped,
-                    ),
-                    size: constraints.biggest,
-                  ),
-              ],
-            ),
             onTapDown: (details) async {
               logger.log('tapped screen', {
                 'position': {
@@ -155,6 +127,34 @@ class ReactionTime extends Task {
                 }
               }
             },
+            child: Stack(
+              children: [
+                if (_starting)
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 120.0),
+                      child: Text(
+                        S.of(context).taskReactionTimeIntro,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (_stimulusPosition != null)
+                  CustomPaint(
+                    painter: StimulusPainter(
+                      _stimulus,
+                      _stimulusPosition,
+                      tapped: _stimulusTapped,
+                    ),
+                    size: constraints.biggest,
+                  ),
+              ],
+            ),
           );
         }),
       ),

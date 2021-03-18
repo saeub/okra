@@ -59,16 +59,6 @@ class NBack extends Task {
       );
     }
     return GestureDetector(
-      child: ColoredBox(
-        color: _feedback == null
-            ? Theme.of(context).scaffoldBackgroundColor
-            : _feedback
-                ? Colors.green[100]
-                : Colors.red[100],
-        child: Center(
-          child: content,
-        ),
-      ),
       onTapDown: (details) async {
         logger.log('tapped screen', {
           'stimulus': _currentStimulusIndex,
@@ -97,6 +87,16 @@ class NBack extends Task {
           });
         }
       },
+      child: ColoredBox(
+        color: _feedback == null
+            ? Theme.of(context).scaffoldBackgroundColor
+            : _feedback
+                ? Colors.green[100]
+                : Colors.red[100],
+        child: Center(
+          child: content,
+        ),
+      ),
     );
   }
 
