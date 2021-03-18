@@ -156,6 +156,37 @@ class _TaskPageState extends State<TaskPage> {
     return Scaffold(
       body: SafeArea(
         child: WillPopScope(
+          onWillPop: () async {
+            if (_mode == TaskPageMode.task || _mode == TaskPageMode.ratings) {
+              _logger.log('aborting task');
+              return await showDialog<bool>(
+                barrierDismissible: false,
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text(S.of(context).taskAbortDialogTitle),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        _logger.log('declined aborting task');
+                        Navigator.of(context).pop(false);
+                      },
+                      child: Text(S.of(context).dialogNo),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        _logger.log('confirmed aborting task');
+                        Navigator.of(context).pop(true);
+                        // TODO: Send aborted task
+                      },
+                      child: Text(S.of(context).dialogYes),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return true;
+            }
+          },
           child: OrientationBuilder(builder: (context, orientation) {
             var forceOrientation = widget.experiment.type.forceOrientation;
             if (forceOrientation != null && orientation != forceOrientation) {
@@ -179,37 +210,6 @@ class _TaskPageState extends State<TaskPage> {
             }
             return content;
           }),
-          onWillPop: () async {
-            if (_mode == TaskPageMode.task || _mode == TaskPageMode.ratings) {
-              _logger.log('aborting task');
-              return await showDialog<bool>(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(S.of(context).taskAbortDialogTitle),
-                  actions: [
-                    FlatButton(
-                      child: Text(S.of(context).dialogNo),
-                      onPressed: () {
-                        _logger.log('declined aborting task');
-                        Navigator.of(context).pop(false);
-                      },
-                    ),
-                    FlatButton(
-                      child: Text(S.of(context).dialogYes),
-                      onPressed: () {
-                        _logger.log('confirmed aborting task');
-                        Navigator.of(context).pop(true);
-                        // TODO: Send aborted task
-                      },
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return true;
-            }
-          },
         ),
       ),
     );
@@ -255,7 +255,7 @@ class _ReadAloudWidgetState extends State<ReadAloudWidget> {
       builder: (context, snapshot) {
         if (snapshot.hasData &&
             snapshot.connectionState == ConnectionState.done) {
-          return FlatButton.icon(
+          return TextButton.icon(
             icon: Icon(_playing ? Icons.stop : Icons.volume_up),
             label: Text(_playing
                 ? S.of(context).instructionsStopAudio
@@ -290,7 +290,7 @@ class _ReadAloudWidgetState extends State<ReadAloudWidget> {
             ),
           );
         } else {
-          return FlatButton.icon(
+          return TextButton.icon(
             icon: Container(
               height: 20,
               width: 20,
@@ -338,38 +338,42 @@ class InstructionsWidget extends StatelessWidget {
                 if (experiment.instructionsAudioUrl != null)
                   ReadAloudWidget(experiment.instructionsAudioUrl),
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  padding: const EdgeInsets.symmetric(vertical: 24.0),
                   child: MarkdownBody(
                     data: experiment.instructions,
                     fitContent: false,
                   ),
                 ),
                 if (experiment.hasPracticeTask && experiment.nTasksDone == 0)
-                  AccentButton(
-                    Icons.sports_tennis,
-                    S.of(context).instructionsStartPracticeTask,
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.sports_tennis),
+                    label: Text(S.of(context).instructionsStartPracticeTask),
                     onPressed: onStartPracticePressed,
                   )
                 else if (experiment.hasPracticeTask)
                   Column(
                     children: [
-                      AccentButton(
-                        Icons.sports_tennis,
-                        S.of(context).instructionsRestartPracticeTask,
-                        color: Colors.grey,
+                      ElevatedButton.icon(
+                        icon: Icon(Icons.sports_tennis),
+                        label:
+                            Text(S.of(context).instructionsRestartPracticeTask),
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all<Color>(Colors.grey),
+                        ),
                         onPressed: onStartPracticePressed,
                       ),
-                      AccentButton(
-                        Icons.arrow_forward,
-                        S.of(context).instructionsStartTask,
+                      ElevatedButton.icon(
+                        icon: Icon(Icons.arrow_forward),
+                        label: Text(S.of(context).instructionsStartTask),
                         onPressed: onStartPressed,
                       ),
                     ],
                   )
                 else
-                  AccentButton(
-                    Icons.arrow_forward,
-                    S.of(context).instructionsStartTask,
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.arrow_forward),
+                    label: Text(S.of(context).instructionsStartTask),
                     onPressed: onStartPressed,
                   ),
               ],
@@ -604,9 +608,9 @@ class _RatingsWidgetState extends State<RatingsWidget> {
           ),
         ),
         Spacer(flex: 1),
-        AccentButton(
-          Icons.arrow_forward,
-          S.of(context).taskAdvance,
+        ElevatedButton.icon(
+          icon: Icon(Icons.arrow_forward),
+          label: Text(S.of(context).taskAdvance),
           onPressed: _answers[_currentRatingIndex] != null
               ? () {
                   if (_currentRatingIndex < widget.ratings.length - 1) {
@@ -697,18 +701,23 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(4.0),
-                              child: AccentButton(
-                                Icons.schedule,
-                                S.of(context).taskResultsNoNextTask,
-                                color: Colors.grey,
+                              child: ElevatedButton.icon(
+                                icon: Icon(Icons.schedule),
+                                label:
+                                    Text(S.of(context).taskResultsNoNextTask),
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          Colors.grey),
+                                ),
                                 onPressed: Navigator.of(context).pop,
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(4.0),
-                              child: AccentButton(
-                                Icons.arrow_forward,
-                                S.of(context).taskResultsNextTask,
+                              child: ElevatedButton.icon(
+                                icon: Icon(Icons.arrow_forward),
+                                label: Text(S.of(context).taskResultsNextTask),
                                 onPressed: widget.onContinuePressed,
                               ),
                             ),
@@ -718,9 +727,9 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                     );
                   } else {
                     // No tasks left
-                    return AccentButton(
-                      Icons.check,
-                      S.of(context).taskResultsFinishExperiment,
+                    return ElevatedButton.icon(
+                      icon: Icon(Icons.check),
+                      label: Text(S.of(context).taskResultsFinishExperiment),
                       onPressed: Navigator.of(context).pop,
                     );
                   }

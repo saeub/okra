@@ -10,7 +10,7 @@ void showErrorSnackBar(BuildContext context, String message,
   if (retry != null) {
     action = SnackBarAction(label: S.of(context).errorRetry, onPressed: retry);
   }
-  Scaffold.of(context).showSnackBar(SnackBar(
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
     content: Text(message),
     action: action,
   ));
@@ -29,34 +29,12 @@ class ErrorMessage extends StatelessWidget {
       children: [
         Text(message),
         if (retry != null)
-          FlatButton.icon(
+          TextButton.icon(
             icon: Icon(Icons.refresh),
             label: Text(S.of(context).errorRetry),
             onPressed: retry,
           ),
       ],
-    );
-  }
-}
-
-class AccentButton extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final Color color;
-  final VoidCallback onPressed;
-
-  const AccentButton(this.icon, this.text,
-      {this.color, this.onPressed, Key key})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return RaisedButton.icon(
-      icon: Icon(icon),
-      label: Text(text),
-      color: color ?? Theme.of(context).accentColor,
-      textColor: Theme.of(context).accentTextTheme.button.color,
-      onPressed: onPressed,
     );
   }
 }
