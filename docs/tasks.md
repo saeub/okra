@@ -93,7 +93,9 @@ A textual stimulus is shown above a number of pictures. One of the pictures (or 
 
 ### Question answering
 
-A text is presented, and after reading, several single-answer multiple-choice questions have to be answered. There are two modes of text presentation: `normal`, where all text is presented at once on a single screen, and `self-paced`, where two segments of text are shown at once and the participant advances by tapping the screen.
+A text is presented, and several single-answer multiple-choice questions have to be answered. On smaller screen sizes, the question panel is expandable and collapsible from the bottom of the screen. On larger screen sizes, it is constantly visible side-by-side with the text. There are two modes of text presentation: `normal`, where all text is presented at once on a single screen, and `self-paced`, where two segments of text are shown at once and the participant advances by tapping the screen.
+
+**NOTE:** The`self-paced` reading type is currently neither optimized nor well tested. At the moment, using it for smaller screen sizes is a bad idea.
 
 - Identifier: `question-answering`
 - Implementation: [`lib/src/tasks/question_answering.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/question_answering.dart)

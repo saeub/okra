@@ -2,11 +2,14 @@
 
 Okra is a mobile (Android/iOS) app which allows its users to participate in psycholinguistic experiments. It receives the experiment setup and stimuli from a server of the institution conducting the experiment, presents the stimuli to the participant, collects responses and behavioral data, and sends them back to the server.
 
-The app currently provides implementations of various types of tasks related to readability and text difficulty:
+The app currently provides implementations of various types of tasks related to psycholinguistics and reading comprehension in particular:
 
 - Cloze test
-- Multiple-choice question answering
-- Picture naming
+- Lexical decision task
+- Multiple-choice question answering task
+- *n*-back working memory task
+- Picture naming task
+- Reaction time test
 
 ## [💻 Source code](https://github.com/saeub/okra)
 
