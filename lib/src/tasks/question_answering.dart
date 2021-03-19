@@ -111,10 +111,11 @@ class QuestionAnswering extends Task {
               flex: 3,
               child: _readingWidget,
             ),
-            Expanded(
-              flex: 2,
-              child: Material(elevation: 5.0, child: _questionsWidget),
-            ),
+            if (_questions.isNotEmpty)
+              Expanded(
+                flex: 2,
+                child: Material(elevation: 5.0, child: _questionsWidget),
+              ),
           ],
         );
       },
@@ -495,7 +496,7 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                         if (_feedbacking) {
                           widget.logger.log('finished feedback');
                         } else {
-                          widget.logger.log('finished answering');
+                          widget.logger.log('finished reading');
                         }
                         if (!_feedbacking) {
                           for (var i = 0; i < widget.questions.length; i++) {

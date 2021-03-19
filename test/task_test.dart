@@ -574,6 +574,9 @@ void main() {
 
   group('Question answering', () {
     testWidgets('can be completed', (tester) async {
+      tester.binding.window.physicalSizeTestValue = Size(20000, 20000);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -605,41 +608,34 @@ void main() {
 
       l.expectLogged('started reading');
       expect(find.byType(MarkdownBody), findsOneWidget);
-      await tester.tap(find.text('CONTINUE'));
-      await tester.pumpAndSettle();
-      l.expectLogged('finished reading');
 
-      l.expectLogged('started answering');
       expect(find.text('Is this a question?'), findsOneWidget);
       expect(find.text('Yes'), findsOneWidget);
       expect(find.text('No'), findsOneWidget);
       expect(find.text('Maybe'), findsOneWidget);
-      await tester.ensureVisible(find.text('FINISH', skipOffstage: false));
       await tester.tap(find.text('FINISH')); // disabled
-      await tester.ensureVisible(find.text('Yes', skipOffstage: false));
       await tester.tap(find.text('Yes'));
       l.expectLogged('chose answer', data: {'question': 0, 'answer': 0});
       await tester.tap(find.text('Maybe'));
       l.expectLogged('chose answer', data: {'question': 0, 'answer': 2});
-      await tester.ensureVisible(find.text('FINISH', skipOffstage: false));
       await tester.tap(find.text('FINISH')); // disabled
 
-      await tester
-          .ensureVisible(find.text('What about this?', skipOffstage: false));
       expect(find.text('What about this?'), findsOneWidget);
       expect(find.text('Definitely'), findsOneWidget);
       await tester.tap(find.text('Definitely'));
       l.expectLogged('chose answer', data: {'question': 1, 'answer': 0});
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('FINISH', skipOffstage: false));
       await tester.tap(find.text('FINISH'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished answering');
+      l.expectLogged('finished reading');
 
       l.expectDoneLogging();
     });
 
     testWidgets('supports feedback', (tester) async {
+      tester.binding.window.physicalSizeTestValue = Size(20000, 20000);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -673,26 +669,14 @@ void main() {
 
       l.expectLogged('started reading');
       expect(find.byType(MarkdownBody), findsOneWidget);
-      await tester.tap(find.text('CONTINUE'));
-      await tester.pumpAndSettle();
-      l.expectLogged('finished reading');
-
-      l.expectLogged('started answering');
-      await tester.ensureVisible(find.text('No', skipOffstage: false));
       await tester.tap(find.text('No'));
       l.expectLogged('chose answer', data: {'question': 0, 'answer': 1});
-
-      await tester
-          .ensureVisible(find.text('What about this?', skipOffstage: false));
-      expect(find.text('What about this?'), findsOneWidget);
-      expect(find.text('Definitely'), findsOneWidget);
       await tester.tap(find.text('Definitely'));
       l.expectLogged('chose answer', data: {'question': 1, 'answer': 0});
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('FINISH', skipOffstage: false));
       await tester.tap(find.text('FINISH'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished answering');
+      l.expectLogged('finished reading');
 
       l.expectLogged('started feedback');
       expect(find.byIcon(Icons.arrow_forward, skipOffstage: false),
@@ -707,6 +691,9 @@ void main() {
 
     testWidgets('supports self-paced reading without questions',
         (tester) async {
+      tester.binding.window.physicalSizeTestValue = Size(20000, 20000);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -760,7 +747,7 @@ void main() {
       l.expectDoneLogging();
     });
 
-    testWidgets('can be completed', (tester) async {
+    testWidgets('logs scroll events', (tester) async {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -780,9 +767,9 @@ void main() {
       await tester.pumpAndSettle();
 
       l.expectLogged('started reading');
-      await tester.scrollUntilVisible(find.text('CONTINUE'), 50.0);
+      await tester.scrollUntilVisible(find.text('FINISH'), 50.0);
       l.expectLogged('scrolled text');
-      await tester.tap(find.text('CONTINUE'));
+      await tester.tap(find.text('FINISH'));
       await tester.pumpAndSettle();
       l.expectLogged('finished reading');
 
