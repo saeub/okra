@@ -342,6 +342,10 @@ class InstructionsWidget extends StatelessWidget {
                   child: MarkdownBody(
                     data: experiment.instructions,
                     fitContent: false,
+                    styleSheet: MarkdownStyleSheet(
+                      textScaleFactor: 1.3,
+                      p: TextStyle(height: 1.5),
+                    ),
                   ),
                 ),
                 if (experiment.hasPracticeTask && experiment.nTasksDone == 0)

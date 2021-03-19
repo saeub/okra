@@ -6,42 +6,47 @@ import '../../generated/l10n.dart';
 import '../util.dart';
 import 'task.dart';
 
-enum QuestionAnsweringMode {
-  text,
-  questions,
-}
-
 class QuestionAnswering extends Task {
-  Widget _readingWidget;
   List<Question> _questions;
-  QuestionAnsweringMode _mode;
+  bool _questionsExpanded;
   double _progress;
+  Widget _readingWidget, _questionsWidget;
 
   @override
   void init(Map<String, dynamic> data) {
     String readingType = data['readingType'];
     String text = data['text'];
+
+    List<Map<String, dynamic>> questionData;
+    if (data['questions'] != null) {
+      questionData = data['questions'].cast<Map<String, dynamic>>();
+    } else {
+      questionData = [];
+    }
+    _questions = questionData.map(Question.fromJson).toList();
+    _questionsExpanded = false;
+
+    var focusCallback = () {
+      setState(() {
+        _questionsExpanded = false;
+      });
+    };
     var progressCallback = (progress) {
       setState(() {
         _progress = progress;
       });
     };
-    var finishedReadingCallback = () {
-      logger.log('finished reading');
-      if (_questions.isNotEmpty) {
-        setState(() {
-          _mode = QuestionAnsweringMode.questions;
-          _progress = null;
-        });
-        logger.log('started answering');
-      } else {
+    Function() finishedReadingCallback;
+    if (_questions.isEmpty) {
+      finishedReadingCallback = () {
+        logger.log('finished reading');
         finish(data: {'chosenAnswerIndices': []});
-      }
-    };
+      };
+    }
     switch (readingType) {
       case 'normal':
-        _readingWidget = NormalReading(
-            text, logger, progressCallback, finishedReadingCallback);
+        _readingWidget =
+            NormalReading(text, logger, focusCallback, finishedReadingCallback);
         break;
       case 'self-paced':
         _readingWidget = SelfPacedReading(
@@ -52,15 +57,9 @@ class QuestionAnswering extends Task {
         throw ArgumentError('Unknown reading type "$readingType"');
     }
 
-    List<Map<String, dynamic>> questionData;
-    if (data['questions'] != null) {
-      questionData = data['questions'].cast<Map<String, dynamic>>();
-    } else {
-      questionData = [];
-    }
-    _questions = questionData.map(Question.fromJson).toList();
-
-    _mode = QuestionAnsweringMode.text;
+    _questionsWidget = QuestionsWidget(_questions, logger, (answers) {
+      finish(data: {'chosenAnswerIndices': answers});
+    });
 
     logger.log('started reading');
     logger.stopwatch.start();
@@ -70,17 +69,63 @@ class QuestionAnswering extends Task {
   double getProgress() => _progress;
 
   @override
-  // TODO: null safety
-  // ignore: missing_return
   Widget build(BuildContext context) {
-    switch (_mode) {
-      case QuestionAnsweringMode.text:
-        return _readingWidget;
-      case QuestionAnsweringMode.questions:
-        return QuestionsWidget(_questions, logger, (answers) {
-          finish(data: {'chosenAnswerIndices': answers});
-        });
-    }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        // Small screens
+        if (constraints.maxWidth < 1000) {
+          return Column(
+            children: [
+              Expanded(child: _readingWidget),
+              if (_questions.isNotEmpty)
+                ExpansionPanelList(
+                  expansionCallback: (index, isExpanded) {
+                    setState(() {
+                      _questionsExpanded = !isExpanded;
+                    });
+                    logger.log(_questionsExpanded
+                        ? 'expanded questions'
+                        : 'collapsed questions');
+                  },
+                  children: [
+                    ExpansionPanel(
+                      canTapOnHeader: true,
+                      headerBuilder: (context, isExpanded) {
+                        return ListTile(
+                            title: Text(S
+                                .of(context)
+                                .taskQuestionAnsweringExpandQuestions));
+                      },
+                      body: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxHeight: constraints.maxHeight - 250.0,
+                        ),
+                        child: _questionsWidget,
+                      ),
+                      isExpanded: _questionsExpanded,
+                    ),
+                  ],
+                ),
+            ],
+          );
+        }
+        // Large screens
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              flex: 3,
+              child: _readingWidget,
+            ),
+            if (_questions.isNotEmpty)
+              Expanded(
+                flex: 2,
+                child: Material(elevation: 5.0, child: _questionsWidget),
+              ),
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -101,33 +146,75 @@ class Question {
   }
 }
 
-class NormalReading extends StatelessWidget {
+class NormalReading extends StatefulWidget {
   final String text;
   final TaskEventLogger logger;
-  final void Function(double progress) onProgress;
+  final void Function() onFocus;
   final VoidCallback onFinishedReading;
 
   const NormalReading(
-      this.text, this.logger, this.onProgress, this.onFinishedReading,
+      this.text, this.logger, this.onFocus, this.onFinishedReading,
       {Key key})
       : super(key: key);
 
   @override
+  _NormalReadingState createState() => _NormalReadingState();
+}
+
+class _NormalReadingState extends State<NormalReading> {
+  static const logScrollDistanceThreshold = 50.0;
+
+  double _distanceScrolled;
+
+  @override
+  void initState() {
+    super.initState();
+    _distanceScrolled = 0;
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: ReadingWidth(
-            child: Column(
-              children: [
-                MarkdownBody(data: text),
-                ElevatedButton.icon(
-                  icon: Icon(Icons.arrow_forward),
-                  label: Text(S.of(context).taskAdvance),
-                  onPressed: onFinishedReading,
+    return GestureDetector(
+      onTap: widget.onFocus,
+      child: NotificationListener<ScrollUpdateNotification>(
+        onNotification: (notification) {
+          _distanceScrolled += notification.scrollDelta.abs();
+          if (_distanceScrolled >= logScrollDistanceThreshold) {
+            widget.logger.log('scrolled text', {
+              'extentBefore': notification.metrics.extentBefore,
+              'extentInside': notification.metrics.extentInside,
+              'extentAfter': notification.metrics.extentAfter,
+            });
+            while (_distanceScrolled >= logScrollDistanceThreshold) {
+              _distanceScrolled -= logScrollDistanceThreshold;
+            }
+          }
+          widget.onFocus();
+          return false;
+        },
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Center(
+              child: ReadingWidth(
+                child: Column(
+                  children: [
+                    MarkdownBody(
+                      data: widget.text,
+                      styleSheet: MarkdownStyleSheet(
+                        textScaleFactor: 1.3,
+                        p: TextStyle(height: 1.5),
+                      ),
+                    ),
+                    if (widget.onFinishedReading != null)
+                      ElevatedButton.icon(
+                        icon: Icon(Icons.arrow_forward),
+                        label: Text(S.of(context).taskFinish),
+                        onPressed: widget.onFinishedReading,
+                      ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -415,7 +502,7 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                         if (_feedbacking) {
                           widget.logger.log('finished feedback');
                         } else {
-                          widget.logger.log('finished answering');
+                          widget.logger.log('finished reading');
                         }
                         if (!_feedbacking) {
                           for (var i = 0; i < widget.questions.length; i++) {
