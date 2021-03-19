@@ -775,6 +775,58 @@ void main() {
 
       l.expectDoneLogging();
     });
+
+    testWidgets('supports expandable questions on small screen sizes', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.questionAnswering,
+        {
+          'readingType': 'normal',
+          'text':
+              '# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget. Pharetra massa massa ultricies mi quis hendrerit dolor. Tellus cras adipiscing enim eu turpis egestas pretium aenean. Nisl condimentum id venenatis a condimentum. Vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor posuere. Nunc sed blandit libero volutpat sed. Blandit volutpat maecenas volutpat blandit aliquam etiam erat velit scelerisque. Elementum curabitur vitae nunc sed velit dignissim sodales ut. Nunc vel risus commodo viverra maecenas accumsan lacus vel facilisis. Aliquet bibendum enim facilisis gravida neque convallis a cras semper. Aliquam vestibulum morbi blandit cursus risus at. Eget sit amet tellus cras adipiscing enim. Dictum at tempor commodo ullamcorper a lacus vestibulum sed. Sed blandit libero volutpat sed.',
+          'questions': [
+            {
+              'question': 'Is this a question?',
+              'answers': ['Yes', 'No', 'Maybe'],
+            },
+            {
+              'question': 'What about this?',
+              'answers': ['Definitely'],
+            },
+          ],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {'chosenAnswerIndices': [0, 0]});
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started reading');
+      expect(find.byType(ExpansionPanelList), findsOneWidget);
+      await tester.tap(find.text('Questions')); // expand
+      await tester.pumpAndSettle();
+      l.expectLogged('expanded questions');
+      await tester.tap(find.text('Yes'));
+      l.expectLogged('chose answer', data: {'question': 0, 'answer': 0});
+      await tester.tap(find.text('Questions')); // collapse
+      await tester.pumpAndSettle();
+      l.expectLogged('collapsed questions');
+      await tester.tap(find.text('Questions')); // expand
+      await tester.pumpAndSettle();
+      l.expectLogged('expanded questions');
+      await tester.tap(find.text('Definitely'));
+      l.expectLogged('chose answer', data: {'question': 1, 'answer': 0});
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('FINISH'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished reading');
+
+      l.expectDoneLogging();
+    });
   });
 
   group('Reaction time', () {

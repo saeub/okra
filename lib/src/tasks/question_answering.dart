@@ -83,6 +83,9 @@ class QuestionAnswering extends Task {
                     setState(() {
                       _questionsExpanded = !isExpanded;
                     });
+                    logger.log(_questionsExpanded
+                        ? 'expanded questions'
+                        : 'collapsed questions');
                   },
                   children: [
                     ExpansionPanel(
