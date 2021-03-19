@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info/package_info.dart';
 import 'package:provider/provider.dart';
 
 import '../../generated/l10n.dart';
@@ -15,6 +16,14 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+  Future<PackageInfo> _packageInfoFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _packageInfoFuture = PackageInfo.fromPlatform();
+  }
+
   @override
   Widget build(BuildContext context) {
     var storage = context.watch<Storage>();
@@ -113,11 +122,23 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           Divider(),
           ListHeadingTile(S.of(context).settingsAboutHeading),
-          AboutListTile(
-            icon: Icon(Icons.info),
-            aboutBoxChildren: [
-              Text(S.of(context).settingsAboutText),
-            ],
+          FutureBuilder<PackageInfo>(
+            future: _packageInfoFuture,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return AboutListTile(
+                  icon: Icon(Icons.info),
+                  applicationVersion: snapshot.data.version,
+                  aboutBoxChildren: [
+                    Text(S.of(context).settingsAboutText),
+                  ],
+                );
+              } else if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return CircularProgressIndicator();
+              }
+            },
           ),
         ],
       ),

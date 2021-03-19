@@ -3,7 +3,7 @@ description: An app for text readability and comprehension experiments.
 
 publish_to: 'none'
 
-version: 0.1.0-alpha
+version: 0.2.0-alpha
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -20,6 +20,7 @@ dependencies:
   intl: ^0.17.0
   just_audio: ^0.5.6
   localstorage: ^3.0.0
+  package_info: ^2.0.0
   provider: ^4.3.2
 
 dev_dependencies:
