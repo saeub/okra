@@ -155,6 +155,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.10"
+  effective_dart:
+    dependency: transitive
+    description:
+      name: effective_dart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.3.1"
   fake_async:
     dependency: transitive
     description:
@@ -589,6 +596,67 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.0"
+  synchronized:
+    dependency: transitive
+    description:
+      name: synchronized
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
+  tekartik_browser_utils:
+    dependency: transitive
+    description:
+      path: "."
+      ref: dart2
+      resolved-ref: f992677e21f1693877320f66d30068e40d62578e
+      url: "git://github.com/tekartik/browser_utils.dart"
+    source: git
+    version: "0.6.13"
+  tekartik_camera_web:
+    dependency: transitive
+    description:
+      path: camera_web
+      ref: dart2
+      resolved-ref: "536e5370864fc79cae4d7d33f1b46c718256b015"
+      url: "git://github.com/tekartik/app_camera.dart"
+    source: git
+    version: "0.1.0"
+  tekartik_common_utils:
+    dependency: transitive
+    description:
+      path: "."
+      ref: dart2
+      resolved-ref: c056feab14a253e35f418fe9eb9b11923e734a30
+      url: "git://github.com/tekartik/common_utils.dart"
+    source: git
+    version: "0.10.17"
+  tekartik_js_qr:
+    dependency: transitive
+    description:
+      path: js_qr
+      ref: dart2
+      resolved-ref: "536e5370864fc79cae4d7d33f1b46c718256b015"
+      url: "git://github.com/tekartik/app_camera.dart"
+    source: git
+    version: "0.1.0"
+  tekartik_js_utils:
+    dependency: transitive
+    description:
+      path: js_utils
+      ref: dart2
+      resolved-ref: "3f763bf5828d3b9a9af5f7fda993963597bb7385"
+      url: "git://github.com/tekartik/js_utils.dart"
+    source: git
+    version: "0.1.1"
+  tekartik_qrscan_flutter_web:
+    dependency: "direct main"
+    description:
+      path: qrscan_flutter_web
+      ref: dart2
+      resolved-ref: "536e5370864fc79cae4d7d33f1b46c718256b015"
+      url: "git://github.com/tekartik/app_camera.dart"
+    source: git
+    version: "0.1.0"
   term_glyph:
     dependency: transitive
     description:
@@ -695,5 +763,5 @@ packages:
     source: hosted
     version: "2.2.1"
 sdks:
-  dart: ">=2.12.0-259.9.beta <3.0.0"
+  dart: ">=2.12.0 <3.0.0"
   flutter: ">=1.17.0"
