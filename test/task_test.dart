@@ -776,7 +776,8 @@ void main() {
       l.expectDoneLogging();
     });
 
-    testWidgets('supports expandable questions on small screen sizes', (tester) async {
+    testWidgets('supports expandable questions on small screen sizes',
+        (tester) async {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -799,7 +800,9 @@ void main() {
         },
         logger,
         ({data, message}) {
-          expect(data, {'chosenAnswerIndices': [0, 0]});
+          expect(data, {
+            'chosenAnswerIndices': [0, 0]
+          });
           expect(message, null);
         },
       ));
