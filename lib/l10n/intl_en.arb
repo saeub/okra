@@ -48,6 +48,7 @@
   "taskFinish": "FINISH",
   "taskLexicalDecisionNonword": "NOT A WORD",
   "taskLexicalDecisionWord": "WORD",
+  "taskQuestionAnsweringExpandQuestions": "Answer questions",
   "taskReactionTimeIntro": "Pop the balloon!",
   "taskResultsFinishExperiment": "FINISH EXPERIMENT",
   "taskResultsMessage1": "Awesome!",

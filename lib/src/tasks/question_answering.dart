@@ -91,7 +91,10 @@ class QuestionAnswering extends Task {
                     ExpansionPanel(
                       canTapOnHeader: true,
                       headerBuilder: (context, isExpanded) {
-                        return ListTile(title: Text('Questions'));
+                        return ListTile(
+                            title: Text(S
+                                .of(context)
+                                .taskQuestionAnsweringExpandQuestions));
                       },
                       body: ConstrainedBox(
                         constraints: BoxConstraints(

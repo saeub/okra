@@ -80,6 +80,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "taskFinish" : MessageLookupByLibrary.simpleMessage("ABSCHLIESSEN"),
     "taskLexicalDecisionNonword" : MessageLookupByLibrary.simpleMessage("KEIN WORT"),
     "taskLexicalDecisionWord" : MessageLookupByLibrary.simpleMessage("WORT"),
+    "taskQuestionAnsweringExpandQuestions" : MessageLookupByLibrary.simpleMessage("Fragen beantworten"),
     "taskReactionTimeIntro" : MessageLookupByLibrary.simpleMessage("Lass den Ballon platzen!"),
     "taskResultsFinishExperiment" : MessageLookupByLibrary.simpleMessage("EXPERIMENT ABSCHLIESSEN"),
     "taskResultsMessage1" : MessageLookupByLibrary.simpleMessage("Super!"),

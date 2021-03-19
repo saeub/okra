@@ -810,15 +810,15 @@ void main() {
 
       l.expectLogged('started reading');
       expect(find.byType(ExpansionPanelList), findsOneWidget);
-      await tester.tap(find.text('Questions')); // expand
+      await tester.tap(find.text('Answer questions')); // expand
       await tester.pumpAndSettle();
       l.expectLogged('expanded questions');
       await tester.tap(find.text('Yes'));
       l.expectLogged('chose answer', data: {'question': 0, 'answer': 0});
-      await tester.tap(find.text('Questions')); // collapse
+      await tester.tap(find.text('Answer questions')); // collapse
       await tester.pumpAndSettle();
       l.expectLogged('collapsed questions');
-      await tester.tap(find.text('Questions')); // expand
+      await tester.tap(find.text('Answer questions')); // expand
       await tester.pumpAndSettle();
       l.expectLogged('expanded questions');
       await tester.tap(find.text('Definitely'));

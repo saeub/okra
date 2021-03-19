@@ -49,6 +49,7 @@
   "taskFinish": "ABSCHLIESSEN",
   "taskLexicalDecisionNonword": "KEIN WORT",
   "taskLexicalDecisionWord": "WORT",
+  "taskQuestionAnsweringExpandQuestions": "Fragen beantworten",
   "taskReactionTimeIntro": "Lass den Ballon platzen!",
   "taskResultsFinishExperiment": "EXPERIMENT ABSCHLIESSEN",
   "taskResultsMessage1": "Super!",
