@@ -1,9 +1,9 @@
-import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:okra/src/qr/qr.dart';
 
 import '../../generated/l10n.dart';
 import '../data/api.dart';
+import '../qr/qr.dart';
 import '../util.dart';
 
 class RegistrationPage extends StatefulWidget {
@@ -57,8 +57,12 @@ class _RegistrationPageState extends State<RegistrationPage> {
                   ),
                 ),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
+                    ElevatedButton.icon(
+                      icon: Icon(Icons.check),
+                      label: Text(S.of(context).registrationOk),
+                      onPressed: _loading ? null : () => register(context),
+                    ),
                     Visibility(
                       visible: _loading,
                       child: Container(
@@ -67,11 +71,6 @@ class _RegistrationPageState extends State<RegistrationPage> {
                         padding: EdgeInsets.all(8.0),
                         child: CircularProgressIndicator(),
                       ),
-                    ),
-                    ElevatedButton.icon(
-                      icon: Icon(Icons.check),
-                      label: Text(S.of(context).registrationOk),
-                      onPressed: _loading ? null : () => register(context),
                     ),
                   ],
                 ),
@@ -86,35 +85,18 @@ class _RegistrationPageState extends State<RegistrationPage> {
           label: Text(S.of(context).registrationScanQrCode),
           onPressed: () async {
             try {
-              var result = await BarcodeScanner.scan(
-                options: ScanOptions(restrictFormat: [
-                  BarcodeFormat.qr,
-                ], strings: {
-                  'cancel': S.of(context).registrationQrCancel,
-                  'flash_on': S.of(context).registrationQrFlashOn,
-                  'flash_off': S.of(context).registrationQrFlashOff,
-                }),
-              );
-              switch (result.type) {
-                case ResultType.Barcode:
-                  var data = result.rawContent.split('\n');
-                  if (data.length == 3) {
-                    _urlController.text = data[0];
-                    _participantIdController.text = data[1];
-                    _registrationKeyController.text = data[2];
-                  } else {
-                    showErrorSnackBar(
-                        context, S.of(context).registrationInvalidQrCode);
-                  }
-                  break;
-                case ResultType.Error:
-                  // TODO: Report error
-                  showErrorSnackBar(context, S.of(context).errorUnknown);
-                  break;
+              var result = await scanQrCode(context);
+              var data = result.split('\n');
+              if (data.length == 3) {
+                _urlController.text = data[0];
+                _participantIdController.text = data[1];
+                _registrationKeyController.text = data[2];
+              } else {
+                showErrorSnackBar(
+                    context, S.of(context).registrationInvalidQrCode);
               }
-            } on PlatformException {
-              showErrorSnackBar(
-                  context, S.of(context).registrationCameraPermissionRequired);
+            } on QrScanError catch (e) {
+              showErrorSnackBar(context, e.message);
             } catch (_) {
               // TODO: Report error
               showErrorSnackBar(context, S.of(context).errorUnknown);
