@@ -130,14 +130,12 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      // Ratings
-      await tester.tap(find.text('CONTINUE'));
-      await tester.pumpAndSettle();
+      // No ratings for practice tasks
       // Results
       expect(testApi.taskResults.data, {
         'chosenOptionIndices': [1],
       });
-      expect(testApi.taskResults.ratingAnswers, [0.5]);
+      expect(testApi.taskResults.ratingAnswers, null);
       expect(testApi.taskResults.events.length, 3);
     });
   });
