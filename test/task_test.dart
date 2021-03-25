@@ -599,14 +599,15 @@ void main() {
         logger,
         ({data, message}) {
           expect(data, {
-            'chosenAnswerIndices': [2, 0]
+            'chosenAnswerIndices': [2, 0],
+            'ratingsBeforeQuestionsAnswers': null,
           });
           expect(message, null);
         },
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started reading');
+      l.expectLogged('started reading', data: {'stage': 1});
       expect(find.byType(MarkdownBody), findsOneWidget);
 
       expect(find.text('Is this a question?'), findsOneWidget);
@@ -627,7 +628,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('FINISH'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished reading');
+      l.expectLogged('finished reading', data: {'stage': 1});
 
       l.expectDoneLogging();
     });
@@ -660,14 +661,15 @@ void main() {
         logger,
         ({data, message}) {
           expect(data, {
-            'chosenAnswerIndices': [1, 0]
+            'chosenAnswerIndices': [1, 0],
+            'ratingsBeforeQuestionsAnswers': null,
           });
           expect(message, null);
         },
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started reading');
+      l.expectLogged('started reading', data: {'stage': 1});
       expect(find.byType(MarkdownBody), findsOneWidget);
       await tester.tap(find.text('No'));
       l.expectLogged('chose answer', data: {'question': 0, 'answer': 1});
@@ -676,7 +678,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('FINISH'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished reading');
+      l.expectLogged('finished reading', data: {'stage': 1});
 
       l.expectLogged('started feedback');
       expect(find.byIcon(Icons.arrow_forward, skipOffstage: false),
@@ -705,13 +707,16 @@ void main() {
         },
         logger,
         ({data, message}) {
-          expect(data, {'chosenAnswerIndices': []});
+          expect(data, {
+            'chosenAnswerIndices': [],
+            'ratingsBeforeQuestionsAnswers': null,
+          });
           expect(message, null);
         },
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started reading');
+      l.expectLogged('started reading', data: {'stage': 1});
 
       l.expectLogged('started segment', data: {
         'segments': [0]
@@ -743,7 +748,7 @@ void main() {
       await tester.tap(find.text('Third segment.'));
       await tester.pumpAndSettle();
 
-      l.expectLogged('finished reading');
+      l.expectLogged('finished reading', data: {'stage': 1});
       l.expectDoneLogging();
     });
 
@@ -760,18 +765,21 @@ void main() {
         },
         logger,
         ({data, message}) {
-          expect(data, {'chosenAnswerIndices': []});
+          expect(data, {
+            'chosenAnswerIndices': [],
+            'ratingsBeforeQuestionsAnswers': null,
+          });
           expect(message, null);
         },
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started reading');
+      l.expectLogged('started reading', data: {'stage': 1});
       await tester.scrollUntilVisible(find.text('FINISH'), 50.0);
       l.expectLogged('scrolled text');
       await tester.tap(find.text('FINISH'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished reading');
+      l.expectLogged('finished reading', data: {'stage': 1});
 
       l.expectDoneLogging();
     });
@@ -801,14 +809,15 @@ void main() {
         logger,
         ({data, message}) {
           expect(data, {
-            'chosenAnswerIndices': [0, 0]
+            'chosenAnswerIndices': [0, 0],
+            'ratingsBeforeQuestionsAnswers': null,
           });
           expect(message, null);
         },
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started reading');
+      l.expectLogged('started reading', data: {'stage': 1});
       expect(find.byType(ExpansionPanelList), findsOneWidget);
       await tester.tap(find.text('Answer questions')); // expand
       await tester.pumpAndSettle();
@@ -826,7 +835,83 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('FINISH'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished reading');
+      l.expectLogged('finished reading', data: {'stage': 1});
+
+      l.expectDoneLogging();
+    });
+
+    testWidgets('supports ratings before questions', (tester) async {
+      tester.binding.window.physicalSizeTestValue = Size(20000, 20000);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.questionAnswering,
+        {
+          'readingType': 'normal',
+          'text': 'This is an example text.',
+          'questions': [
+            {
+              'question': 'Is this a question?',
+              'answers': ['Yes', 'No', 'Maybe'],
+            },
+          ],
+          'ratingsBeforeQuestions': [
+            {
+              'question': 'How is it?',
+              'type': 'emoticon',
+              'lowExtreme': 'bad',
+              'highExtreme': 'good',
+            },
+            {
+              'question': 'How was it?',
+              'type': 'slider',
+            },
+          ],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {
+            'chosenAnswerIndices': [0],
+            'ratingsBeforeQuestionsAnswers': [3, 0.5],
+          });
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started reading', data: {'stage': 0});
+      expect(find.byType(MarkdownBody), findsOneWidget);
+
+      expect(find.text('Is this a question?'), findsNothing);
+      await tester.tap(find.text('FINISH'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished reading', data: {'stage': 0});
+
+      l.expectLogged('started ratings before questions');
+      await tester.tap(find.text('CONTINUE')); // disabled
+      expect(find.text('How is it?'), findsOneWidget);
+      expect(find.text('good'), findsOneWidget);
+      expect(find.text('bad'), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.sentiment_satisfied));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      expect(find.text('How was it?'), findsOneWidget);
+      expect(find.byType(Slider), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished ratings before questions');
+
+      l.expectLogged('started reading', data: {'stage': 1});
+      await tester.tap(find.text('Yes'));
+      await tester.pumpAndSettle();
+      l.expectLogged('chose answer', data: {'question': 0, 'answer': 0});
+      await tester.tap(find.text('FINISH'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished reading', data: {'stage': 1});
 
       l.expectDoneLogging();
     });

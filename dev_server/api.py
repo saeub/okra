@@ -136,6 +136,10 @@ EXPERIMENTS_TASKS = [
                     "correctAnswer": 1,
                 },
             ],
+            "ratingsBeforeQuestions": [
+                example_rating("emoticon"),
+                example_rating("radio"),
+            ],
         },
     ),
     (
