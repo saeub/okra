@@ -3,14 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../generated/l10n.dart';
+import '../data/models.dart';
+import '../pages/task.dart';
 import '../util.dart';
 import 'task.dart';
 
+enum _QuestionAnsweringStage {
+  textOnly,
+  ratingsBeforeQuestions,
+  textAndQuestions,
+}
+
 class QuestionAnswering extends Task {
   List<Question> _questions;
+  List<TaskRating> _ratingsBeforeQuestions;
+  List<num> _ratingsBeforeQuestionsAnswers;
+  _QuestionAnsweringStage _stage;
   bool _questionsExpanded;
   double _progress;
-  Widget _readingWidget, _questionsWidget;
+  Widget _firstStageReadingWidget, _readingWidget, _questionsWidget;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -24,8 +35,20 @@ class QuestionAnswering extends Task {
       questionData = [];
     }
     _questions = questionData.map(Question.fromJson).toList();
+
+    List<Map<String, dynamic>> ratingsBeforeQuestionsData =
+        data['ratingsBeforeQuestions']?.cast<Map<String, dynamic>>();
+    _ratingsBeforeQuestions =
+        ratingsBeforeQuestionsData?.map(TaskRating.fromJson)?.toList();
+    if (_ratingsBeforeQuestions != null) {
+      _stage = _QuestionAnsweringStage.textOnly;
+    } else {
+      _stage = _QuestionAnsweringStage.textAndQuestions;
+    }
+
     _questionsExpanded = false;
 
+    // TODO: Refactor widget building
     var focusCallback = () {
       setState(() {
         _questionsExpanded = false;
@@ -39,16 +62,31 @@ class QuestionAnswering extends Task {
     Function() finishedReadingCallback;
     if (_questions.isEmpty) {
       finishedReadingCallback = () {
-        logger.log('finished reading');
-        finish(data: {'chosenAnswerIndices': []});
+        logger.log('finished reading', {'stage': 1});
+        finish(data: {
+          'chosenAnswerIndices': [],
+          'ratingsBeforeQuestionsAnswers': _ratingsBeforeQuestionsAnswers,
+        });
       };
     }
+    var firstStageFinishedReadingCallback = () {
+      logger.log('finished reading', {'stage': 0});
+      setState(() {
+        _stage = _QuestionAnsweringStage.ratingsBeforeQuestions;
+        _progress = null;
+      });
+      logger.log('started ratings before questions');
+    };
     switch (readingType) {
       case 'normal':
+        _firstStageReadingWidget = NormalReading(
+            text, logger, null, firstStageFinishedReadingCallback);
         _readingWidget =
             NormalReading(text, logger, focusCallback, finishedReadingCallback);
         break;
       case 'self-paced':
+        _firstStageReadingWidget = SelfPacedReading(
+            text, logger, progressCallback, firstStageFinishedReadingCallback);
         _readingWidget = SelfPacedReading(
             text, logger, progressCallback, finishedReadingCallback);
         _progress = 0;
@@ -58,10 +96,14 @@ class QuestionAnswering extends Task {
     }
 
     _questionsWidget = QuestionsWidget(_questions, logger, (answers) {
-      finish(data: {'chosenAnswerIndices': answers});
+      finish(data: {
+        'chosenAnswerIndices': answers,
+        'ratingsBeforeQuestionsAnswers': _ratingsBeforeQuestionsAnswers,
+      });
     });
 
-    logger.log('started reading');
+    logger.log('started reading',
+        {'stage': _stage == _QuestionAnsweringStage.textOnly ? 0 : 1});
     logger.stopwatch.start();
   }
 
@@ -69,63 +111,87 @@ class QuestionAnswering extends Task {
   double getProgress() => _progress;
 
   @override
+  // FIXME: null-safety
+  // ignore: missing_return
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Small screens
-        if (constraints.maxWidth < 1000) {
-          return Column(
-            children: [
-              Expanded(child: _readingWidget),
-              if (_questions.isNotEmpty)
-                ExpansionPanelList(
-                  expansionCallback: (index, isExpanded) {
-                    setState(() {
-                      _questionsExpanded = !isExpanded;
-                    });
-                    logger.log(_questionsExpanded
-                        ? 'expanded questions'
-                        : 'collapsed questions');
-                  },
-                  children: [
-                    ExpansionPanel(
-                      canTapOnHeader: true,
-                      headerBuilder: (context, isExpanded) {
-                        return ListTile(
-                            title: Text(S
-                                .of(context)
-                                .taskQuestionAnsweringExpandQuestions));
-                      },
-                      body: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          maxHeight: constraints.maxHeight - 250.0,
-                        ),
-                        child: _questionsWidget,
-                      ),
-                      isExpanded: _questionsExpanded,
-                    ),
-                  ],
-                ),
-            ],
-          );
-        }
-        // Large screens
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              flex: 3,
-              child: _readingWidget,
-            ),
-            if (_questions.isNotEmpty)
-              Expanded(
-                flex: 2,
-                child: Material(elevation: 5.0, child: _questionsWidget),
-              ),
-          ],
+    switch (_stage) {
+      case _QuestionAnsweringStage.textOnly:
+        return _firstStageReadingWidget;
+
+      case _QuestionAnsweringStage.ratingsBeforeQuestions:
+        return RatingsWidget(
+          _ratingsBeforeQuestions,
+          onFinished: (answers) {
+            logger.log('finished ratings before questions');
+            _ratingsBeforeQuestionsAnswers = answers;
+            setState(() {
+              _stage = _QuestionAnsweringStage.textAndQuestions;
+              if (_readingWidget is SelfPacedReading) {
+                _progress = 0;
+              }
+            });
+            logger.log('started reading', {'stage': 1});
+          },
         );
-      },
-    );
+
+      case _QuestionAnsweringStage.textAndQuestions:
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            // Small screens
+            if (constraints.maxWidth < 1000) {
+              return Column(
+                children: [
+                  Expanded(child: _readingWidget),
+                  if (_questions.isNotEmpty)
+                    ExpansionPanelList(
+                      expansionCallback: (index, isExpanded) {
+                        setState(() {
+                          _questionsExpanded = !isExpanded;
+                        });
+                        logger.log(_questionsExpanded
+                            ? 'expanded questions'
+                            : 'collapsed questions');
+                      },
+                      children: [
+                        ExpansionPanel(
+                          canTapOnHeader: true,
+                          headerBuilder: (context, isExpanded) {
+                            return ListTile(
+                                title: Text(S
+                                    .of(context)
+                                    .taskQuestionAnsweringExpandQuestions));
+                          },
+                          body: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: constraints.maxHeight - 250.0,
+                            ),
+                            child: _questionsWidget,
+                          ),
+                          isExpanded: _questionsExpanded,
+                        ),
+                      ],
+                    ),
+                ],
+              );
+            }
+            // Large screens
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: _readingWidget,
+                ),
+                if (_questions.isNotEmpty)
+                  Expanded(
+                    flex: 2,
+                    child: Material(elevation: 5.0, child: _questionsWidget),
+                  ),
+              ],
+            );
+          },
+        );
+    }
   }
 }
 
@@ -515,10 +581,9 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                     ? () {
                         if (_feedbacking) {
                           widget.logger.log('finished feedback');
+                          widget.onFinishedAnswering(_chosenAnswerIndices);
                         } else {
-                          widget.logger.log('finished reading');
-                        }
-                        if (!_feedbacking) {
+                          widget.logger.log('finished reading', {'stage': 1});
                           for (var i = 0; i < widget.questions.length; i++) {
                             if (widget.questions[i].correctAnswerIndex !=
                                 null) {
@@ -531,8 +596,6 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                           if (!_feedbacking) {
                             widget.onFinishedAnswering(_chosenAnswerIndices);
                           }
-                        } else {
-                          widget.onFinishedAnswering(_chosenAnswerIndices);
                         }
                       }
                     : null,
