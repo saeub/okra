@@ -567,10 +567,9 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                     ? () {
                         if (_feedbacking) {
                           widget.logger.log('finished feedback');
+                          widget.onFinishedAnswering(_chosenAnswerIndices);
                         } else {
-                          widget.logger.log('finished reading');
-                        }
-                        if (!_feedbacking) {
+                          widget.logger.log('finished reading', {'stage': 1});
                           for (var i = 0; i < widget.questions.length; i++) {
                             if (widget.questions[i].correctAnswerIndex !=
                                 null) {
@@ -583,8 +582,6 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                           if (!_feedbacking) {
                             widget.onFinishedAnswering(_chosenAnswerIndices);
                           }
-                        } else {
-                          widget.onFinishedAnswering(_chosenAnswerIndices);
                         }
                       }
                     : null,
