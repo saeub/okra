@@ -49,6 +49,8 @@
   "taskFinish": "ABSCHLIESSEN",
   "taskLexicalDecisionNonword": "KEIN WORT",
   "taskLexicalDecisionWord": "WORT",
+  "taskPracticeIndicatorSubtitle": "Dieser Versuch zählt nicht",
+  "taskPracticeIndicatorTitle": "ÜBUNG",
   "taskQuestionAnsweringExpandQuestions": "Fragen beantworten",
   "taskReactionTimeIntro": "Lass den Ballon platzen!",
   "taskResultsFinishExperiment": "EXPERIMENT ABSCHLIESSEN",

@@ -48,6 +48,8 @@
   "taskFinish": "FINISH",
   "taskLexicalDecisionNonword": "NOT A WORD",
   "taskLexicalDecisionWord": "WORD",
+  "taskPracticeIndicatorSubtitle": "This trial does not count",
+  "taskPracticeIndicatorTitle": "PRACTICE",
   "taskQuestionAnsweringExpandQuestions": "Answer questions",
   "taskReactionTimeIntro": "Pop the balloon!",
   "taskResultsFinishExperiment": "FINISH EXPERIMENT",

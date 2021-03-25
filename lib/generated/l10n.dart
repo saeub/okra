@@ -527,6 +527,26 @@ class S {
     );
   }
 
+  /// `This trial does not count`
+  String get taskPracticeIndicatorSubtitle {
+    return Intl.message(
+      'This trial does not count',
+      name: 'taskPracticeIndicatorSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PRACTICE`
+  String get taskPracticeIndicatorTitle {
+    return Intl.message(
+      'PRACTICE',
+      name: 'taskPracticeIndicatorTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Answer questions`
   String get taskQuestionAnsweringExpandQuestions {
     return Intl.message(

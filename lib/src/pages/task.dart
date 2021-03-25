@@ -447,7 +447,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                             ),
                           ),
                           Text(
-                            'PRACTICE',
+                            S.of(context).taskPracticeIndicatorTitle,
                             style: TextStyle(
                               fontSize: 25.0,
                               fontWeight: FontWeight.bold,
@@ -457,7 +457,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                         ],
                       ),
                       Text(
-                        'This trial does not count',
+                        S.of(context).taskPracticeIndicatorSubtitle,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).primaryColor,
