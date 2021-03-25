@@ -466,18 +466,22 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                                   ),
                                   if (_feedbacking &&
                                       j ==
-                                          widget
-                                              .questions[i].correctAnswerIndex &&
+                                          widget.questions[i]
+                                              .correctAnswerIndex &&
                                       j == _chosenAnswerIndices[i])
                                     Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
-                                      child:
-                                          Icon(Icons.check, color: Colors.green),
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
+                                      child: Icon(Icons.check,
+                                          color: Colors.green),
                                     )
                                   else if (_feedbacking &&
-                                      j == widget.questions[i].correctAnswerIndex)
+                                      j ==
+                                          widget
+                                              .questions[i].correctAnswerIndex)
                                     Padding(
-                                      padding: const EdgeInsets.only(right: 8.0),
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
                                       child: Icon(Icons.arrow_forward,
                                           color: Colors.red),
                                     ),
@@ -488,7 +492,8 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                                           ? () => _chooseAnswer(i, j)
                                           : null,
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 16.0),
                                         child: Text(
                                           widget.questions[i].answers[j],
                                         ),
