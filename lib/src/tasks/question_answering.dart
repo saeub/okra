@@ -437,61 +437,70 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
           child: Column(
             children: [
               for (var i = 0; i < widget.questions.length; i++)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.questions[i].question,
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                      Column(
-                        children: [
-                          for (var j = 0;
-                              j < widget.questions[i].answers.length;
-                              j++)
-                            Row(
-                              children: [
-                                Radio(
-                                  value: j,
-                                  groupValue: _chosenAnswerIndices[i],
-                                  onChanged: !_feedbacking
-                                      ? (_) => _chooseAnswer(i, j)
-                                      : null,
-                                ),
-                                if (_feedbacking &&
-                                    j ==
-                                        widget
-                                            .questions[i].correctAnswerIndex &&
-                                    j == _chosenAnswerIndices[i])
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child:
-                                        Icon(Icons.check, color: Colors.green),
-                                  )
-                                else if (_feedbacking &&
-                                    j == widget.questions[i].correctAnswerIndex)
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: Icon(Icons.arrow_forward,
-                                        color: Colors.red),
-                                  ),
-                                Expanded(
-                                  child: GestureDetector(
-                                    onTap: !_feedbacking
-                                        ? () => _chooseAnswer(i, j)
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8.0),
+                          child: Text(
+                            widget.questions[i].question,
+                            style: Theme.of(context).textTheme.headline6,
+                          ),
+                        ),
+                        Column(
+                          children: [
+                            for (var j = 0;
+                                j < widget.questions[i].answers.length;
+                                j++)
+                              Row(
+                                children: [
+                                  Radio(
+                                    value: j,
+                                    groupValue: _chosenAnswerIndices[i],
+                                    onChanged: !_feedbacking
+                                        ? (_) => _chooseAnswer(i, j)
                                         : null,
-                                    child: Text(
-                                      widget.questions[i].answers[j],
+                                  ),
+                                  if (_feedbacking &&
+                                      j ==
+                                          widget
+                                              .questions[i].correctAnswerIndex &&
+                                      j == _chosenAnswerIndices[i])
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 8.0),
+                                      child:
+                                          Icon(Icons.check, color: Colors.green),
+                                    )
+                                  else if (_feedbacking &&
+                                      j == widget.questions[i].correctAnswerIndex)
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 8.0),
+                                      child: Icon(Icons.arrow_forward,
+                                          color: Colors.red),
+                                    ),
+                                  Expanded(
+                                    child: GestureDetector(
+                                      behavior: HitTestBehavior.opaque,
+                                      onTap: !_feedbacking
+                                          ? () => _chooseAnswer(i, j)
+                                          : null,
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                        child: Text(
+                                          widget.questions[i].answers[j],
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
-                            ),
-                        ],
-                      ),
-                    ],
+                                ],
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ElevatedButton.icon(
