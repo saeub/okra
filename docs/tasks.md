@@ -95,7 +95,7 @@ A textual stimulus is shown above a number of pictures. One of the pictures (or 
 
 A text is presented, and several single-answer multiple-choice questions have to be answered. On smaller screen sizes, the question panel is expandable and collapsible from the bottom of the screen. On larger screen sizes, it is constantly visible side-by-side with the text. There are two modes of text presentation: `normal`, where all text is presented at once on a single screen, and `self-paced`, where two segments of text are shown at once and the participant advances by tapping the screen.
 
-**NOTE:** The`self-paced` reading type is currently neither optimized nor well tested. At the moment, using it for smaller screen sizes is a bad idea.
+**NOTE:** The `self-paced` reading type is currently neither optimized nor well tested. At the moment, using it for smaller screen sizes is a bad idea.
 
 - Identifier: `question-answering`
 - Implementation: [`lib/src/tasks/question_answering.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/question_answering.dart)
@@ -114,14 +114,23 @@ A text is presented, and several single-answer multiple-choice questions have to
         "correctAnswerIndex": 0
       },
       ...
+    ],
+    "ratingsBeforeQuestions": [
+      {
+        "question": "How easy was it?",
+        "type": "emoticon",
+        "lowerExtreme": "very difficult",
+        "higherExtreme": "very easy"
+      }
     ]
   }
   ```
-  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment. `correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
+  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment. `correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer. `ratingsBeforeQuestions` is optional. If it is provided, the text is shown without questions in the beginning, followed by the specified ratings, followed by the text with questions visible. They follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)).
 - Results data structure:
   ```json
   {
-    "chosenAnswerIndices": [0, -1, ...]
+    "chosenAnswerIndices": [0, -1, ...],
+    "ratingsBeforeQuestionsAnswers": [3]
   }
   ```
 
