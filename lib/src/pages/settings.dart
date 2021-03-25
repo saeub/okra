@@ -38,8 +38,9 @@ class _SettingsPageState extends State<SettingsPage> {
             ListTile(
               title: Text('${api.name} (${api.baseUrl})'),
               subtitle: Text(S.of(context).settingsApiDate(
-                  DateFormat.yMd().format(api.added),
-                  DateFormat.Hm().format(api.added))),
+                      DateFormat.yMd().format(api.added),
+                      DateFormat.Hm().format(api.added)) +
+                  ' (ID: ${api.participantId})'),
               trailing: IconButton(
                 icon: Icon(Icons.delete),
                 tooltip: S.of(context).settingsDeleteApi,
