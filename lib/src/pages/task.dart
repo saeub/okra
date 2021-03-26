@@ -66,6 +66,7 @@ class _TaskPageState extends State<TaskPage> {
         _taskId,
         _results,
       );
+      _mode = TaskPageMode.results;
     });
     _taskFinishedFuture.then((_) {
       setState(() {
@@ -146,11 +147,27 @@ class _TaskPageState extends State<TaskPage> {
         break;
 
       case TaskPageMode.results:
-        content = ResultsWidget(
-          experiment: widget.experiment,
-          message: _results.message,
-          practice: _practicing,
-          onContinuePressed: () => startTask(false),
+        content = FutureBuilder(
+          future: _taskFinishedFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return ResultsWidget(
+                experiment: widget.experiment,
+                message: _results.message,
+                practice: _practicing,
+                onContinuePressed: () => startTask(false),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: ErrorMessage(
+                  S.of(context).errorGeneric(snapshot.error),
+                  retry: () => startTask(_practicing),
+                ),
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
         );
         break;
     }
