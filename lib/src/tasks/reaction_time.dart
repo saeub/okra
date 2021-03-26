@@ -10,7 +10,7 @@ import '../../main.dart';
 import 'task.dart';
 
 class ReactionTime extends Task {
-  static const maxWidth = 400.0;
+  static const maxWidth = 600.0;
   static const maxHeight = 600.0;
 
   Stimulus _stimulus;

@@ -173,10 +173,9 @@ class _TaskPageState extends State<TaskPage> {
     }
 
     return Scaffold(
-      appBar:
-          (_mode == TaskPageMode.instructions)
-              ? AppBar(title: Text(widget.experiment.title))
-              : null,
+      appBar: (_mode == TaskPageMode.instructions)
+          ? AppBar(title: Text(widget.experiment.title))
+          : null,
       body: SafeArea(
         child: WillPopScope(
           onWillPop: () async {
