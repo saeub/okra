@@ -149,6 +149,7 @@ class _TaskPageState extends State<TaskPage> {
         content = ResultsWidget(
           experiment: widget.experiment,
           message: _results.message,
+          practice: _practicing,
           onContinuePressed: () => startTask(false),
         );
         break;
@@ -637,11 +638,13 @@ class _RatingsWidgetState extends State<RatingsWidget> {
 class ResultsWidget extends StatefulWidget {
   final Experiment experiment;
   final String message;
+  final bool practice;
   final VoidCallback onContinuePressed;
 
   const ResultsWidget({
     this.experiment,
     this.message,
+    this.practice = false,
     this.onContinuePressed,
     Key key,
   }) : super(key: key);
@@ -728,6 +731,14 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                             ),
                           ],
                         ),
+                        if (widget.practice)
+                          Text(
+                            S.of(context).taskResultsNextTaskCounts,
+                            style:
+                                Theme.of(context).textTheme.headline6.copyWith(
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                          ),
                       ],
                     );
                   } else {

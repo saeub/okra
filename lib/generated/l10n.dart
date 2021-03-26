@@ -527,10 +527,10 @@ class S {
     );
   }
 
-  /// `This trial does not count`
+  /// `This task does not count`
   String get taskPracticeIndicatorSubtitle {
     return Intl.message(
-      'This trial does not count',
+      'This task does not count',
       name: 'taskPracticeIndicatorSubtitle',
       desc: '',
       args: [],
@@ -612,6 +612,16 @@ class S {
     return Intl.message(
       'NEXT TASK',
       name: 'taskResultsNextTask',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The next task will count!`
+  String get taskResultsNextTaskCounts {
+    return Intl.message(
+      'The next task will count!',
+      name: 'taskResultsNextTaskCounts',
       desc: '',
       args: [],
     );
