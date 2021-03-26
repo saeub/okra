@@ -63,6 +63,7 @@ class TaskData {
 class TaskRating {
   static const Map<String, TaskRatingType> typeMap = {
     'emoticon': TaskRatingType.emoticon,
+    'emoticon-reversed': TaskRatingType.emoticonReversed,
     'radio': TaskRatingType.radio,
     'slider': TaskRatingType.slider,
   };
@@ -97,6 +98,7 @@ class TaskRating {
 
 enum TaskRatingType {
   emoticon,
+  emoticonReversed,
   radio,
   slider,
 }

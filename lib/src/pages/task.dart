@@ -522,14 +522,6 @@ class _RatingsWidgetState extends State<RatingsWidget> {
   int _currentRatingIndex;
   List<num> _answers;
 
-  static Color getEmoticonColor(int index, int variant) {
-    return HSVColor.lerp(
-      HSVColor.fromColor(Colors.red[variant]),
-      HSVColor.fromColor(Colors.green[variant]),
-      index / TaskRating.emoticons.length,
-    ).toColor();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -543,6 +535,48 @@ class _RatingsWidgetState extends State<RatingsWidget> {
   @override
   Widget build(BuildContext context) {
     var rating = widget.ratings[_currentRatingIndex];
+    Widget inputWidget;
+
+    switch (rating.type) {
+      case TaskRatingType.emoticon:
+        inputWidget = _getEmoticons();
+        break;
+
+      case TaskRatingType.emoticonReversed:
+        inputWidget = _getEmoticons(reversed: true);
+        break;
+
+      case TaskRatingType.radio:
+        inputWidget = Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = 0; i < TaskRating.radioLevels; i++)
+              Radio(
+                value: i,
+                groupValue: _answers[_currentRatingIndex],
+                onChanged: (value) {
+                  setState(() {
+                    _answers[_currentRatingIndex] = value;
+                  });
+                },
+              ),
+          ],
+        );
+        break;
+
+      case TaskRatingType.slider:
+        inputWidget = Slider(
+          value: _answers[_currentRatingIndex],
+          onChanged: (value) {
+            setState(() {
+              _answers[_currentRatingIndex] = value;
+            });
+          },
+        );
+        break;
+    }
+
     return Column(
       children: [
         Spacer(flex: 2),
@@ -561,62 +595,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  if (rating.type == TaskRatingType.emoticon)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (var i = 0; i < TaskRating.emoticons.length; i++)
-                          IconButton(
-                            icon: DecoratedBox(
-                              decoration: _answers[_currentRatingIndex] == i
-                                  ? BoxDecoration(
-                                      border: Border.all(
-                                          color: getEmoticonColor(i, 900),
-                                          width: 6.0),
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      color: getEmoticonColor(i, 200),
-                                    )
-                                  : BoxDecoration(),
-                              child: Icon(TaskRating.emoticons[i]),
-                            ),
-                            iconSize: 40.0,
-                            color: getEmoticonColor(i,
-                                _answers[_currentRatingIndex] == i ? 900 : 700),
-                            onPressed: () {
-                              setState(() {
-                                _answers[_currentRatingIndex] = i;
-                              });
-                            },
-                          ),
-                      ],
-                    )
-                  else if (rating.type == TaskRatingType.radio)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (var i = 0; i < TaskRating.radioLevels; i++)
-                          Radio(
-                            value: i,
-                            groupValue: _answers[_currentRatingIndex],
-                            onChanged: (value) {
-                              setState(() {
-                                _answers[_currentRatingIndex] = value;
-                              });
-                            },
-                          ),
-                      ],
-                    )
-                  else if (rating.type == TaskRatingType.slider)
-                    Slider(
-                      value: _answers[_currentRatingIndex],
-                      onChanged: (value) {
-                        setState(() {
-                          _answers[_currentRatingIndex] = value;
-                        });
-                      },
-                    ),
+                  inputWidget,
                   if (rating.lowExtreme != null || rating.highExtreme != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -650,6 +629,52 @@ class _RatingsWidgetState extends State<RatingsWidget> {
               : null,
         ),
         Spacer(flex: 1),
+      ],
+    );
+  }
+
+  static Color _getEmoticonColor(int index, int variant) {
+    return HSVColor.lerp(
+      HSVColor.fromColor(Colors.red[variant]),
+      HSVColor.fromColor(Colors.green[variant]),
+      index / TaskRating.emoticons.length,
+    ).toColor();
+  }
+
+  Widget _getEmoticons({bool reversed = false}) {
+    var emoticonIndices = [
+      for (var i = 0; i < TaskRating.emoticons.length; i++) i
+    ];
+    if (reversed) {
+      emoticonIndices = emoticonIndices.reversed.toList();
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < emoticonIndices.length; i++)
+          IconButton(
+            icon: DecoratedBox(
+              decoration: _answers[_currentRatingIndex] == i
+                  ? BoxDecoration(
+                      border: Border.all(
+                          color: _getEmoticonColor(emoticonIndices[i], 900),
+                          width: 6.0),
+                      borderRadius: BorderRadius.circular(20.0),
+                      color: _getEmoticonColor(emoticonIndices[i], 200),
+                    )
+                  : BoxDecoration(),
+              child: Icon(TaskRating.emoticons[emoticonIndices[i]]),
+            ),
+            iconSize: 40.0,
+            color: _getEmoticonColor(emoticonIndices[i],
+                _answers[_currentRatingIndex] == i ? 900 : 700),
+            onPressed: () {
+              setState(() {
+                _answers[_currentRatingIndex] = i;
+              });
+            },
+          ),
       ],
     );
   }
