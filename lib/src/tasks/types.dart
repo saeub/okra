@@ -42,7 +42,8 @@ class TaskType {
   static final TaskType reactionTime = TaskType(
     Icons.offline_bolt,
     () => ReactionTime(),
-    forceOrientation: Orientation.portrait,
+    // TODO: Lock initial orientation instead of enforcing one
+    // (balloons can go off-screen when rotating device)
   );
 
   static TaskType fromString(String identifier) {

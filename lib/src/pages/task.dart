@@ -66,6 +66,7 @@ class _TaskPageState extends State<TaskPage> {
         _taskId,
         _results,
       );
+      _mode = TaskPageMode.results;
     });
     _taskFinishedFuture.then((_) {
       setState(() {
@@ -109,7 +110,8 @@ class _TaskPageState extends State<TaskPage> {
                       message: message,
                     );
                     if (widget.experiment.ratings != null &&
-                        widget.experiment.ratings.isNotEmpty) {
+                        widget.experiment.ratings.isNotEmpty &&
+                        !_practicing) {
                       startRatings();
                     } else {
                       finishTask();
@@ -145,15 +147,35 @@ class _TaskPageState extends State<TaskPage> {
         break;
 
       case TaskPageMode.results:
-        content = ResultsWidget(
-          experiment: widget.experiment,
-          message: _results.message,
-          onContinuePressed: () => startTask(false),
+        content = FutureBuilder(
+          future: _taskFinishedFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              return ResultsWidget(
+                experiment: widget.experiment,
+                message: _results.message,
+                practice: _practicing,
+                onContinuePressed: () => startTask(false),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: ErrorMessage(
+                  S.of(context).errorGeneric(snapshot.error),
+                  retry: () => startTask(_practicing),
+                ),
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+          },
         );
         break;
     }
 
     return Scaffold(
+      appBar: (_mode == TaskPageMode.instructions)
+          ? AppBar(title: Text(widget.experiment.title))
+          : null,
       body: SafeArea(
         child: WillPopScope(
           onWillPop: () async {
@@ -447,7 +469,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                             ),
                           ),
                           Text(
-                            'PRACTICE',
+                            S.of(context).taskPracticeIndicatorTitle,
                             style: TextStyle(
                               fontSize: 25.0,
                               fontWeight: FontWeight.bold,
@@ -457,7 +479,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                         ],
                       ),
                       Text(
-                        'This trial does not count',
+                        S.of(context).taskPracticeIndicatorSubtitle,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Theme.of(context).primaryColor,
@@ -500,14 +522,6 @@ class _RatingsWidgetState extends State<RatingsWidget> {
   int _currentRatingIndex;
   List<num> _answers;
 
-  static Color getEmoticonColor(int index, int variant) {
-    return HSVColor.lerp(
-      HSVColor.fromColor(Colors.red[variant]),
-      HSVColor.fromColor(Colors.green[variant]),
-      index / TaskRating.emoticons.length,
-    ).toColor();
-  }
-
   @override
   void initState() {
     super.initState();
@@ -521,6 +535,48 @@ class _RatingsWidgetState extends State<RatingsWidget> {
   @override
   Widget build(BuildContext context) {
     var rating = widget.ratings[_currentRatingIndex];
+    Widget inputWidget;
+
+    switch (rating.type) {
+      case TaskRatingType.emoticon:
+        inputWidget = _getEmoticons();
+        break;
+
+      case TaskRatingType.emoticonReversed:
+        inputWidget = _getEmoticons(reversed: true);
+        break;
+
+      case TaskRatingType.radio:
+        inputWidget = Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = 0; i < TaskRating.radioLevels; i++)
+              Radio(
+                value: i,
+                groupValue: _answers[_currentRatingIndex],
+                onChanged: (value) {
+                  setState(() {
+                    _answers[_currentRatingIndex] = value;
+                  });
+                },
+              ),
+          ],
+        );
+        break;
+
+      case TaskRatingType.slider:
+        inputWidget = Slider(
+          value: _answers[_currentRatingIndex],
+          onChanged: (value) {
+            setState(() {
+              _answers[_currentRatingIndex] = value;
+            });
+          },
+        );
+        break;
+    }
+
     return Column(
       children: [
         Spacer(flex: 2),
@@ -539,62 +595,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                       textAlign: TextAlign.center,
                     ),
                   ),
-                  if (rating.type == TaskRatingType.emoticon)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (var i = 0; i < TaskRating.emoticons.length; i++)
-                          IconButton(
-                            icon: DecoratedBox(
-                              decoration: _answers[_currentRatingIndex] == i
-                                  ? BoxDecoration(
-                                      border: Border.all(
-                                          color: getEmoticonColor(i, 900),
-                                          width: 6.0),
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      color: getEmoticonColor(i, 200),
-                                    )
-                                  : BoxDecoration(),
-                              child: Icon(TaskRating.emoticons[i]),
-                            ),
-                            iconSize: 40.0,
-                            color: getEmoticonColor(i,
-                                _answers[_currentRatingIndex] == i ? 900 : 700),
-                            onPressed: () {
-                              setState(() {
-                                _answers[_currentRatingIndex] = i;
-                              });
-                            },
-                          ),
-                      ],
-                    )
-                  else if (rating.type == TaskRatingType.radio)
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (var i = 0; i < TaskRating.radioLevels; i++)
-                          Radio(
-                            value: i,
-                            groupValue: _answers[_currentRatingIndex],
-                            onChanged: (value) {
-                              setState(() {
-                                _answers[_currentRatingIndex] = value;
-                              });
-                            },
-                          ),
-                      ],
-                    )
-                  else if (rating.type == TaskRatingType.slider)
-                    Slider(
-                      value: _answers[_currentRatingIndex],
-                      onChanged: (value) {
-                        setState(() {
-                          _answers[_currentRatingIndex] = value;
-                        });
-                      },
-                    ),
+                  inputWidget,
                   if (rating.lowExtreme != null || rating.highExtreme != null)
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -631,16 +632,64 @@ class _RatingsWidgetState extends State<RatingsWidget> {
       ],
     );
   }
+
+  static Color _getEmoticonColor(int index, int variant) {
+    return HSVColor.lerp(
+      HSVColor.fromColor(Colors.red[variant]),
+      HSVColor.fromColor(Colors.green[variant]),
+      index / TaskRating.emoticons.length,
+    ).toColor();
+  }
+
+  Widget _getEmoticons({bool reversed = false}) {
+    var emoticonIndices = [
+      for (var i = 0; i < TaskRating.emoticons.length; i++) i
+    ];
+    if (reversed) {
+      emoticonIndices = emoticonIndices.reversed.toList();
+    }
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        for (var i = 0; i < emoticonIndices.length; i++)
+          IconButton(
+            icon: DecoratedBox(
+              decoration: _answers[_currentRatingIndex] == i
+                  ? BoxDecoration(
+                      border: Border.all(
+                          color: _getEmoticonColor(emoticonIndices[i], 900),
+                          width: 6.0),
+                      borderRadius: BorderRadius.circular(20.0),
+                      color: _getEmoticonColor(emoticonIndices[i], 200),
+                    )
+                  : BoxDecoration(),
+              child: Icon(TaskRating.emoticons[emoticonIndices[i]]),
+            ),
+            iconSize: 40.0,
+            color: _getEmoticonColor(emoticonIndices[i],
+                _answers[_currentRatingIndex] == i ? 900 : 700),
+            onPressed: () {
+              setState(() {
+                _answers[_currentRatingIndex] = i;
+              });
+            },
+          ),
+      ],
+    );
+  }
 }
 
 class ResultsWidget extends StatefulWidget {
   final Experiment experiment;
   final String message;
+  final bool practice;
   final VoidCallback onContinuePressed;
 
   const ResultsWidget({
     this.experiment,
     this.message,
+    this.practice = false,
     this.onContinuePressed,
     Key key,
   }) : super(key: key);
@@ -727,6 +776,14 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                             ),
                           ],
                         ),
+                        if (widget.practice)
+                          Text(
+                            S.of(context).taskResultsNextTaskCounts,
+                            style:
+                                Theme.of(context).textTheme.headline6.copyWith(
+                                      color: Theme.of(context).accentColor,
+                                    ),
+                          ),
                       ],
                     );
                   } else {

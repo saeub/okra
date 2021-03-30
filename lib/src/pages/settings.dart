@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 
 import '../../generated/l10n.dart';
@@ -38,8 +38,9 @@ class _SettingsPageState extends State<SettingsPage> {
             ListTile(
               title: Text('${api.name} (${api.baseUrl})'),
               subtitle: Text(S.of(context).settingsApiDate(
-                  DateFormat.yMd().format(api.added),
-                  DateFormat.Hm().format(api.added))),
+                      DateFormat.yMd().format(api.added),
+                      DateFormat.Hm().format(api.added)) +
+                  ' (ID: ${api.participantId})'),
               trailing: IconButton(
                 icon: Icon(Icons.delete),
                 tooltip: S.of(context).settingsDeleteApi,

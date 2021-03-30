@@ -124,7 +124,7 @@ EXPERIMENTS_TASKS = [
             "nTasks": 3,
             "nTasksDone": 1,
             "hasPracticeTask": False,
-            "ratings": [example_rating("emoticon"), example_rating("slider")],
+            "ratings": [example_rating("emoticon-reversed"), example_rating("slider")],
         },
         {
             "readingType": "normal",

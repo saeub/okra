@@ -527,6 +527,26 @@ class S {
     );
   }
 
+  /// `This task does not count`
+  String get taskPracticeIndicatorSubtitle {
+    return Intl.message(
+      'This task does not count',
+      name: 'taskPracticeIndicatorSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `PRACTICE`
+  String get taskPracticeIndicatorTitle {
+    return Intl.message(
+      'PRACTICE',
+      name: 'taskPracticeIndicatorTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Answer questions`
   String get taskQuestionAnsweringExpandQuestions {
     return Intl.message(
@@ -592,6 +612,16 @@ class S {
     return Intl.message(
       'NEXT TASK',
       name: 'taskResultsNextTask',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The next task will count!`
+  String get taskResultsNextTaskCounts {
+    return Intl.message(
+      'The next task will count!',
+      name: 'taskResultsNextTaskCounts',
       desc: '',
       args: [],
     );

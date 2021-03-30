@@ -220,6 +220,7 @@ components:
           description: "Type of scale used for answering"
           enum:
             - emoticon
+            - emoticon-reversed
             - radio
             - slider
         lowExtreme:
