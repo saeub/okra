@@ -41,23 +41,6 @@ class NBack extends Task {
 
   @override
   Widget build(BuildContext context) {
-    Widget content;
-    if (_stimulusVisible &&
-        _currentStimulusIndex >= 0 &&
-        (_feedback == null || !_feedbacked)) {
-      content = Text(
-        _currentStimulusIndex >= 0 ? _stimuli[_currentStimulusIndex] : '',
-        style: TextStyle(
-          fontSize: 50.0,
-        ),
-      );
-    } else if (_feedback != null) {
-      content = Icon(
-        _feedback == true ? Icons.thumb_up : Icons.thumb_down,
-        color: _feedback == true ? Colors.green : Colors.red,
-        size: 50.0,
-      );
-    }
     return GestureDetector(
       onTapDown: (details) async {
         logger.log('tapped screen', {
@@ -94,7 +77,39 @@ class NBack extends Task {
                 ? Colors.green[100]
                 : Colors.red[100],
         child: Center(
-          child: content,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Visibility(
+                visible: _feedback != null,
+                maintainAnimation: true,
+                maintainSize: true,
+                maintainState: true,
+                child: Icon(
+                  _feedback == true ? Icons.thumb_up : Icons.thumb_down,
+                  color: _feedback == true ? Colors.green : Colors.red,
+                  size: 50.0,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, bottom: 66.0),
+                child: Visibility(
+                  visible: _currentStimulusIndex >= 0 && _stimulusVisible,
+                  maintainAnimation: true,
+                  maintainSize: true,
+                  maintainState: true,
+                  child: Text(
+                    _currentStimulusIndex >= 0
+                        ? _stimuli[_currentStimulusIndex]
+                        : '',
+                    style: TextStyle(
+                      fontSize: 50.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
