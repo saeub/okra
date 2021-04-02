@@ -5,7 +5,11 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'task.dart';
 
 class NBack extends Task {
+  static const initialDelayDuration = Duration(milliseconds: 500);
+  static const feedbackDuration = Duration(milliseconds: 500);
+
   int _n;
+  Duration _stimulusDuration, _betweenStimuliDuration;
   List<String> _stimuli;
   int _currentStimulusIndex;
   bool _stimulusVisible;
@@ -15,6 +19,13 @@ class NBack extends Task {
   @override
   void init(Map<String, dynamic> data) {
     _n = data['n'];
+    num secondsShowingStimulus = data['secondsShowingStimulus'] ?? 0.5;
+    _stimulusDuration =
+        Duration(milliseconds: (secondsShowingStimulus * 1000).round());
+    num secondsBetweenStimuli = data['secondsBetweenStimuli'] ?? 2.5;
+    _betweenStimuliDuration =
+        Duration(milliseconds: (secondsBetweenStimuli * 1000).round());
+
     var stimulusChoices = Set<String>.from(data['stimulusChoices']).toList();
     int nStimuli = data['nStimuli'];
     int nPositives = data['nPositives'];
@@ -29,7 +40,7 @@ class NBack extends Task {
     _stimulusVisible = false;
     _feedbacked = false;
     _nTruePositives = _nFalsePositives = 0;
-    Future.delayed(Duration(milliseconds: 500)).then((_) {
+    Future.delayed(initialDelayDuration).then((_) {
       _nextStimulus();
     });
   }
@@ -41,23 +52,6 @@ class NBack extends Task {
 
   @override
   Widget build(BuildContext context) {
-    Widget content;
-    if (_stimulusVisible &&
-        _currentStimulusIndex >= 0 &&
-        (_feedback == null || !_feedbacked)) {
-      content = Text(
-        _currentStimulusIndex >= 0 ? _stimuli[_currentStimulusIndex] : '',
-        style: TextStyle(
-          fontSize: 50.0,
-        ),
-      );
-    } else if (_feedback != null) {
-      content = Icon(
-        _feedback == true ? Icons.thumb_up : Icons.thumb_down,
-        color: _feedback == true ? Colors.green : Colors.red,
-        size: 50.0,
-      );
-    }
     return GestureDetector(
       onTapDown: (details) async {
         logger.log('tapped screen', {
@@ -78,7 +72,7 @@ class NBack extends Task {
             'stimulus': _currentStimulusIndex,
             'feedback': _feedback,
           });
-          await Future.delayed(Duration(milliseconds: 500));
+          await Future.delayed(feedbackDuration);
           setState(() {
             _feedback = null;
           });
@@ -88,13 +82,41 @@ class NBack extends Task {
         }
       },
       child: ColoredBox(
-        color: _feedback == null
-            ? Theme.of(context).scaffoldBackgroundColor
-            : _feedback
-                ? Colors.green[100]
-                : Colors.red[100],
+        color: Theme.of(context).scaffoldBackgroundColor,
         child: Center(
-          child: content,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Visibility(
+                visible: _feedback != null,
+                maintainAnimation: true,
+                maintainSize: true,
+                maintainState: true,
+                child: Icon(
+                  _feedback == true ? Icons.thumb_up : Icons.thumb_down,
+                  color: _feedback == true ? Colors.green : Colors.red,
+                  size: 50.0,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, bottom: 66.0),
+                child: Visibility(
+                  visible: _currentStimulusIndex >= 0 && _stimulusVisible,
+                  maintainAnimation: true,
+                  maintainSize: true,
+                  maintainState: true,
+                  child: Text(
+                    _currentStimulusIndex >= 0
+                        ? _stimuli[_currentStimulusIndex]
+                        : '',
+                    style: TextStyle(
+                      fontSize: 50.0,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -110,14 +132,14 @@ class NBack extends Task {
       logger.log('started showing stimulus', {
         'stimulus': _currentStimulusIndex,
       });
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(_stimulusDuration);
       setState(() {
         _stimulusVisible = false;
       });
       logger.log('stopped showing stimulus', {
         'stimulus': _currentStimulusIndex,
       });
-      await Future.delayed(Duration(milliseconds: 2500));
+      await Future.delayed(_betweenStimuliDuration);
       _nextStimulus(); // ignore: unawaited_futures
     } else {
       finish(data: {

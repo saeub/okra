@@ -119,8 +119,8 @@ A text is presented, and several single-answer multiple-choice questions have to
       {
         "question": "How easy was it?",
         "type": "emoticon",
-        "lowerExtreme": "very difficult",
-        "higherExtreme": "very easy"
+        "lowExtreme": "very difficult",
+        "highExtreme": "very easy"
       }
     ]
   }
@@ -159,7 +159,7 @@ A single picture of a red balloon is shown at a time, which disappears with a po
 
 ### _n_-back
 
-A single textual stimulus (usually a letter) is shown for 500 milliseconds every 3 seconds. The participant taps the screen whenever they see the same stimulus as _n_ stimuli back (a "positive" stimulus). Immediate positive or negative feedback is shown after each tap. The sequence of stimuli is randomly generated before each task.
+A single textual stimulus (usually a letter) is shown for 500 milliseconds with 2500 milliseconds between stimuli (these durations can be configured to different values). The participant taps the screen whenever they see the same stimulus as _n_ stimuli back (a "positive" stimulus). Immediate positive or negative feedback is shown after each tap. The sequence of stimuli is randomly generated before each task.
 
 - Identifier: `n-back`
 - Implementation: [`lib/src/tasks/n_back.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/n_back.dart)
@@ -169,9 +169,12 @@ A single textual stimulus (usually a letter) is shown for 500 milliseconds every
     "n": 2,
     "stimulusChoices": ["A", "B", "C", ...],
     "nStimuli": 20,
-    "nPositives": 5
+    "nPositives": 5,
+    "secondsShowingStimulus": 1.0,
+    "secondsBetweenStimuli": 2.0
   }
   ```
+  **NOTE:** `secondsShowingStimulus` and `secondsBetweenStimuli` are optional.
 - Results data structure:
   ```json
   {
