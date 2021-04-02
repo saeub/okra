@@ -20,9 +20,11 @@ class NBack extends Task {
   void init(Map<String, dynamic> data) {
     _n = data['n'];
     num secondsShowingStimulus = data['secondsShowingStimulus'] ?? 0.5;
-    _stimulusDuration = Duration(milliseconds: (secondsShowingStimulus * 1000).round());
+    _stimulusDuration =
+        Duration(milliseconds: (secondsShowingStimulus * 1000).round());
     num secondsBetweenStimuli = data['secondsBetweenStimuli'] ?? 2.5;
-    _betweenStimuliDuration = Duration(milliseconds: (secondsBetweenStimuli * 1000).round());
+    _betweenStimuliDuration =
+        Duration(milliseconds: (secondsBetweenStimuli * 1000).round());
 
     var stimulusChoices = Set<String>.from(data['stimulusChoices']).toList();
     int nStimuli = data['nStimuli'];
