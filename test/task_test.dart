@@ -391,6 +391,56 @@ void main() {
       expect(() => NBack.generateStimuli(['A', 'B'], 3, 2, 2),
           throwsArgumentError);
     });
+
+    testWidgets('supports configurable stimulus durations', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        TaskType.nBack,
+        {
+          'n': 1,
+          'stimulusChoices': ['A', 'B'],
+          'nStimuli': 2,
+          'nPositives': 1,
+          'secondsShowingStimulus': 1.5,
+          'secondsBetweenStimuli': 5,
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {'nTruePositives': 1, 'nFalsePositives': 1});
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+      l.expectLogged('generated stimuli');
+      await tester.pump(Duration(milliseconds: 500));
+
+      l.expectLogged('started showing stimulus', data: {'stimulus': 0});
+      await tester.tapAt(Offset(100, 100));
+      l.expectLogged('tapped screen', data: {'stimulus': 0});
+      l.expectLogged('started feedback',
+          data: {'stimulus': 0}, allowAdditionalKeys: true);
+      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      l.expectLogged('tapped screen', data: {'stimulus': 0});
+      await tester.pump(Duration(milliseconds: 1500));
+      l.expectLogged('stopped feedback', data: {'stimulus': 0});
+      l.expectLogged('stopped showing stimulus', data: {'stimulus': 0});
+      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      l.expectLogged('tapped screen', data: {'stimulus': 0});
+      await tester.pump(Duration(milliseconds: 5000));
+
+      l.expectLogged('started showing stimulus', data: {'stimulus': 1});
+      await tester.pump(Duration(milliseconds: 1500));
+      l.expectLogged('stopped showing stimulus', data: {'stimulus': 1});
+      await tester.tapAt(Offset(100, 100));
+      l.expectLogged('tapped screen', data: {'stimulus': 1});
+      l.expectLogged('started feedback',
+          data: {'stimulus': 1}, allowAdditionalKeys: true);
+      await tester.pump(Duration(milliseconds: 5000));
+      l.expectLogged('stopped feedback', data: {'stimulus': 1});
+      l.expectDoneLogging();
+    });
   });
 
   group('Picture naming', () {
