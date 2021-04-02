@@ -782,7 +782,8 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                             padding: const EdgeInsets.only(top: 16.0),
                             child: ElevatedButton.icon(
                               icon: Icon(Icons.sports_tennis),
-                              label: Text(S.of(context).taskResultsRepeatPracticeTask),
+                              label: Text(
+                                  S.of(context).taskResultsRepeatPracticeTask),
                               style: ButtonStyle(
                                 backgroundColor:
                                     MaterialStateProperty.all<Color>(
