@@ -131,8 +131,8 @@ void main() {
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
       // Results
-      expect(find.text('Continue with the next one?'), findsOneWidget);
       expect(find.text('The next task will count!'), findsNothing);
+      expect(find.text('REPEAT PRACTICE TASK'), findsNothing);
       expect(testApi.taskResults.data, {
         'chosenOptionIndices': [1],
       });
@@ -156,10 +156,30 @@ void main() {
       await tester.pumpAndSettle();
       // No ratings for practice tasks
       // Results
-      expect(find.text('Continue with the next one?'), findsOneWidget);
       expect(find.text('The next task will count!'), findsOneWidget);
+      expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
       expect(testApi.taskResults.data, {
         'chosenOptionIndices': [1],
+      });
+      expect(testApi.taskResults.ratingAnswers, null);
+      expect(testApi.taskResults.events.length, 3);
+
+      // Repeat
+      await tester.tap(find.text('REPEAT PRACTICE TASK'));
+      await tester.pumpAndSettle();
+      // Task
+      expect(find.text('PRACTICE'), findsOneWidget);
+      expect(find.text('This task does not count'), findsOneWidget);
+      await tester.tap(find.text('madness'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      // No ratings for practice tasks
+      // Results
+      expect(find.text('The next task will count!'), findsOneWidget);
+      expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
+      expect(testApi.taskResults.data, {
+        'chosenOptionIndices': [0],
       });
       expect(testApi.taskResults.ratingAnswers, null);
       expect(testApi.taskResults.events.length, 3);
