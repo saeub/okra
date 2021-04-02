@@ -6,6 +6,7 @@ import 'cloze.dart';
 import 'n_back.dart';
 import 'picture_naming.dart';
 import 'question_answering.dart';
+import 'simon_game.dart';
 import 'task.dart';
 
 typedef TaskFactory<T extends Task> = T Function();
@@ -45,6 +46,10 @@ class TaskType {
     // TODO: Lock initial orientation instead of enforcing one
     // (balloons can go off-screen when rotating device)
   );
+  static final TaskType simonGame = TaskType(
+    Icons.grid_view,
+    () => SimonGame(),
+  );
 
   static TaskType fromString(String identifier) {
     switch (identifier) {
@@ -60,6 +65,8 @@ class TaskType {
         return questionAnswering;
       case 'reaction-time':
         return reactionTime;
+      case 'simon-game':
+        return simonGame;
       default:
         throw ArgumentError('Task type "$identifier" is not implemented');
     }
