@@ -627,21 +627,21 @@ class S {
     );
   }
 
-  /// `Continue with the next one?`
-  String get taskResultsNextTaskTitle {
-    return Intl.message(
-      'Continue with the next one?',
-      name: 'taskResultsNextTaskTitle',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `LATER`
   String get taskResultsNoNextTask {
     return Intl.message(
       'LATER',
       name: 'taskResultsNoNextTask',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `REPEAT PRACTICE TASK`
+  String get taskResultsRepeatPracticeTask {
+    return Intl.message(
+      'REPEAT PRACTICE TASK',
+      name: 'taskResultsRepeatPracticeTask',
       desc: '',
       args: [],
     );

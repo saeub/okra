@@ -156,6 +156,7 @@ class _TaskPageState extends State<TaskPage> {
                 message: _results.message,
                 practice: _practicing,
                 onContinuePressed: () => startTask(false),
+                onRepeatPracticePressed: () => startTask(true),
               );
             } else if (snapshot.hasError) {
               return Center(
@@ -684,13 +685,14 @@ class ResultsWidget extends StatefulWidget {
   final Experiment experiment;
   final String message;
   final bool practice;
-  final VoidCallback onContinuePressed;
+  final VoidCallback onContinuePressed, onRepeatPracticePressed;
 
   const ResultsWidget({
     this.experiment,
     this.message,
     this.practice = false,
     this.onContinuePressed,
+    this.onRepeatPracticePressed,
     Key key,
   }) : super(key: key);
 
@@ -745,10 +747,9 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                     // Still tasks left
                     return Column(
                       children: [
-                        Text(
-                          S.of(context).taskResultsNextTaskTitle,
-                          style: Theme.of(context).textTheme.headline6,
-                        ),
+                        if (widget.practice)
+                          Text(S.of(context).taskResultsNextTaskCounts,
+                              style: Theme.of(context).textTheme.headline6),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -777,12 +778,19 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                           ],
                         ),
                         if (widget.practice)
-                          Text(
-                            S.of(context).taskResultsNextTaskCounts,
-                            style:
-                                Theme.of(context).textTheme.headline6.copyWith(
-                                      color: Theme.of(context).accentColor,
-                                    ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 16.0),
+                            child: ElevatedButton.icon(
+                              icon: Icon(Icons.sports_tennis),
+                              label: Text(
+                                  S.of(context).taskResultsRepeatPracticeTask),
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.grey),
+                              ),
+                              onPressed: widget.onRepeatPracticePressed,
+                            ),
                           ),
                       ],
                     );
