@@ -58,6 +58,7 @@ class SimonGame extends Task {
                                 Padding(
                                   padding: const EdgeInsets.all(4.0),
                                   child: ElevatedButton(
+                                    key: ValueKey(colors[i]),
                                     style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all(colors[i]
@@ -65,30 +66,7 @@ class SimonGame extends Task {
                                     ),
                                     onPressed: _feedback == null &&
                                             _currentRepetitionIndex != null
-                                        ? () {
-                                            if (i ==
-                                                _sequence[
-                                                    _currentRepetitionIndex]) {
-                                              _currentRepetitionIndex++;
-                                              if (_currentRepetitionIndex >=
-                                                  _sequence.length) {
-                                                setState(() {
-                                                  _feedback = true;
-                                                });
-                                                Future.delayed(Duration(
-                                                        milliseconds: 1000))
-                                                    .then(
-                                                        (_) => _nextSequence());
-                                              }
-                                            } else {
-                                              setState(() {
-                                                _feedback = false;
-                                              });
-                                              Future.delayed(Duration(
-                                                      milliseconds: 1000))
-                                                  .then((_) => finish());
-                                            }
-                                          }
+                                        ? () => _onTap(i)
                                         : null,
                                     child: Container(),
                                   ),
@@ -133,6 +111,7 @@ class SimonGame extends Task {
     });
     _currentRepetitionIndex = null;
     _sequence.add(_random.nextInt(colors.length));
+    logger.log('started watching', {'sequence': _sequence});
     await Future.delayed(Duration(milliseconds: 500));
     for (var i = 0; i < _sequence.length; i++) {
       setState(() {
@@ -144,9 +123,40 @@ class SimonGame extends Task {
       });
       await Future.delayed(Duration(milliseconds: 200));
     }
+    logger.log('finished watching');
     setState(() {
       _highlight = null;
     });
     _currentRepetitionIndex = 0;
+    logger.log('started repeating', {'sequence': _sequence});
+  }
+
+  void _onTap(int index) {
+    if (index == _sequence[_currentRepetitionIndex]) {
+      _currentRepetitionIndex++;
+      if (_currentRepetitionIndex >= _sequence.length) {
+        logger.log('finished repeating');
+        setState(() {
+          _feedback = true;
+        });
+        logger.log('started feedback', {'feedback': _feedback});
+        Future.delayed(Duration(milliseconds: 1000)).then((_) {
+          logger.log('finished feedback');
+          _nextSequence();
+        });
+      }
+    } else {
+      logger.log('finished repeating');
+      setState(() {
+        _feedback = false;
+      });
+      logger.log('started feedback', {'feedback': _feedback});
+      Future.delayed(Duration(milliseconds: 1000)).then((_) {
+        logger.log('finished feedback', {'feedback': _feedback});
+        finish(data: {
+          'maxCorrectItems': _sequence.length - 1,
+        });
+      });
+    }
   }
 }

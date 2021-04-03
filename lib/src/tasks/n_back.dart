@@ -76,7 +76,7 @@ class NBack extends Task {
           setState(() {
             _feedback = null;
           });
-          logger.log('stopped feedback', {
+          logger.log('finished feedback', {
             'stimulus': _currentStimulusIndex,
           });
         }
@@ -136,7 +136,7 @@ class NBack extends Task {
       setState(() {
         _stimulusVisible = false;
       });
-      logger.log('stopped showing stimulus', {
+      logger.log('finished showing stimulus', {
         'stimulus': _currentStimulusIndex,
       });
       await Future.delayed(_betweenStimuliDuration);
