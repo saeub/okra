@@ -1,7 +1,7 @@
 ## Task specifications
 
 - TOC
-  {:toc}
+{:toc}
 
 ### Cloze test
 
@@ -57,6 +57,32 @@ One word is shown at a time. The task is to determine whether it is a real word 
   }
   ```
   **NOTE:** Durations are in seconds.
+
+### _n_-back
+
+A single textual stimulus (usually a letter) is shown for 500 milliseconds with 2500 milliseconds between stimuli (these durations can be configured to different values). The participant taps the screen whenever they see the same stimulus as _n_ stimuli back (a "positive" stimulus). Immediate positive or negative feedback is shown after each tap. The sequence of stimuli is randomly generated before each task.
+
+- Identifier: `n-back`
+- Implementation: [`lib/src/tasks/n_back.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/n_back.dart)
+- Data structure:
+  ```json
+  {
+    "n": 2,
+    "stimulusChoices": ["A", "B", "C", ...],
+    "nStimuli": 20,
+    "nPositives": 5,
+    "secondsShowingStimulus": 1.0,
+    "secondsBetweenStimuli": 2.0
+  }
+  ```
+  **NOTE:** `secondsShowingStimulus` and `secondsBetweenStimuli` are optional.
+- Results data structure:
+  ```json
+  {
+    "nTruePositives": 3,
+    "nFalsePositives": 1
+  }
+  ```
 
 ### Picture naming
 
@@ -157,28 +183,16 @@ A single picture of a red balloon is shown at a time, which disappears with a po
   ```
   **NOTE:** Reaction times are in seconds. The reaction time for the introductory stimulus is not included.
 
-### _n_-back
+### Simon game
 
-A single textual stimulus (usually a letter) is shown for 500 milliseconds with 2500 milliseconds between stimuli (these durations can be configured to different values). The participant taps the screen whenever they see the same stimulus as _n_ stimuli back (a "positive" stimulus). Immediate positive or negative feedback is shown after each tap. The sequence of stimuli is randomly generated before each task.
+Four buttons are shown. They light up in a specific sequence, which has to be repeated by pressing the buttons in the same order. After each successful repetition, a random item is added to the sequence, and the sequence is shown again. Inspired by the electronic game [Simon](https://en.wikipedia.org/wiki/Simon_(game)).
 
-- Identifier: `n-back`
-- Implementation: [`lib/src/tasks/n_back.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/n_back.dart)
-- Data structure:
-  ```json
-  {
-    "n": 2,
-    "stimulusChoices": ["A", "B", "C", ...],
-    "nStimuli": 20,
-    "nPositives": 5,
-    "secondsShowingStimulus": 1.0,
-    "secondsBetweenStimuli": 2.0
-  }
-  ```
-  **NOTE:** `secondsShowingStimulus` and `secondsBetweenStimuli` are optional.
+- Identifier: `simon-game`
+- Implementation: [`lib/src/tasks/simon_game.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/simon_game.dart)
+- Data structure: (no data)
 - Results data structure:
   ```json
   {
-    "nTruePositives": 3,
-    "nFalsePositives": 1
+    "maxCorrectItems": 7
   }
   ```
