@@ -11,11 +11,12 @@ import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
 import 'package:okra/main.dart' as okra;
 
-MaterialApp getTaskApp(TaskType type, Map<String, dynamic> data,
+MaterialApp getTaskApp(String taskType, Map<String, dynamic> data,
     TaskEventLogger logger, FinishCallback onFinished) {
   return MaterialApp(
     home: Scaffold(
-      body: TaskWidget(type.taskFactory, data, logger, onFinished),
+      body: TaskWidget(
+          TaskType.fromString(taskType).taskFactory, data, logger, onFinished),
     ),
     localizationsDelegates: [
       S.delegate,
@@ -65,7 +66,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.cloze,
+        'cloze',
         {
           'segments': [
             {
@@ -135,7 +136,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.cloze,
+        'cloze',
         {
           'segments': [
             {
@@ -197,7 +198,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.lexicalDecision,
+        'lexical-decision',
         {
           'words': ['word', 'non-word'],
         },
@@ -245,7 +246,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.lexicalDecision,
+        'lexical-decision',
         {
           'words': ['word', 'word', 'non-word', 'non-word'],
           'correctAnswers': [true, true, false, false],
@@ -325,7 +326,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.nBack,
+        'n-back',
         {
           'n': 1,
           'stimulusChoices': ['A', 'B'],
@@ -400,7 +401,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.nBack,
+        'n-back',
         {
           'n': 1,
           'stimulusChoices': ['A', 'B'],
@@ -455,7 +456,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.pictureNaming,
+        'picture-naming',
         {
           'showQuestionMark': true,
           'subtasks': [
@@ -539,7 +540,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.pictureNaming,
+        'picture-naming',
         {
           'showQuestionMark': true,
           'subtasks': [
@@ -634,7 +635,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text': 'This is an example text.',
@@ -694,7 +695,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text': 'This is an example text.',
@@ -753,7 +754,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'self-paced',
           'text': 'First segment.\nSecond segment.\nThird segment.',
@@ -810,7 +811,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text':
@@ -843,7 +844,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text':
@@ -901,7 +902,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text': 'This is an example text.',
@@ -980,7 +981,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.reactionTime,
+        'reaction-time',
         {
           'nStimuli': 3,
           'minSecondsBetweenStimuli': 0,
@@ -1089,7 +1090,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.simonGame,
+        'simon-game',
         {},
         logger,
         ({data, message}) {
