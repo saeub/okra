@@ -2,6 +2,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:okra/src/util.dart';
+
+import '../../generated/l10n.dart';
 import 'task.dart';
 
 class SimonGame extends Task {
@@ -13,8 +15,8 @@ class SimonGame extends Task {
   ];
 
   List<int> _sequence;
-  int _highlight;
   int _currentRepetitionIndex;
+  int _highlight;
   bool _feedback;
   Random _random;
 
@@ -35,7 +37,9 @@ class SimonGame extends Task {
       child: Column(
         children: [
           Text(
-            _currentRepetitionIndex == null ? 'WATCH!' : 'REPEAT!',
+            _currentRepetitionIndex == null
+                ? S.of(context).taskSimonGameWatch
+                : S.of(context).taskSimonGameRepeat,
             style: TextStyle(fontSize: 30.0),
           ),
           Flexible(
@@ -107,9 +111,9 @@ class SimonGame extends Task {
 
   Future<void> _nextSequence() async {
     setState(() {
+      _currentRepetitionIndex = null;
       _feedback = null;
     });
-    _currentRepetitionIndex = null;
     _sequence.add(_random.nextInt(colors.length));
     logger.log('started watching', {'sequence': _sequence});
     await Future.delayed(Duration(milliseconds: 500));
@@ -121,13 +125,13 @@ class SimonGame extends Task {
       setState(() {
         _highlight = null;
       });
-      await Future.delayed(Duration(milliseconds: 200));
+      await Future.delayed(Duration(milliseconds: 300));
     }
     logger.log('finished watching');
     setState(() {
+      _currentRepetitionIndex = 0;
       _highlight = null;
     });
-    _currentRepetitionIndex = 0;
     logger.log('started repeating', {'sequence': _sequence});
   }
 

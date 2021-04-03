@@ -95,6 +95,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "taskResultsSecondsTaken" : m4,
     "taskRotateLandscape" : MessageLookupByLibrary.simpleMessage("Rotate your phone into landscape mode"),
     "taskRotatePortrait" : MessageLookupByLibrary.simpleMessage("Rotate your phone into portrait mode"),
+    "taskSimonGameRepeat" : MessageLookupByLibrary.simpleMessage("REPEAT!"),
+    "taskSimonGameWatch" : MessageLookupByLibrary.simpleMessage("WATCH!"),
     "tutorialName" : MessageLookupByLibrary.simpleMessage("Tutorial")
   };
 }

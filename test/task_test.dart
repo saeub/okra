@@ -1091,7 +1091,7 @@ void main() {
 
       await tester.pumpWidget(getTaskApp(
         'simon-game',
-        {},
+        null,
         logger,
         ({data, message}) {
           expect(data, {'maxCorrectItems': 3});
@@ -1106,9 +1106,11 @@ void main() {
       for (var i = 0; i < 3; i++) {
         var loggedData = l.expectLogged('started watching');
         sequence = loggedData['sequence'];
-        await tester.pump(Duration(milliseconds: 1200));
+        expect(find.text('WATCH!'), findsOneWidget);
+        await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
         l.expectLogged('finished watching');
         l.expectLogged('started repeating', data: {'sequence': sequence});
+        expect(find.text('REPEAT!'), findsOneWidget);
         for (var item in sequence) {
           expect(find.byIcon(Icons.thumb_up), findsNothing);
           expect(find.byIcon(Icons.thumb_down), findsNothing);
@@ -1122,15 +1124,16 @@ void main() {
         expect(find.byIcon(Icons.thumb_down), findsNothing);
         await tester.pump(Duration(milliseconds: 1000));
         l.expectLogged('finished feedback');
-        await tester.pump(Duration(milliseconds: 10000));
       }
 
       // Incorrect 4th sequence
       var loggedData = l.expectLogged('started watching');
       sequence = loggedData['sequence'].toList(); // copy
-      await tester.pump(Duration(milliseconds: 1200));
+      expect(find.text('WATCH!'), findsOneWidget);
+      await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
       l.expectLogged('finished watching');
       l.expectLogged('started repeating', data: {'sequence': sequence});
+      expect(find.text('REPEAT!'), findsOneWidget);
       // Inject incorrect item
       sequence[2]--;
       if (sequence[2] < 0) {
