@@ -6,15 +6,17 @@ import 'package:okra/generated/l10n.dart';
 import 'package:okra/src/pages/task.dart';
 import 'package:okra/src/tasks/n_back.dart';
 import 'package:okra/src/tasks/reaction_time.dart';
+import 'package:okra/src/tasks/simon_game.dart';
 import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
 import 'package:okra/main.dart' as okra;
 
-MaterialApp getTaskApp(TaskType type, Map<String, dynamic> data,
+MaterialApp getTaskApp(String taskType, Map<String, dynamic> data,
     TaskEventLogger logger, FinishCallback onFinished) {
   return MaterialApp(
     home: Scaffold(
-      body: TaskWidget(type.taskFactory, data, logger, onFinished),
+      body: TaskWidget(
+          TaskType.fromString(taskType).taskFactory, data, logger, onFinished),
     ),
     localizationsDelegates: [
       S.delegate,
@@ -33,9 +35,10 @@ class LoggerTester {
     _eventIndex = 0;
   }
 
-  void expectLogged(String label,
+  Map<String, dynamic> expectLogged(String label,
       {Map<String, dynamic> data, bool allowAdditionalKeys = false}) {
     expect(logger.events[_eventIndex].label, label);
+    var actualData = logger.events[_eventIndex].data;
     if (data != null) {
       if (allowAdditionalKeys) {
         for (var key in data.keys) {
@@ -46,6 +49,7 @@ class LoggerTester {
       }
     }
     _eventIndex++;
+    return actualData;
   }
 
   void expectDoneLogging() {
@@ -62,7 +66,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.cloze,
+        'cloze',
         {
           'segments': [
             {
@@ -132,7 +136,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.cloze,
+        'cloze',
         {
           'segments': [
             {
@@ -194,7 +198,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.lexicalDecision,
+        'lexical-decision',
         {
           'words': ['word', 'non-word'],
         },
@@ -242,7 +246,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.lexicalDecision,
+        'lexical-decision',
         {
           'words': ['word', 'word', 'non-word', 'non-word'],
           'correctAnswers': [true, true, false, false],
@@ -322,7 +326,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.nBack,
+        'n-back',
         {
           'n': 1,
           'stimulusChoices': ['A', 'B'],
@@ -347,21 +351,21 @@ void main() {
       await tester.tapAt(Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
       await tester.pump(Duration(milliseconds: 500));
-      l.expectLogged('stopped showing stimulus', data: {'stimulus': 0});
-      l.expectLogged('stopped feedback', data: {'stimulus': 0});
+      l.expectLogged('finished showing stimulus', data: {'stimulus': 0});
+      l.expectLogged('finished feedback', data: {'stimulus': 0});
       await tester.tapAt(Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
       await tester.pump(Duration(milliseconds: 2500));
 
       l.expectLogged('started showing stimulus', data: {'stimulus': 1});
       await tester.pump(Duration(milliseconds: 500));
-      l.expectLogged('stopped showing stimulus', data: {'stimulus': 1});
+      l.expectLogged('finished showing stimulus', data: {'stimulus': 1});
       await tester.tapAt(Offset(100, 100));
       l.expectLogged('tapped screen', data: {'stimulus': 1});
       l.expectLogged('started feedback',
           data: {'stimulus': 1}, allowAdditionalKeys: true);
       await tester.pump(Duration(milliseconds: 2500));
-      l.expectLogged('stopped feedback', data: {'stimulus': 1});
+      l.expectLogged('finished feedback', data: {'stimulus': 1});
       l.expectDoneLogging();
     });
 
@@ -397,7 +401,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.nBack,
+        'n-back',
         {
           'n': 1,
           'stimulusChoices': ['A', 'B'],
@@ -424,21 +428,21 @@ void main() {
       await tester.tapAt(Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
       await tester.pump(Duration(milliseconds: 1500));
-      l.expectLogged('stopped feedback', data: {'stimulus': 0});
-      l.expectLogged('stopped showing stimulus', data: {'stimulus': 0});
+      l.expectLogged('finished feedback', data: {'stimulus': 0});
+      l.expectLogged('finished showing stimulus', data: {'stimulus': 0});
       await tester.tapAt(Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
       await tester.pump(Duration(milliseconds: 5000));
 
       l.expectLogged('started showing stimulus', data: {'stimulus': 1});
       await tester.pump(Duration(milliseconds: 1500));
-      l.expectLogged('stopped showing stimulus', data: {'stimulus': 1});
+      l.expectLogged('finished showing stimulus', data: {'stimulus': 1});
       await tester.tapAt(Offset(100, 100));
       l.expectLogged('tapped screen', data: {'stimulus': 1});
       l.expectLogged('started feedback',
           data: {'stimulus': 1}, allowAdditionalKeys: true);
       await tester.pump(Duration(milliseconds: 5000));
-      l.expectLogged('stopped feedback', data: {'stimulus': 1});
+      l.expectLogged('finished feedback', data: {'stimulus': 1});
       l.expectDoneLogging();
     });
   });
@@ -452,7 +456,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.pictureNaming,
+        'picture-naming',
         {
           'showQuestionMark': true,
           'subtasks': [
@@ -536,7 +540,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.pictureNaming,
+        'picture-naming',
         {
           'showQuestionMark': true,
           'subtasks': [
@@ -631,7 +635,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text': 'This is an example text.',
@@ -691,7 +695,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text': 'This is an example text.',
@@ -750,7 +754,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'self-paced',
           'text': 'First segment.\nSecond segment.\nThird segment.',
@@ -807,7 +811,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text':
@@ -840,7 +844,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text':
@@ -898,7 +902,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.questionAnswering,
+        'question-answering',
         {
           'readingType': 'normal',
           'text': 'This is an example text.',
@@ -977,7 +981,7 @@ void main() {
       var l = LoggerTester(logger);
 
       await tester.pumpWidget(getTaskApp(
-        TaskType.reactionTime,
+        'reaction-time',
         {
           'nStimuli': 3,
           'minSecondsBetweenStimuli': 0,
@@ -1077,6 +1081,79 @@ void main() {
         var delay = task.generateRandomStimulusDelay();
         expect(delay.inMilliseconds, 500);
       }
+    });
+  });
+
+  group('Simon game', () {
+    testWidgets('can be completed', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'simon-game',
+        null,
+        logger,
+        ({data, message}) {
+          expect(data, {'maxCorrectItems': 3});
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      List<int> sequence;
+
+      // 3 correct sequences
+      for (var i = 0; i < 3; i++) {
+        var loggedData = l.expectLogged('started watching');
+        sequence = loggedData['sequence'];
+        expect(find.text('WATCH!'), findsOneWidget);
+        await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
+        l.expectLogged('finished watching');
+        l.expectLogged('started repeating', data: {'sequence': sequence});
+        expect(find.text('REPEAT!'), findsOneWidget);
+        for (var item in sequence) {
+          expect(find.byIcon(Icons.thumb_up), findsNothing);
+          expect(find.byIcon(Icons.thumb_down), findsNothing);
+          var color = SimonGame.colors[item];
+          await tester.tap(find.byKey(ValueKey(color)));
+          await tester.pumpAndSettle();
+        }
+        l.expectLogged('finished repeating');
+        l.expectLogged('started feedback', data: {'feedback': true});
+        expect(find.byIcon(Icons.thumb_up), findsOneWidget);
+        expect(find.byIcon(Icons.thumb_down), findsNothing);
+        await tester.pump(Duration(milliseconds: 1000));
+        l.expectLogged('finished feedback');
+      }
+
+      // Incorrect 4th sequence
+      var loggedData = l.expectLogged('started watching');
+      sequence = loggedData['sequence'].toList(); // copy
+      expect(find.text('WATCH!'), findsOneWidget);
+      await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
+      l.expectLogged('finished watching');
+      l.expectLogged('started repeating', data: {'sequence': sequence});
+      expect(find.text('REPEAT!'), findsOneWidget);
+      // Inject incorrect item
+      sequence[2]--;
+      if (sequence[2] < 0) {
+        sequence[2] = SimonGame.colors.length - 1;
+      }
+      for (var item in sequence.sublist(0, 3)) {
+        expect(find.byIcon(Icons.thumb_up), findsNothing);
+        expect(find.byIcon(Icons.thumb_down), findsNothing);
+        var color = SimonGame.colors[item];
+        await tester.tap(find.byKey(ValueKey(color)));
+        await tester.pumpAndSettle();
+      }
+      l.expectLogged('finished repeating');
+      l.expectLogged('started feedback', data: {'feedback': false});
+      expect(find.byIcon(Icons.thumb_up), findsNothing);
+      expect(find.byIcon(Icons.thumb_down), findsOneWidget);
+      await tester.pump(Duration(milliseconds: 1000));
+      l.expectLogged('finished feedback');
+
+      l.expectDoneLogging();
     });
   });
 }

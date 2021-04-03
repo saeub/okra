@@ -679,6 +679,26 @@ class S {
     );
   }
 
+  /// `REPEAT!`
+  String get taskSimonGameRepeat {
+    return Intl.message(
+      'REPEAT!',
+      name: 'taskSimonGameRepeat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `WATCH!`
+  String get taskSimonGameWatch {
+    return Intl.message(
+      'WATCH!',
+      name: 'taskSimonGameWatch',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Tutorial`
   String get tutorialName {
     return Intl.message(

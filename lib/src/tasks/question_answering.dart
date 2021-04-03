@@ -273,10 +273,13 @@ class _NormalReadingState extends State<NormalReading> {
                       ),
                     ),
                     if (widget.onFinishedReading != null)
-                      ElevatedButton.icon(
-                        icon: Icon(Icons.arrow_forward),
-                        label: Text(S.of(context).taskFinish),
-                        onPressed: widget.onFinishedReading,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: ElevatedButton.icon(
+                          icon: Icon(Icons.arrow_forward),
+                          label: Text(S.of(context).taskFinish),
+                          onPressed: widget.onFinishedReading,
+                        ),
                       ),
                   ],
                 ),

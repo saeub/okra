@@ -64,5 +64,7 @@
   "taskResultsSecondsTaken": "{howMany, plural, one{1 Sekunde} other{{howMany} Sekunden}}",
   "taskRotateLandscape": "Drehe dein Gerät ins Querformat",
   "taskRotatePortrait": "Drehe dein Gerät ins Hochformat",
+  "taskSimonGameRepeat": "WIEDERHOLE!",
+  "taskSimonGameWatch": "SCHAU!",
   "tutorialName": "Tutorial"
 }
