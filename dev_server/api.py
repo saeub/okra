@@ -135,7 +135,7 @@ EXPERIMENTS_TASKS = [
                     "answers": ["Answer 1", "Answer 2", "Answer 3"],
                     "correctAnswer": 1,
                 },
-            ],
+            ] * 3,
             "ratingsBeforeQuestions": [
                 example_rating("emoticon"),
                 example_rating("radio"),
@@ -192,9 +192,21 @@ EXPERIMENTS_TASKS = [
         {
             "n": 2,
             "stimulusChoices": ["A", "B", "C"],
-            "nStimuli": 20,
+            "nStimuli": 15,
             "nPositives": 5,
         },
+    ),
+    (
+        {
+            "id": "8",
+            "type": "simon-game",
+            "title": "Simon game",
+            "instructions": "Repeat the sequence by tapping the boxes.",
+            "nTasks": 6,
+            "nTasksDone": 1,
+            "hasPracticeTask": True,
+        },
+        None,
     ),
 ]
 
