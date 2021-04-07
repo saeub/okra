@@ -10,6 +10,7 @@ The app currently provides implementations of various types of tasks related to 
 - *n*-back working memory task
 - Picture naming task
 - Reaction time test
+- Simon game (working memory task)
 
 ## [💻 Source code](https://github.com/saeub/okra)
 
