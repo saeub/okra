@@ -849,7 +849,8 @@ void main() {
         {
           'readingType': 'normal',
           'text':
-              '# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget.\n\n' * 5,
+              '# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget.\n\n' *
+                  5,
           'questions': [
             {
               'question': 'Is this a question?',
@@ -965,6 +966,40 @@ void main() {
       await tester.pumpAndSettle();
       l.expectLogged('chose answer', data: {'question': 0, 'answer': 0});
       await tester.tap(find.text('FINISH'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished reading', data: {'stage': 1});
+
+      l.expectDoneLogging();
+    });
+
+    testWidgets('supports configurable font size', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'question-answering',
+        {
+          'readingType': 'normal',
+          'text':
+              '# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget.\n\n' *
+                  5,
+          'fontSize': 1,
+        },
+        logger,
+        ({data, message}) {
+          expect(data, {
+            'chosenAnswerIndices': [],
+            'ratingsBeforeQuestionsAnswers': null,
+          });
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started reading', data: {'stage': 1});
+      await tester.scrollUntilVisible(find.text('CONTINUE'), 50.0);
+      // No scrolling due to small font size
+      await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
       l.expectLogged('finished reading', data: {'stage': 1});
 
