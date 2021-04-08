@@ -31,7 +31,7 @@ class NBack extends Task {
     int nPositives = data['nPositives'];
     _stimuli = generateStimuli(stimulusChoices, nStimuli, nPositives, _n);
     logger.log('generated stimuli', {
-      'stimuli': _stimuli,
+      'stimuli': _stimuli.toList(growable: false),
       'positive': [
         for (int i = 0; i < _stimuli.length; i++) _isPositiveStimulus(i)
       ],

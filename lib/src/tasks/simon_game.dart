@@ -149,7 +149,8 @@ class SimonGame extends Task {
       nextItem = _random.nextInt(colors.length);
     } while (_sequence.isNotEmpty && nextItem == _sequence.last);
     _sequence.add(nextItem);
-    logger.log('started watching', {'sequence': _sequence});
+    logger.log(
+        'started watching', {'sequence': _sequence.toList(growable: false)});
     await Future.delayed(Duration(milliseconds: 500));
     for (var i = 0; i < _sequence.length; i++) {
       setState(() {
@@ -166,7 +167,8 @@ class SimonGame extends Task {
       _currentRepetitionIndex = 0;
       _highlight = null;
     });
-    logger.log('started repeating', {'sequence': _sequence});
+    logger.log(
+        'started repeating', {'sequence': _sequence.toList(growable: false)});
   }
 
   void _onTap(int index) {
