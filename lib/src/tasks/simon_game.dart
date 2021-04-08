@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:okra/src/util.dart';
@@ -7,11 +8,35 @@ import '../../generated/l10n.dart';
 import 'task.dart';
 
 class SimonGame extends Task {
-  static var colors = <MaterialColor>[
+  static const colors = <MaterialColor>[
     Colors.green,
     Colors.red,
     Colors.yellow,
     Colors.blue,
+  ];
+  static final shapes = <Path>[
+    Path()..addOval(Rect.fromLTRB(-1.1, -1.1, 1.1, 1.1)),
+    Path()
+      ..addPolygon([
+        Offset(-1.0, -1.0),
+        Offset(1.0, -1.0),
+        Offset(1.0, 1.0),
+        Offset(-1.0, 1.0),
+      ], true),
+    Path()
+      ..addPolygon([
+        Offset(0, -1.4),
+        Offset(1.4, 0),
+        Offset(0, 1.4),
+        Offset(-1.4, 0),
+      ], true),
+    (Path()
+          ..addPolygon([
+            Offset(0, -1.4),
+            Offset(1.4 * cos(pi * 1 / 6), 1.4 * sin(pi * 1 / 6)),
+            Offset(-1.4 * cos(pi * 1 / 6), 1.4 * sin(pi * 1 / 6)),
+          ], true))
+        .shift(Offset(0, 0.2)),
   ];
 
   List<int> _sequence;
@@ -66,13 +91,18 @@ class SimonGame extends Task {
                                     style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all(colors[i]
-                                              [_highlight == i ? 200 : 600]),
+                                              [_highlight == i ? 200 : 700]),
                                     ),
                                     onPressed: _feedback == null &&
                                             _currentRepetitionIndex != null
                                         ? () => _onTap(i)
                                         : null,
-                                    child: Container(),
+                                    child: SizedBox.expand(
+                                      child: CustomPaint(
+                                        foregroundPainter:
+                                            ShapePainter(shapes[i]),
+                                      ),
+                                    ),
                                   ),
                                 ),
                             ],
@@ -114,7 +144,11 @@ class SimonGame extends Task {
       _currentRepetitionIndex = null;
       _feedback = null;
     });
-    _sequence.add(_random.nextInt(colors.length));
+    int nextItem;
+    do {
+      nextItem = _random.nextInt(colors.length);
+    } while (_sequence.isNotEmpty && nextItem == _sequence.last);
+    _sequence.add(nextItem);
     logger.log('started watching', {'sequence': _sequence});
     await Future.delayed(Duration(milliseconds: 500));
     for (var i = 0; i < _sequence.length; i++) {
@@ -162,5 +196,25 @@ class SimonGame extends Task {
         });
       });
     }
+  }
+}
+
+class ShapePainter extends CustomPainter {
+  final Path shape;
+
+  ShapePainter(this.shape);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var matrix = Matrix4.identity();
+    matrix.translate(size.width / 2, size.height / 2);
+    matrix.scale(size.width / 7);
+    var scaledShape = shape.transform(matrix.storage);
+    canvas.drawPath(scaledShape, Paint()..color = Colors.white);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return false;
   }
 }
