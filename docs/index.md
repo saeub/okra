@@ -2,6 +2,8 @@
 
 Okra is a mobile (Android/iOS) app which allows its users to participate in psycholinguistic experiments. It receives the experiment setup and stimuli from a server of the institution conducting the experiment, presents the stimuli to the participant, collects responses and behavioral data, and sends them back to the server.
 
+## Supported tasks
+
 The app currently provides implementations of various types of tasks related to psycholinguistics and reading comprehension in particular:
 
 - Cloze test
@@ -11,6 +13,18 @@ The app currently provides implementations of various types of tasks related to 
 - Picture naming task
 - Reaction time test
 - Simon game (working memory task)
+
+Issues and pull requests about adding more tasks are welcome (as long as they make sense).
+
+## Supported languages
+
+The app is currently available in these [localizations](https://github.com/saeub/okra/tree/master/lib/l10n):
+
+- English
+- German
+- German (Switzerland)
+
+Pull requests adding more languages are welcome.
 
 ## [💻 Source code](https://github.com/saeub/okra)
 
