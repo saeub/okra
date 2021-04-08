@@ -277,7 +277,7 @@ class _NormalReadingState extends State<NormalReading> {
                         padding: const EdgeInsets.only(top: 16.0),
                         child: ElevatedButton.icon(
                           icon: Icon(Icons.arrow_forward),
-                          label: Text(S.of(context).taskFinish),
+                          label: Text(S.of(context).taskAdvance),
                           onPressed: widget.onFinishedReading,
                         ),
                       ),
