@@ -27,6 +27,8 @@ class QuestionAnswering extends Task {
   void init(Map<String, dynamic> data) {
     String readingType = data['readingType'];
     String text = data['text'];
+    num rawFontSize = data['fontSize'] ?? 16.0;
+    var fontSize = rawFontSize.toDouble();
 
     List<Map<String, dynamic>> questionData;
     if (data['questions'] != null) {
@@ -80,15 +82,19 @@ class QuestionAnswering extends Task {
     switch (readingType) {
       case 'normal':
         _firstStageReadingWidget = NormalReading(
-            text, logger, null, firstStageFinishedReadingCallback);
-        _readingWidget =
-            NormalReading(text, logger, focusCallback, finishedReadingCallback);
+            text, logger, null, firstStageFinishedReadingCallback,
+            fontSize: fontSize);
+        _readingWidget = NormalReading(
+            text, logger, focusCallback, finishedReadingCallback,
+            fontSize: fontSize);
         break;
       case 'self-paced':
         _firstStageReadingWidget = SelfPacedReading(
-            text, logger, progressCallback, firstStageFinishedReadingCallback);
+            text, logger, progressCallback, firstStageFinishedReadingCallback,
+            fontSize: fontSize);
         _readingWidget = SelfPacedReading(
-            text, logger, progressCallback, finishedReadingCallback);
+            text, logger, progressCallback, finishedReadingCallback,
+            fontSize: fontSize);
         _progress = 0;
         break;
       default:
@@ -217,10 +223,11 @@ class NormalReading extends StatefulWidget {
   final TaskEventLogger logger;
   final void Function() onFocus;
   final VoidCallback onFinishedReading;
+  final double fontSize;
 
   const NormalReading(
       this.text, this.logger, this.onFocus, this.onFinishedReading,
-      {Key key})
+      {@required this.fontSize, Key key})
       : super(key: key);
 
   @override
@@ -268,8 +275,21 @@ class _NormalReadingState extends State<NormalReading> {
                     MarkdownBody(
                       data: widget.text,
                       styleSheet: MarkdownStyleSheet(
-                        textScaleFactor: 1.3,
-                        p: TextStyle(height: 1.5),
+                        h1: TextStyle(
+                            fontSize: widget.fontSize * 1.5,
+                            fontWeight: FontWeight.bold),
+                        h2: TextStyle(fontSize: widget.fontSize * 1.3),
+                        h3: TextStyle(
+                            fontSize: widget.fontSize * 1.2,
+                            fontWeight: FontWeight.bold),
+                        h4: TextStyle(
+                            fontSize: widget.fontSize,
+                            fontWeight: FontWeight.bold),
+                        h5: TextStyle(
+                            fontSize: widget.fontSize,
+                            fontStyle: FontStyle.italic),
+                        h6: TextStyle(fontSize: widget.fontSize),
+                        p: TextStyle(fontSize: widget.fontSize, height: 1.3),
                       ),
                     ),
                     if (widget.onFinishedReading != null)
@@ -297,10 +317,11 @@ class SelfPacedReading extends StatefulWidget {
   final TaskEventLogger logger;
   final void Function(double progress) onProgress;
   final VoidCallback onFinishedReading;
+  final double fontSize;
 
   const SelfPacedReading(
       this.text, this.logger, this.onProgress, this.onFinishedReading,
-      {Key key})
+      {@required this.fontSize, Key key})
       : super(key: key);
 
   @override
@@ -355,6 +376,7 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
                   _currentSegmentIndex < _segments.length
                       ? _segments[_currentSegmentIndex]
                       : '',
+                  fontSize: widget.fontSize,
                 ),
               ),
             ),
@@ -368,19 +390,12 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
 
 class AnimatedSegments extends StatefulWidget {
   final String previousSegment, currentSegment;
-  final TextStyle previousSegmentStyle, currentSegmentStyle;
+  final double fontSize;
   final double segmentHeight;
   final Duration duration;
 
   const AnimatedSegments(this.previousSegment, this.currentSegment,
-      {this.previousSegmentStyle = const TextStyle(
-        fontSize: 20.0,
-        color: Colors.grey,
-      ),
-      this.currentSegmentStyle = const TextStyle(
-        fontSize: 20.0,
-        color: Colors.black,
-      ),
+      {@required this.fontSize,
       this.segmentHeight = 150.0,
       this.duration = const Duration(milliseconds: 200),
       Key key})
@@ -431,6 +446,14 @@ class _AnimatedSegmentsState extends State<AnimatedSegments>
 
   @override
   Widget build(BuildContext context) {
+    var previousSegmentStyle = TextStyle(
+      fontSize: widget.fontSize,
+      color: Colors.grey,
+    );
+    var currentSegmentStyle = TextStyle(
+      fontSize: widget.fontSize,
+      color: Colors.black,
+    );
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
@@ -446,8 +469,8 @@ class _AnimatedSegmentsState extends State<AnimatedSegments>
                 height: widget.segmentHeight,
                 child: AutoSizeText(
                   widget.previousSegment,
-                  style: TextStyle.lerp(widget.previousSegmentStyle,
-                      widget.currentSegmentStyle, _animation.value),
+                  style: TextStyle.lerp(previousSegmentStyle,
+                      currentSegmentStyle, _animation.value),
                 ),
               ),
               Positioned(
@@ -460,7 +483,7 @@ class _AnimatedSegmentsState extends State<AnimatedSegments>
                   opacity: 1.0 - _animation.value,
                   child: AutoSizeText(
                     widget.currentSegment,
-                    style: widget.currentSegmentStyle,
+                    style: currentSegmentStyle,
                   ),
                 ),
               ),
