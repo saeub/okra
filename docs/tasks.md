@@ -130,6 +130,7 @@ A text is presented, and several single-answer multiple-choice questions have to
   {
     "readingType": "self-paced",
     "text": "First segment.\nSecond segment.",
+    "fontSize": 25.0,
     "questions": [
       {
         "question": "Question?",
@@ -151,7 +152,7 @@ A text is presented, and several single-answer multiple-choice questions have to
     ]
   }
   ```
-  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment. `correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer. `ratingsBeforeQuestions` is optional. If it is provided, the text is shown without questions in the beginning, followed by the specified ratings, followed by the text with questions visible. They follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)).
+  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment. `fontSize` is optional and specifies the font size of the text (not the questions; default is 16.0). `correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer. `ratingsBeforeQuestions` is optional. If it is provided, the text is shown without questions in the beginning, followed by the specified ratings, followed by the text with questions visible. They follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)).
 - Results data structure:
   ```json
   {
