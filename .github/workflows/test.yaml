@@ -33,10 +33,12 @@ jobs:
         with:
           channel: stable
           flutter-version: '2.0.2'
+      - run: apt-get update && apt-get install -y lcov
       - run: flutter test --coverage
+      - run: lcov --remove coverage/lcov.info 'lib/generated/*' > coverage/lcov_nogen.info
       - uses: codecov/codecov-action@v1
         with:
-          files: coverage/lcov.info
+          files: coverage/lcov_nogen.info
           fail_ci_if_error: true
   # drive-android:
   #   name: Integration tests
