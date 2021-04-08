@@ -3,13 +3,13 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:okra/generated/l10n.dart';
+import 'package:okra/main.dart' as okra;
 import 'package:okra/src/pages/task.dart';
 import 'package:okra/src/tasks/n_back.dart';
 import 'package:okra/src/tasks/reaction_time.dart';
 import 'package:okra/src/tasks/simon_game.dart';
 import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
-import 'package:okra/main.dart' as okra;
 
 MaterialApp getTaskApp(String taskType, Map<String, dynamic> data,
     TaskEventLogger logger, FinishCallback onFinished) {
@@ -815,7 +815,8 @@ void main() {
         {
           'readingType': 'normal',
           'text':
-              '# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget.\n\n' * 5,
+              '# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget.\n\n' *
+                  5,
         },
         logger,
         ({data, message}) {
@@ -848,7 +849,7 @@ void main() {
         {
           'readingType': 'normal',
           'text':
-              '# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget. Pharetra massa massa ultricies mi quis hendrerit dolor. Tellus cras adipiscing enim eu turpis egestas pretium aenean. Nisl condimentum id venenatis a condimentum. Vulputate enim nulla aliquet porttitor lacus luctus accumsan tortor posuere. Nunc sed blandit libero volutpat sed. Blandit volutpat maecenas volutpat blandit aliquam etiam erat velit scelerisque. Elementum curabitur vitae nunc sed velit dignissim sodales ut. Nunc vel risus commodo viverra maecenas accumsan lacus vel facilisis. Aliquet bibendum enim facilisis gravida neque convallis a cras semper. Aliquam vestibulum morbi blandit cursus risus at. Eget sit amet tellus cras adipiscing enim. Dictum at tempor commodo ullamcorper a lacus vestibulum sed. Sed blandit libero volutpat sed.',
+              '# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ullamcorper velit sed ullamcorper morbi tincidunt ornare massa eget.\n\n' * 5,
           'questions': [
             {
               'question': 'Is this a question?',
