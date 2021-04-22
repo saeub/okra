@@ -2,12 +2,11 @@ import 'dart:math';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:okra/src/util.dart';
 
-import '../../generated/l10n.dart';
 import 'task.dart';
 
 class SimonGame extends Task {
+  static const maxSize = 400.0;
   static const colors = <MaterialColor>[
     Colors.green,
     Colors.red,
@@ -59,81 +58,67 @@ class SimonGame extends Task {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
+      child: Stack(
         children: [
-          Text(
-            _currentRepetitionIndex == null
-                ? S.of(context).taskSimonGameWatch
-                : S.of(context).taskSimonGameRepeat,
-            style: TextStyle(fontSize: 30.0),
-          ),
-          Flexible(
-            child: Stack(
-              children: [
-                Center(
-                  child: ReadingWidth(
-                    child: LayoutBuilder(
-                      builder: (context, constraints) {
-                        var size =
-                            min(constraints.maxWidth, constraints.maxHeight);
-                        return SizedBox(
-                          width: size,
-                          height: size,
-                          child: GridView.count(
-                            crossAxisCount: 2,
-                            shrinkWrap: true,
-                            children: [
-                              for (var i = 0; i < colors.length; i++)
-                                Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: ElevatedButton(
-                                    key: ValueKey(colors[i]),
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          MaterialStateProperty.all(colors[i]
-                                              [_highlight == i ? 200 : 700]),
-                                    ),
-                                    onPressed: _feedback == null &&
-                                            _currentRepetitionIndex != null
-                                        ? () => _onTap(i)
-                                        : null,
-                                    child: SizedBox.expand(
-                                      child: CustomPaint(
-                                        foregroundPainter:
-                                            ShapePainter(shapes[i]),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                if (_feedback != null)
-                  Center(
-                    child: Card(
-                      color: _feedback ? Colors.green[800] : Colors.red[800],
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _feedback ? Icons.thumb_up : Icons.thumb_down,
-                              color: Colors.white,
-                              size: 40.0,
+          Center(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                var size = min(constraints.maxWidth, constraints.maxHeight);
+                if (size > maxSize) {
+                  size = maxSize;
+                }
+                return SizedBox(
+                  width: size,
+                  height: size,
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    children: [
+                      for (var i = 0; i < colors.length; i++)
+                        Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: ElevatedButton(
+                            key: ValueKey(colors[i]),
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(
+                                  colors[i][_highlight == i ? 100 : 700]),
                             ),
-                          ],
+                            onPressed: _feedback == null &&
+                                    _currentRepetitionIndex != null
+                                ? () => _onTap(i)
+                                : null,
+                            child: SizedBox.expand(
+                              child: CustomPaint(
+                                foregroundPainter: ShapePainter(shapes[i]),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                    ],
                   ),
-              ],
+                );
+              },
             ),
           ),
+          if (_feedback != null)
+            Center(
+              child: Card(
+                color: _feedback ? Colors.green[800] : Colors.red[800],
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        _feedback ? Icons.thumb_up : Icons.thumb_down,
+                        color: Colors.white,
+                        size: 40.0,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
         ],
       ),
     );
