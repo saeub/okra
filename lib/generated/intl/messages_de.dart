@@ -95,8 +95,6 @@ class MessageLookup extends MessageLookupByLibrary {
     "taskResultsSecondsTaken" : m4,
     "taskRotateLandscape" : MessageLookupByLibrary.simpleMessage("Drehe dein Gerät ins Querformat"),
     "taskRotatePortrait" : MessageLookupByLibrary.simpleMessage("Drehe dein Gerät ins Hochformat"),
-    "taskSimonGameRepeat" : MessageLookupByLibrary.simpleMessage("WIEDERHOLE!"),
-    "taskSimonGameWatch" : MessageLookupByLibrary.simpleMessage("SCHAU!"),
     "tutorialName" : MessageLookupByLibrary.simpleMessage("Tutorial")
   };
 }

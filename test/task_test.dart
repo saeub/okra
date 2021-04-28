@@ -1142,11 +1142,9 @@ void main() {
       for (var i = 0; i < 3; i++) {
         var loggedData = l.expectLogged('started watching');
         sequence = loggedData['sequence'];
-        expect(find.text('WATCH!'), findsOneWidget);
         await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
         l.expectLogged('finished watching');
         l.expectLogged('started repeating', data: {'sequence': sequence});
-        expect(find.text('REPEAT!'), findsOneWidget);
         for (var item in sequence) {
           expect(find.byIcon(Icons.thumb_up), findsNothing);
           expect(find.byIcon(Icons.thumb_down), findsNothing);
@@ -1165,11 +1163,10 @@ void main() {
       // Incorrect 4th sequence
       var loggedData = l.expectLogged('started watching');
       sequence = loggedData['sequence'].toList(); // copy
-      expect(find.text('WATCH!'), findsOneWidget);
+      await tester.tap(find.byKey(ValueKey(SimonGame.colors[0]))); // disabled
       await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
       l.expectLogged('finished watching');
       l.expectLogged('started repeating', data: {'sequence': sequence});
-      expect(find.text('REPEAT!'), findsOneWidget);
       // Inject incorrect item
       sequence[2]--;
       if (sequence[2] < 0) {
