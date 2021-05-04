@@ -150,7 +150,8 @@ class _TaskPageState extends State<TaskPage> {
         content = FutureBuilder(
           future: _taskFinishedFuture,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
+            if (snapshot.connectionState == ConnectionState.done &&
+                !snapshot.hasError) {
               return ResultsWidget(
                 experiment: widget.experiment,
                 message: _results.message,
@@ -158,11 +159,12 @@ class _TaskPageState extends State<TaskPage> {
                 onContinuePressed: () => startTask(false),
                 onRepeatPracticePressed: () => startTask(true),
               );
-            } else if (snapshot.hasError) {
+            } else if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.hasError) {
               return Center(
                 child: ErrorMessage(
                   S.of(context).errorGeneric(snapshot.error),
-                  retry: () => startTask(_practicing),
+                  retry: () => finishTask(),
                 ),
               );
             } else {
