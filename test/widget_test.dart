@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/image.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -45,7 +47,21 @@ Widget getApp(Widget widget) {
 }
 
 class TestApi extends Api {
+  final bool unstable;
   TaskResults taskResults;
+  int nRetries;
+
+  TestApi({this.unstable = false}) {
+    nRetries = 0;
+  }
+
+  void _maybeFail() {
+    if (unstable && nRetries == 0) {
+      nRetries++;
+      throw ApiError(retriable: true);
+    }
+    nRetries = 0;
+  }
 
   @override
   String getName() {
@@ -59,6 +75,7 @@ class TestApi extends Api {
 
   @override
   Future<List<Experiment>> getExperiments() async {
+    _maybeFail();
     return [await getExperiment('test')];
   }
 
@@ -82,6 +99,7 @@ class TestApi extends Api {
   @override
   Future<TaskData> startTask(String experimentId,
       {bool practice = false}) async {
+    _maybeFail();
     if (practice) {
       return TaskData('test', {
         'segments': [
@@ -107,11 +125,13 @@ class TestApi extends Api {
 
   @override
   Future<void> finishTask(String taskId, TaskResults results) async {
+    _maybeFail();
     taskResults = results;
   }
 }
 
 var testApi = TestApi();
+var unstableTestApi = TestApi(unstable: true);
 
 void main() {
   group('TaskPage', () {
@@ -184,6 +204,36 @@ void main() {
       expect(testApi.taskResults.ratingAnswers, null);
       expect(testApi.taskResults.events.length, 3);
     });
+
+    // TODO: This doesn't work because of async exceptions
+    testWidgets('tolerates unstable connection', (WidgetTester tester) async {
+      await tester.pumpWidget(
+          getApp(TaskPage(await unstableTestApi.getExperiment('test'))));
+      await tester.pumpAndSettle();
+      // Instructions
+      await tester.tap(find.text('START TASK'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('RETRY'));
+      await tester.pumpAndSettle();
+      // Task
+      await tester.tap(find.text('example'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      // Ratings
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('RETRY'));
+      await tester.pumpAndSettle();
+      // Results
+      expect(find.text('The next task will count!'), findsNothing);
+      expect(find.text('REPEAT PRACTICE TASK'), findsNothing);
+      expect(unstableTestApi.taskResults.data, {
+        'chosenOptionIndices': [1],
+      });
+      expect(unstableTestApi.taskResults.ratingAnswers, [0.5]);
+      expect(unstableTestApi.taskResults.events.length, 3);
+    }, skip: true);
   });
 
   group('SettingsPage', () {
