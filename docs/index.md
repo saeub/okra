@@ -28,6 +28,8 @@ Pull requests adding more languages are welcome.
 
 ## [💻 Source code](https://github.com/saeub/okra)
 
+## [🖼️ Screenshots](https://github.com/saeub/okra/wiki/Screenshots)
+
 ## Documentation
 
 - [Project goals](goals.md)

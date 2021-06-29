@@ -7,3 +7,5 @@
 A mobile app for conducting reading comprehension experiments.
 
 ## [📖 Documentation](https://saeub.github.io/okra)
+
+## [🖼️ Screenshots](https://github.com/saeub/okra/wiki/Screenshots)
