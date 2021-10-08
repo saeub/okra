@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:okra/src/qr/qr.dart';
 
 import '../../generated/l10n.dart';
 import '../data/api.dart';

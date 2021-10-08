@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:okra/src/pages/registration.dart';
 
 import '../../generated/l10n.dart';
+import '../pages/registration.dart';
 import 'qr_native.dart' if (dart.library.html) 'qr_web.dart';
 
 Future<RegistrationData> scanRegistrationCode(BuildContext context) async {

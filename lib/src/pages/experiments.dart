@@ -2,8 +2,6 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:okra/src/pages/registration.dart';
-import 'package:okra/src/qr/qr.dart';
 import 'package:provider/provider.dart';
 
 import '../../generated/l10n.dart';
@@ -13,7 +11,9 @@ import '../data/storage.dart';
 import '../data/tutorial.dart';
 import '../pages/settings.dart';
 import '../pages/task.dart';
+import '../qr/qr.dart';
 import '../util.dart';
+import 'registration.dart';
 
 class ExperimentsMenuPage extends StatefulWidget {
   ExperimentsMenuPage();
