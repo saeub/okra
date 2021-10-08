@@ -13,6 +13,7 @@
   "errorUnknown": "Unbekannter Fehler",
   "experimentsNoTasks": "Momentan keine Aufgaben verfügbar",
   "experimentsPageTitle": "Experimente",
+  "experimentsScanQrCode": "QR-CODE SCANNEN",
   "experimentsTasksLeft": "{howMany, plural, one{1 Aufgabe übrig} other{{howMany} Aufgaben übrig}}",
   "instructionsLoadingAudioFailed": "Laden fehlgeschlagen",
   "instructionsRestartPracticeTask": "ÜBUNGSAUFGABE ERNEUT STARTEN",

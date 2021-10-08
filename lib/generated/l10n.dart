@@ -175,6 +175,16 @@ class S {
     );
   }
 
+  /// `SCAN QR-CODE`
+  String get experimentsScanQrCode {
+    return Intl.message(
+      'SCAN QR-CODE',
+      name: 'experimentsScanQrCode',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `{howMany, plural, one{1 task left} other{{howMany} tasks left}}`
   String experimentsTasksLeft(num howMany) {
     return Intl.plural(

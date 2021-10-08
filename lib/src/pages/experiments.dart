@@ -2,6 +2,8 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:okra/src/pages/registration.dart';
+import 'package:okra/src/qr/qr.dart';
 import 'package:provider/provider.dart';
 
 import '../../generated/l10n.dart';
@@ -67,104 +69,151 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          setState(() {
-            _experiments = loadExperiments();
-          });
-          await Future.wait(_experiments.values);
+      body: storage.webApis.isEmpty
+          ? buildRegisterButton(context)
+          : buildExperimentsList(context, storage.showCompleted),
+    );
+  }
+
+  Widget buildRegisterButton(BuildContext context) {
+    return Center(
+      child: ElevatedButton.icon(
+        onPressed: () async {
+          RegistrationData registrationData;
+          try {
+            registrationData = await scanRegistrationCode(context);
+          } on QrScanError catch (e) {
+            showErrorSnackBar(context, e.message);
+          } catch (_) {
+            // TODO: Report error
+            showErrorSnackBar(context, S.of(context).errorUnknown);
+          }
+          try {
+            var api = await WebApi.register(
+                registrationData.url,
+                registrationData.participantId,
+                registrationData.registrationKey);
+            context.read<Storage>().addWebApi(api);
+            setState(() {
+              _experiments = loadExperiments();
+            });
+          } on ApiError catch (e) {
+            showErrorSnackBar(
+              context,
+              e.message(S.of(context)),
+            );
+          } catch (_) {
+            // TODO: Report error
+            showErrorSnackBar(
+              context,
+              S.of(context).errorUnknown,
+            );
+          }
         },
-        child: ListView(
-          children: [
-            for (var api in _experiments.keys)
-              FutureBuilder<List<Experiment>>(
-                future: _experiments[api],
-                builder: (context, snapshot) {
-                  Widget content;
-                  if (snapshot.hasData) {
-                    var visibleExperiments = snapshot.data
-                        .where((experiment) =>
-                            storage.showCompleted ||
-                            experiment.nTasksDone < experiment.nTasks)
-                        .toList();
-                    if (visibleExperiments.isNotEmpty) {
-                      content = LayoutBuilder(builder: (context, constraints) {
-                        var nColumns = max(constraints.maxWidth ~/ 400.0, 1);
-                        var columns = List<List<ExperimentCard>>.generate(
-                            nColumns, (_) => []);
-                        for (var i = 0; i < visibleExperiments.length; i++) {
-                          columns[i % nColumns].add(ExperimentCard(
-                            visibleExperiments[i],
-                            onTap: () async {
-                              await Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      TaskPage(visibleExperiments[i]),
-                                ),
-                              );
-                              setState(() {
-                                _experiments = loadExperiments();
-                              });
-                            },
-                            key: ValueKey<String>(visibleExperiments[i].id),
-                          ));
-                        }
-                        return Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            for (var column in columns)
-                              Expanded(
-                                child: Column(
-                                  children: column,
-                                ),
+        icon: Icon(Icons.camera_alt),
+        label: Text(S.of(context).experimentsScanQrCode),
+      ),
+    );
+  }
+
+  Widget buildExperimentsList(BuildContext context, bool showCompleted) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        setState(() {
+          _experiments = loadExperiments();
+        });
+        await Future.wait(_experiments.values);
+      },
+      child: ListView(
+        children: [
+          for (var api in _experiments.keys)
+            FutureBuilder<List<Experiment>>(
+              future: _experiments[api],
+              builder: (context, snapshot) {
+                Widget content;
+                if (snapshot.hasData) {
+                  var visibleExperiments = snapshot.data
+                      .where((experiment) =>
+                          showCompleted ||
+                          experiment.nTasksDone < experiment.nTasks)
+                      .toList();
+                  if (visibleExperiments.isNotEmpty) {
+                    content = LayoutBuilder(builder: (context, constraints) {
+                      var nColumns = max(constraints.maxWidth ~/ 400.0, 1);
+                      var columns = List<List<ExperimentCard>>.generate(
+                          nColumns, (_) => []);
+                      for (var i = 0; i < visibleExperiments.length; i++) {
+                        columns[i % nColumns].add(ExperimentCard(
+                          visibleExperiments[i],
+                          onTap: () async {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    TaskPage(visibleExperiments[i]),
                               ),
-                          ],
-                        );
-                      });
-                    } else if (api is TutorialApi) {
-                      content = null;
-                    } else {
-                      content = Column(children: [
-                        Icon(
-                          Icons.assignment,
-                          size: 50.0,
-                          color: Colors.grey,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          child: Text(S.of(context).experimentsNoTasks),
-                        ),
-                      ]);
-                    }
-                  } else if (snapshot.hasError) {
-                    content = ErrorMessage(
-                        S.of(context).errorGeneric(snapshot.error), retry: () {
-                      setState(() {
-                        _experiments = loadExperiments();
-                      });
+                            );
+                            setState(() {
+                              _experiments = loadExperiments();
+                            });
+                          },
+                          key: ValueKey<String>(visibleExperiments[i].id),
+                        ));
+                      }
+                      return Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (var column in columns)
+                            Expanded(
+                              child: Column(
+                                children: column,
+                              ),
+                            ),
+                        ],
+                      );
                     });
+                  } else if (api is TutorialApi) {
+                    content = null;
                   } else {
-                    content = Column(
-                      children: [
-                        CircularProgressIndicator(),
-                      ],
-                    );
+                    content = Column(children: [
+                      Icon(
+                        Icons.assignment,
+                        size: 50.0,
+                        color: Colors.grey,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(S.of(context).experimentsNoTasks),
+                      ),
+                    ]);
                   }
-                  return Column(
-                    key: ValueKey(api),
-                    children: content != null
-                        ? [
-                            ApiTitle(api),
-                            content,
-                            Divider(),
-                          ]
-                        : [],
+                } else if (snapshot.hasError) {
+                  content = ErrorMessage(
+                      S.of(context).errorGeneric(snapshot.error), retry: () {
+                    setState(() {
+                      _experiments = loadExperiments();
+                    });
+                  });
+                } else {
+                  content = Column(
+                    children: [
+                      CircularProgressIndicator(),
+                    ],
                   );
-                },
-              ),
-          ],
-        ),
+                }
+                return Column(
+                  key: ValueKey(api),
+                  children: content != null
+                      ? [
+                          ApiTitle(api),
+                          content,
+                          Divider(),
+                        ]
+                      : [],
+                );
+              },
+            ),
+        ],
       ),
     );
   }
