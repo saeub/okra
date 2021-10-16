@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:okra/src/qr/qr.dart';
 
 import '../../generated/l10n.dart';
 import '../data/api.dart';
 import '../qr/qr.dart';
 import '../util.dart';
+
+class RegistrationData {
+  final String url;
+  final String participantId;
+  final String registrationKey;
+
+  const RegistrationData(this.url, this.participantId, this.registrationKey);
+}
 
 class RegistrationPage extends StatefulWidget {
   @override
@@ -85,16 +92,11 @@ class _RegistrationPageState extends State<RegistrationPage> {
           label: Text(S.of(context).registrationScanQrCode),
           onPressed: () async {
             try {
-              var result = await scanQrCode(context);
-              var data = result.split('\n');
-              if (data.length == 3) {
-                _urlController.text = data[0];
-                _participantIdController.text = data[1];
-                _registrationKeyController.text = data[2];
-              } else {
-                showErrorSnackBar(
-                    context, S.of(context).registrationInvalidQrCode);
-              }
+              var registrationData = await scanRegistrationCode(context);
+              _urlController.text = registrationData.url;
+              _participantIdController.text = registrationData.participantId;
+              _registrationKeyController.text =
+                  registrationData.registrationKey;
             } on QrScanError catch (e) {
               showErrorSnackBar(context, e.message);
             } catch (_) {

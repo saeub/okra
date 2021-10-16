@@ -45,6 +45,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "errorUnknown" : MessageLookupByLibrary.simpleMessage("Unknown error"),
     "experimentsNoTasks" : MessageLookupByLibrary.simpleMessage("No tasks available at the moment"),
     "experimentsPageTitle" : MessageLookupByLibrary.simpleMessage("Experiments"),
+    "experimentsScanQrCode" : MessageLookupByLibrary.simpleMessage("SCAN QR-CODE"),
     "experimentsTasksLeft" : m2,
     "instructionsLoadingAudioFailed" : MessageLookupByLibrary.simpleMessage("Loading audio failed"),
     "instructionsRestartPracticeTask" : MessageLookupByLibrary.simpleMessage("RESTART PRACTICE TASK"),

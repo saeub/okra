@@ -1,9 +1,9 @@
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:okra/src/qr/qr.dart';
 
 import '../../generated/l10n.dart';
+import 'qr.dart';
 
 Future<String> scan(BuildContext context) async {
   ScanResult result;

@@ -13,6 +13,7 @@
   "errorUnknown": "Unknown error",
   "experimentsNoTasks": "No tasks available at the moment",
   "experimentsPageTitle": "Experiments",
+  "experimentsScanQrCode": "SCAN QR-CODE",
   "experimentsTasksLeft": "{howMany, plural, one{1 task left} other{{howMany} tasks left}}",
   "instructionsLoadingAudioFailed": "Loading audio failed",
   "instructionsRestartPracticeTask": "RESTART PRACTICE TASK",

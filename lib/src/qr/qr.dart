@@ -1,8 +1,17 @@
 import 'package:flutter/widgets.dart';
+
+import '../../generated/l10n.dart';
+import '../pages/registration.dart';
 import 'qr_native.dart' if (dart.library.html) 'qr_web.dart';
 
-Future<String> scanQrCode(BuildContext context) async {
-  return await scan(context);
+Future<RegistrationData> scanRegistrationCode(BuildContext context) async {
+  var result = await scan(context);
+  var data = result.split('\n');
+  if (data.length == 3) {
+    return RegistrationData(data[0], data[1], data[2]);
+  } else {
+    throw QrScanError(S.of(context).registrationInvalidQrCode);
+  }
 }
 
 class QrScanError implements Exception {
