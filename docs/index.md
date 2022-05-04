@@ -18,7 +18,7 @@ Issues and pull requests about adding more tasks are welcome (as long as they ma
 
 ## Supported languages
 
-The app is currently available in these [localizations](https://github.com/saeub/okra/tree/master/lib/l10n):
+The app is currently available in these [localizations](https://github.com/saeub/okra/tree/main/lib/l10n):
 
 - English
 - German
