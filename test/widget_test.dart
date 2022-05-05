@@ -34,7 +34,7 @@ Widget getApp(Widget widget) {
         body: widget,
       ),
     ),
-    localizationsDelegates: [
+    localizationsDelegates: const [
       S.delegate,
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
@@ -87,7 +87,7 @@ class TestApi extends Api {
       nTasks: 1,
       nTasksDone: 0,
       hasPracticeTask: experimentId == 'test-practice',
-      ratings: [
+      ratings: const [
         TaskRating('Question?', TaskRatingType.slider),
       ],
     );
@@ -98,7 +98,7 @@ class TestApi extends Api {
       {bool practice = false}) async {
     _maybeFail();
     if (practice) {
-      return TaskData('test', {
+      return const TaskData('test', {
         'segments': [
           {
             'text': 'This is .',
@@ -108,7 +108,7 @@ class TestApi extends Api {
         ],
       });
     } else {
-      return TaskData('test', {
+      return const TaskData('test', {
         'segments': [
           {
             'text': 'This is a .',
@@ -243,7 +243,7 @@ void main() {
         buildSignature: '',
       );
 
-      await tester.pumpWidget(getApp(SettingsPage()));
+      await tester.pumpWidget(getApp(const SettingsPage()));
       await tester.pumpAndSettle();
       await tester.tap(find.text('About '));
       await tester.pumpAndSettle();

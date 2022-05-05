@@ -110,7 +110,7 @@ class NBack extends Task {
                     _currentStimulusIndex >= 0
                         ? _stimuli[_currentStimulusIndex]
                         : '',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 50.0,
                     ),
                   ),

@@ -101,7 +101,7 @@ void main() {
       await driver.tap(find.text('FINISH'));
       await driver.waitFor(find.text("What's this now?"));
       await driver.tap(find.text('An apple'));
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
       await driver.scrollIntoView(find.text('FINISH'));
       await driver.tap(find.text('FINISH'));
       await driver.waitFor(find.text('NEXT TASK'));

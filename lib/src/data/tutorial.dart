@@ -72,26 +72,26 @@ to the next sentence.**
 ## Press the button below to start!
           ''',
         ratings: [
-          TaskRating(
+          const TaskRating(
             'How difficult was the text?',
             TaskRatingType.slider,
             lowExtreme: 'easy',
             highExtreme: 'hard',
           ),
-          TaskRating(
+          const TaskRating(
             'How difficult were the questions?',
             TaskRatingType.slider,
             lowExtreme: 'easy',
             highExtreme: 'hard',
           ),
-          TaskRating(
+          const TaskRating(
             'How much did you enjoy reading the text?',
             TaskRatingType.emoticon,
           ),
         ],
         progress: progress['1'] ?? 0,
         tasks: [
-          TaskData(
+          const TaskData(
             '1',
             {
               'readingType': 'self-paced',

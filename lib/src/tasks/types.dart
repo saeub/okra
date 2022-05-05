@@ -17,7 +17,7 @@ class TaskType {
   final TaskFactory taskFactory;
   final Orientation? forceOrientation;
 
-  TaskType(this.icon, this.taskFactory, {this.forceOrientation});
+  const TaskType(this.icon, this.taskFactory, {this.forceOrientation});
 
   static final TaskType cloze = TaskType(
     Icons.description,

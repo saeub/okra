@@ -14,6 +14,8 @@ class RegistrationData {
 }
 
 class RegistrationPage extends StatefulWidget {
+  const RegistrationPage({Key? key}) : super(key: key);
+
   @override
   _RegistrationPageState createState() => _RegistrationPageState();
 }
@@ -42,7 +44,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       body: Builder(
         builder: (context) => SingleChildScrollView(
           child: Padding(
-            padding: EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
                 TextField(
@@ -66,7 +68,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 Row(
                   children: [
                     ElevatedButton.icon(
-                      icon: Icon(Icons.check),
+                      icon: const Icon(Icons.check),
                       label: Text(S.of(context).registrationOk),
                       onPressed: _loading ? null : () => register(context),
                     ),
@@ -75,8 +77,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
                       child: Container(
                         height: 40,
                         width: 40,
-                        padding: EdgeInsets.all(8.0),
-                        child: CircularProgressIndicator(),
+                        padding: const EdgeInsets.all(8.0),
+                        child: const CircularProgressIndicator(),
                       ),
                     ),
                   ],
@@ -88,13 +90,13 @@ class _RegistrationPageState extends State<RegistrationPage> {
       ),
       floatingActionButton: Builder(
         builder: (context) => FloatingActionButton.extended(
-          icon: Icon(Icons.camera_alt),
+          icon: const Icon(Icons.camera_alt),
           label: Text(S.of(context).registrationScanQrCode),
           onPressed: () async {
             try {
               var registrationData = await Navigator.of(context)
                   .push<RegistrationData>(MaterialPageRoute(
-                      builder: (context) => RegistrationCodeScanner()));
+                      builder: (context) => const RegistrationCodeScanner()));
               if (registrationData != null) {
                 _urlController.text = registrationData.url;
                 _participantIdController.text = registrationData.participantId;
@@ -151,7 +153,7 @@ class RegistrationCodeScanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return MobileScanner(
       onDetect: (barcode, args) {
-        var data = barcode.rawValue?.split("\n");
+        var data = barcode.rawValue?.split('\n');
         if (data == null || data.length != 3) {
           throw QrScanError(S.of(context).registrationInvalidQrCode);
         }

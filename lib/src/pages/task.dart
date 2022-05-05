@@ -20,7 +20,7 @@ enum TaskPageMode {
 class TaskPage extends StatefulWidget {
   final Experiment experiment;
 
-  TaskPage(this.experiment);
+  const TaskPage(this.experiment, {Key? key}) : super(key: key);
 
   @override
   _TaskPageState createState() => _TaskPageState();
@@ -120,7 +120,7 @@ class _TaskPageState extends State<TaskPage> {
                   practice: _practicing,
                 );
               } else {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
             } else if (snapshot.hasError) {
               return Center(
@@ -130,7 +130,7 @@ class _TaskPageState extends State<TaskPage> {
                 ),
               );
             } else {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
           },
         );
@@ -168,7 +168,7 @@ class _TaskPageState extends State<TaskPage> {
                 ),
               );
             } else {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
           },
         );
@@ -220,7 +220,7 @@ class _TaskPageState extends State<TaskPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.screen_rotation,
                       size: 50.0,
                     ),
@@ -317,7 +317,7 @@ class _ReadAloudWidgetState extends State<ReadAloudWidget> {
           );
         } else {
           return TextButton.icon(
-            icon: Container(
+            icon: SizedBox(
               height: 20,
               width: 20,
               child: CircularProgressIndicator(
@@ -371,13 +371,13 @@ class InstructionsWidget extends StatelessWidget {
                     fitContent: false,
                     styleSheet: MarkdownStyleSheet(
                       textScaleFactor: 1.3,
-                      p: TextStyle(height: 1.5),
+                      p: const TextStyle(height: 1.5),
                     ),
                   ),
                 ),
                 if (experiment.hasPracticeTask && experiment.nTasksDone == 0)
                   ElevatedButton.icon(
-                    icon: Icon(Icons.sports_tennis),
+                    icon: const Icon(Icons.sports_tennis),
                     label: Text(S.of(context).instructionsStartPracticeTask),
                     onPressed: onStartPracticePressed,
                   )
@@ -385,7 +385,7 @@ class InstructionsWidget extends StatelessWidget {
                   Column(
                     children: [
                       ElevatedButton.icon(
-                        icon: Icon(Icons.sports_tennis),
+                        icon: const Icon(Icons.sports_tennis),
                         label:
                             Text(S.of(context).instructionsRestartPracticeTask),
                         style: ButtonStyle(
@@ -395,7 +395,7 @@ class InstructionsWidget extends StatelessWidget {
                         onPressed: onStartPracticePressed,
                       ),
                       ElevatedButton.icon(
-                        icon: Icon(Icons.arrow_forward),
+                        icon: const Icon(Icons.arrow_forward),
                         label: Text(S.of(context).instructionsStartTask),
                         onPressed: onStartPressed,
                       ),
@@ -403,7 +403,7 @@ class InstructionsWidget extends StatelessWidget {
                   )
                 else
                   ElevatedButton.icon(
-                    icon: Icon(Icons.arrow_forward),
+                    icon: const Icon(Icons.arrow_forward),
                     label: Text(S.of(context).instructionsStartTask),
                     onPressed: onStartPressed,
                   ),
@@ -503,7 +503,7 @@ class _TaskWidgetState extends State<TaskWidget> {
             ),
           );
         } else {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }
@@ -584,12 +584,12 @@ class _RatingsWidgetState extends State<RatingsWidget> {
 
     return Column(
       children: [
-        Spacer(flex: 2),
+        const Spacer(flex: 2),
         Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Center(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxWidth: 500.0),
+              constraints: const BoxConstraints(maxWidth: 500.0),
               child: Column(
                 children: [
                   Padding(
@@ -617,9 +617,9 @@ class _RatingsWidgetState extends State<RatingsWidget> {
             ),
           ),
         ),
-        Spacer(flex: 1),
+        const Spacer(flex: 1),
         ElevatedButton.icon(
-          icon: Icon(Icons.arrow_forward),
+          icon: const Icon(Icons.arrow_forward),
           label: Text(S.of(context).taskAdvance),
           onPressed: _answers[_currentRatingIndex] != null
               ? () {
@@ -633,7 +633,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                 }
               : null,
         ),
-        Spacer(flex: 1),
+        const Spacer(flex: 1),
       ],
     );
   }
@@ -669,7 +669,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                       borderRadius: BorderRadius.circular(20.0),
                       color: _getEmoticonColor(emoticonIndices[i], 200),
                     )
-                  : BoxDecoration(),
+                  : const BoxDecoration(),
               child: Icon(TaskRating.emoticons[emoticonIndices[i]]),
             ),
             iconSize: 40.0,
@@ -735,7 +735,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
       child: Center(
         child: Column(
           children: [
-            Spacer(flex: 2),
+            const Spacer(flex: 2),
             Text(
               _message,
               style: TextStyle(
@@ -744,7 +744,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                 color: Theme.of(context).colorScheme.secondary,
               ),
             ),
-            Spacer(flex: 1),
+            const Spacer(flex: 1),
             FutureBuilder<Experiment>(
               future: _experimentFuture,
               builder: (context, snapshot) {
@@ -762,7 +762,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                             Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: ElevatedButton.icon(
-                                icon: Icon(Icons.schedule),
+                                icon: const Icon(Icons.schedule),
                                 label:
                                     Text(S.of(context).taskResultsNoNextTask),
                                 style: ButtonStyle(
@@ -776,7 +776,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                             Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: ElevatedButton.icon(
-                                icon: Icon(Icons.arrow_forward),
+                                icon: const Icon(Icons.arrow_forward),
                                 label: Text(S.of(context).taskResultsNextTask),
                                 onPressed: widget.onContinuePressed,
                               ),
@@ -787,7 +787,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: ElevatedButton.icon(
-                              icon: Icon(Icons.sports_tennis),
+                              icon: const Icon(Icons.sports_tennis),
                               label: Text(
                                   S.of(context).taskResultsRepeatPracticeTask),
                               style: ButtonStyle(
@@ -803,7 +803,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                   } else {
                     // No tasks left
                     return ElevatedButton.icon(
-                      icon: Icon(Icons.check),
+                      icon: const Icon(Icons.check),
                       label: Text(S.of(context).taskResultsFinishExperiment),
                       onPressed: Navigator.of(context).pop,
                     );
@@ -818,11 +818,11 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                     },
                   );
                 } else {
-                  return CircularProgressIndicator();
+                  return const CircularProgressIndicator();
                 }
               },
             ),
-            Spacer(flex: 1),
+            const Spacer(flex: 1),
           ],
         ),
       ),

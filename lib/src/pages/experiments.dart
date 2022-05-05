@@ -15,7 +15,7 @@ import '../util.dart';
 import 'registration.dart';
 
 class ExperimentsMenuPage extends StatefulWidget {
-  ExperimentsMenuPage();
+  const ExperimentsMenuPage({Key? key}) : super(key: key);
 
   @override
   _ExperimentsMenuPageState createState() => _ExperimentsMenuPageState();
@@ -51,13 +51,13 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
         actions: [
           Builder(
             builder: (context) => IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               tooltip: S.of(context).settingsPageTitle,
               onPressed: () async {
                 await Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider.value(
-                          value: storage, child: SettingsPage())),
+                          value: storage, child: const SettingsPage())),
                 );
                 setState(() {
                   _experiments = loadExperiments();
@@ -80,7 +80,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
           try {
             var registrationData = await Navigator.of(context)
                 .push<RegistrationData>(MaterialPageRoute(
-                    builder: (context) => RegistrationCodeScanner()));
+                    builder: (context) => const RegistrationCodeScanner()));
             if (registrationData != null) {
               var api = await WebApi.register(
                   registrationData.url,
@@ -103,7 +103,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
             showErrorSnackBar(context, S.of(context).errorUnknown);
           }
         },
-        icon: Icon(Icons.camera_alt),
+        icon: const Icon(Icons.camera_alt),
         label: Text(S.of(context).experimentsScanQrCode),
       ),
     );
@@ -168,7 +168,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                     content = null;
                   } else {
                     content = Column(children: [
-                      Icon(
+                      const Icon(
                         Icons.assignment,
                         size: 50.0,
                         color: Colors.grey,
@@ -188,7 +188,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                   });
                 } else {
                   content = Column(
-                    children: [
+                    children: const [
                       CircularProgressIndicator(),
                     ],
                   );
@@ -199,7 +199,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                       ? [
                           ApiTitle(api),
                           content,
-                          Divider(),
+                          const Divider(),
                         ]
                       : [],
                 );
@@ -219,7 +219,7 @@ class ApiTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
         children: [
           SizedBox(
@@ -262,7 +262,7 @@ class ExperimentCard extends StatelessWidget {
               : ClipRect(
                   child: Center(
                     child: Transform.translate(
-                      offset: Offset(0, -25.0),
+                      offset: const Offset(0, -25.0),
                       child: Transform.rotate(
                         angle: -0.3,
                         child: Icon(
@@ -276,12 +276,12 @@ class ExperimentCard extends StatelessWidget {
                 ),
         ),
         Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(experiment.title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 20.0,
                   )),
               Row(
@@ -304,7 +304,7 @@ class ExperimentCard extends StatelessWidget {
     var enabled = experiment.nTasksDone < experiment.nTasks;
     if (!enabled) {
       content = ColorFiltered(
-        colorFilter: ColorFilter.mode(Colors.white, BlendMode.saturation),
+        colorFilter: const ColorFilter.mode(Colors.white, BlendMode.saturation),
         child: content,
       );
     }

@@ -20,7 +20,7 @@ void main() async {
     body: anyNamed('body'),
   )).thenAnswer((invocation) async {
     if (!(Uri.tryParse(invocation.positionalArguments[0])?.isAbsolute ?? false)) {
-      throw FormatException();
+      throw const FormatException();
     }
     return http.Response('', 404);
   });

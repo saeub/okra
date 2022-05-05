@@ -88,7 +88,7 @@ class WebApi extends Api {
               'registrationKey': registrationKey,
             }),
           )
-          .timeout(Duration(seconds: 30));
+          .timeout(const Duration(seconds: 30));
     } on ArgumentError {
       throw ApiError(message: (s) => s.apiErrorInvalidUrl);
     } on FormatException {

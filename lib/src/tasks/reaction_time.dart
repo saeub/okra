@@ -55,7 +55,7 @@ class ReactionTime extends Task {
         balloon,
         balloonPopped,
         width: stimulusWidth,
-        centerOffset: Offset(50, 40),
+        centerOffset: const Offset(50, 40),
         hitbox: Rect.fromLTWH(99 * scale, 34 * scale, 312 * scale, 393 * scale),
       );
     }
@@ -68,7 +68,8 @@ class ReactionTime extends Task {
   Widget build(BuildContext context) {
     return Center(
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
+        constraints:
+            const BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
         child: LayoutBuilder(builder: (context, constraints) {
           if (_starting) {
             this._stimulusPosition =
@@ -101,7 +102,7 @@ class ReactionTime extends Task {
                     _nStimuliDone++;
                   }
                 });
-                await Future.delayed(Duration(milliseconds: 100));
+                await Future.delayed(const Duration(milliseconds: 100));
                 setState(() {
                   _stimulusTapped = false;
                   this._stimulusPosition = null;
@@ -139,7 +140,7 @@ class ReactionTime extends Task {
                       child: Text(
                         S.of(context).taskReactionTimeIntro,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 30.0,
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
@@ -214,20 +215,13 @@ class Stimulus {
 
   Stimulus(this.image, this.tappedImage,
       {double? width, double? height, Offset? centerOffset, Rect? hitbox}) {
-    if (width == null) {
-      if (height != null) {
-        width = image.width * height / image.height;
-      } else {
-        width = image.width.toDouble();
-      }
-    }
-    if (height == null) {
-      height = image.height * width / image.width;
-    }
-    this.width = width;
-    this.height = height;
-    this.centerOffset = centerOffset ?? Offset(width / 2, height / 2);
-    this.hitbox = hitbox ?? Rect.fromLTWH(0, 0, width, height);
+    this.width = width ??
+        (height != null
+            ? image.width * height / image.height
+            : image.width.toDouble());
+    this.height = height ?? image.height * this.width / image.width;
+    this.centerOffset = centerOffset ?? Offset(this.width / 2, this.height / 2);
+    this.hitbox = hitbox ?? Rect.fromLTWH(0, 0, this.width, this.height);
   }
 
   static Future<Stimulus> test(
@@ -271,9 +265,9 @@ class StimulusPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(StimulusPainter oldPainter) {
-    return stimulus != oldPainter.stimulus ||
-        position != oldPainter.position ||
-        tapped != oldPainter.tapped;
+  bool shouldRepaint(StimulusPainter oldDelegate) {
+    return stimulus != oldDelegate.stimulus ||
+        position != oldDelegate.position ||
+        tapped != oldDelegate.tapped;
   }
 }

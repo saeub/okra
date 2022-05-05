@@ -49,7 +49,7 @@ class PictureNaming extends Task {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             subtask.text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 30.0,
             ),
           ),
@@ -109,7 +109,7 @@ class PictureNaming extends Task {
             maintainAnimation: true,
             maintainState: true,
             child: ElevatedButton.icon(
-              icon: Icon(Icons.arrow_forward),
+              icon: const Icon(Icons.arrow_forward),
               label: Text(S.of(context).taskAdvance),
               onPressed: !_feedbacking
                   ? () async {
@@ -122,7 +122,7 @@ class PictureNaming extends Task {
                         setState(() {
                           _feedbacking = true;
                         });
-                        await Future.delayed(Duration(milliseconds: 600));
+                        await Future.delayed(const Duration(milliseconds: 600));
                         logger.log('finished feedback',
                             {'subtask': _currentSubtaskIndex});
                         _feedbacking = false;
@@ -175,7 +175,7 @@ class PictureCard<T> extends StatelessWidget {
     var feedback = this.feedback;
     var card = Card(
       margin: chosenValue == value || feedback != null
-          ? EdgeInsets.all(chosenMargin)
+          ? const EdgeInsets.all(chosenMargin)
           : null,
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -227,7 +227,7 @@ class Subtask {
   final List<Image> pictures;
   final int? correctPictureIndex;
 
-  Subtask(this.text, this.pictures, [this.correctPictureIndex]);
+  const Subtask(this.text, this.pictures, [this.correctPictureIndex]);
 
   static Subtask fromJson(Map<String, dynamic> json) {
     List<String> pictures = json['pictures'].cast<String>();

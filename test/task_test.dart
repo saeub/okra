@@ -18,7 +18,7 @@ MaterialApp getTaskApp(String taskType, Map<String, dynamic> data,
       body: TaskWidget(
           TaskType.fromString(taskType).taskFactory, data, logger, onFinished),
     ),
-    localizationsDelegates: [
+    localizationsDelegates: const [
       S.delegate,
       GlobalMaterialLocalizations.delegate,
       GlobalWidgetsLocalizations.delegate,
@@ -172,7 +172,7 @@ void main() {
       l.expectLogged('finished segment', data: {'segment': 0});
       l.expectLogged('started feedback', data: {'segment': 0});
       await tester.tap(find.text('CONTINUE')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'segment': 0});
 
       l.expectLogged('started segment', data: {'segment': 1});
@@ -185,7 +185,7 @@ void main() {
       l.expectLogged('finished segment', data: {'segment': 1});
       l.expectLogged('started feedback', data: {'segment': 1});
       await tester.tap(find.text('CONTINUE')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'segment': 1});
 
       l.expectDoneLogging();
@@ -215,15 +215,15 @@ void main() {
       expect(find.text('3'), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.tap(find.text('NOT A WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       expect(find.text('2'), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.tap(find.text('NOT A WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       expect(find.text('1'), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
       await tester.tap(find.text('NOT A WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished countdown');
 
       l.expectLogged('started word', data: {'word': 0});
@@ -263,13 +263,13 @@ void main() {
       l.expectLogged('started countdown');
       expect(find.text('3'), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       expect(find.text('2'), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       expect(find.text('1'), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished countdown');
 
       l.expectLogged('started word', data: {'word': 0});
@@ -280,7 +280,7 @@ void main() {
       l.expectLogged('started feedback', data: {'word': 0});
       expect(find.byIcon(Icons.thumb_up), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'word': 0});
 
       l.expectLogged('started word', data: {'word': 1});
@@ -291,7 +291,7 @@ void main() {
       l.expectLogged('started feedback', data: {'word': 1});
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'word': 1});
 
       l.expectLogged('started word', data: {'word': 2});
@@ -302,7 +302,7 @@ void main() {
       l.expectLogged('started feedback', data: {'word': 2});
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'word': 2});
 
       l.expectLogged('started word', data: {'word': 3});
@@ -313,7 +313,7 @@ void main() {
       l.expectLogged('started feedback', data: {'word': 3});
       expect(find.byIcon(Icons.thumb_up), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'word': 3});
 
       l.expectDoneLogging();
@@ -341,30 +341,30 @@ void main() {
       ));
       await tester.pumpAndSettle();
       l.expectLogged('generated stimuli');
-      await tester.pump(Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
 
       l.expectLogged('started showing stimulus', data: {'stimulus': 0});
-      await tester.tapAt(Offset(100, 100));
+      await tester.tapAt(const Offset(100, 100));
       l.expectLogged('tapped screen', data: {'stimulus': 0});
       l.expectLogged('started feedback',
           data: {'stimulus': 0}, allowAdditionalKeys: true);
-      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      await tester.tapAt(const Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
-      await tester.pump(Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
       l.expectLogged('finished showing stimulus', data: {'stimulus': 0});
       l.expectLogged('finished feedback', data: {'stimulus': 0});
-      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      await tester.tapAt(const Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
-      await tester.pump(Duration(milliseconds: 2500));
+      await tester.pump(const Duration(milliseconds: 2500));
 
       l.expectLogged('started showing stimulus', data: {'stimulus': 1});
-      await tester.pump(Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
       l.expectLogged('finished showing stimulus', data: {'stimulus': 1});
-      await tester.tapAt(Offset(100, 100));
+      await tester.tapAt(const Offset(100, 100));
       l.expectLogged('tapped screen', data: {'stimulus': 1});
       l.expectLogged('started feedback',
           data: {'stimulus': 1}, allowAdditionalKeys: true);
-      await tester.pump(Duration(milliseconds: 2500));
+      await tester.pump(const Duration(milliseconds: 2500));
       l.expectLogged('finished feedback', data: {'stimulus': 1});
       l.expectDoneLogging();
     });
@@ -418,30 +418,30 @@ void main() {
       ));
       await tester.pumpAndSettle();
       l.expectLogged('generated stimuli');
-      await tester.pump(Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
 
       l.expectLogged('started showing stimulus', data: {'stimulus': 0});
-      await tester.tapAt(Offset(100, 100));
+      await tester.tapAt(const Offset(100, 100));
       l.expectLogged('tapped screen', data: {'stimulus': 0});
       l.expectLogged('started feedback',
           data: {'stimulus': 0}, allowAdditionalKeys: true);
-      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      await tester.tapAt(const Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
-      await tester.pump(Duration(milliseconds: 1500));
+      await tester.pump(const Duration(milliseconds: 1500));
       l.expectLogged('finished feedback', data: {'stimulus': 0});
       l.expectLogged('finished showing stimulus', data: {'stimulus': 0});
-      await tester.tapAt(Offset(100, 100)); // already feedbacked
+      await tester.tapAt(const Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
-      await tester.pump(Duration(milliseconds: 5000));
+      await tester.pump(const Duration(milliseconds: 5000));
 
       l.expectLogged('started showing stimulus', data: {'stimulus': 1});
-      await tester.pump(Duration(milliseconds: 1500));
+      await tester.pump(const Duration(milliseconds: 1500));
       l.expectLogged('finished showing stimulus', data: {'stimulus': 1});
-      await tester.tapAt(Offset(100, 100));
+      await tester.tapAt(const Offset(100, 100));
       l.expectLogged('tapped screen', data: {'stimulus': 1});
       l.expectLogged('started feedback',
           data: {'stimulus': 1}, allowAdditionalKeys: true);
-      await tester.pump(Duration(milliseconds: 5000));
+      await tester.pump(const Duration(milliseconds: 5000));
       l.expectLogged('finished feedback', data: {'stimulus': 1});
       l.expectDoneLogging();
     });
@@ -533,7 +533,7 @@ void main() {
 
     testWidgets('supports feedback', (tester) async {
       // TODO: Make the task screen size independent, remove this setup
-      tester.binding.window.physicalSizeTestValue = Size(600, 1100);
+      tester.binding.window.physicalSizeTestValue = const Size(600, 1100);
       addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
 
       var logger = TaskEventLogger();
@@ -589,7 +589,7 @@ void main() {
       l.expectLogged('finished subtask', data: {'subtask': 0});
       l.expectLogged('started feedback', data: {'subtask': 0});
       await tester.tap(find.text('CONTINUE')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'subtask': 0});
 
       l.expectLogged('started subtask', data: {'subtask': 1});
@@ -604,7 +604,7 @@ void main() {
       l.expectLogged('finished subtask', data: {'subtask': 1});
       l.expectLogged('started feedback', data: {'subtask': 1});
       await tester.tap(find.text('CONTINUE')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'subtask': 1});
 
       l.expectLogged('started subtask', data: {'subtask': 2});
@@ -619,7 +619,7 @@ void main() {
       l.expectLogged('finished subtask', data: {'subtask': 2});
       l.expectLogged('started feedback', data: {'subtask': 2});
       await tester.tap(find.text('CONTINUE')); // disabled
-      await tester.pump(Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'subtask': 2});
 
       l.expectDoneLogging();
@@ -628,7 +628,7 @@ void main() {
 
   group('Question answering', () {
     testWidgets('can be completed', (tester) async {
-      tester.binding.window.physicalSizeTestValue = Size(20000, 20000);
+      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
       addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
 
       var logger = TaskEventLogger();
@@ -688,7 +688,7 @@ void main() {
     });
 
     testWidgets('supports feedback', (tester) async {
-      tester.binding.window.physicalSizeTestValue = Size(20000, 20000);
+      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
       addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
 
       var logger = TaskEventLogger();
@@ -747,7 +747,7 @@ void main() {
 
     testWidgets('supports self-paced reading without questions',
         (tester) async {
-      tester.binding.window.physicalSizeTestValue = Size(20000, 20000);
+      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
       addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
 
       var logger = TaskEventLogger();
@@ -897,7 +897,7 @@ void main() {
     });
 
     testWidgets('supports ratings before questions', (tester) async {
-      tester.binding.window.physicalSizeTestValue = Size(20000, 20000);
+      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
       addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
 
       var logger = TaskEventLogger();
@@ -1010,7 +1010,7 @@ void main() {
   group('Reaction time', () {
     testWidgets('can be completed', (tester) async {
       // Reduce screen size to restrict stimulus positions
-      tester.binding.window.physicalSizeTestValue = Size(100, 100);
+      tester.binding.window.physicalSizeTestValue = const Size(100, 100);
       addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
 
       var logger = TaskEventLogger();
@@ -1035,7 +1035,7 @@ void main() {
 
       l.expectLogged('started stimulus', data: {'stimulus': null});
       expect(find.text('Pop the balloon!'), findsOneWidget);
-      await tester.tapAt(Offset(20, 20));
+      await tester.tapAt(const Offset(20, 20));
       await tester.pumpAndSettle();
       l.expectLogged('tapped screen', data: {
         'stimulus': null,
@@ -1047,7 +1047,7 @@ void main() {
         l.expectLogged('started stimulus',
             data: {'stimulus': i}, allowAdditionalKeys: true);
         expect(find.text('Tap the balloon!'), findsNothing);
-        await tester.tapAt(Offset(20, 20));
+        await tester.tapAt(const Offset(20, 20));
         await tester.pumpAndSettle();
         l.expectLogged('tapped screen', data: {
           'stimulus': i,
@@ -1072,7 +1072,7 @@ void main() {
 
       for (var i = 0; i < 10000; i++) {
         task.randomizeStimulusPosition(
-            BoxConstraints(maxWidth: 800, maxHeight: 300));
+            const BoxConstraints(maxWidth: 800, maxHeight: 300));
         var hitbox = task.getStimulusHitbox()!;
         expect(hitbox.left >= 0, true);
         expect(hitbox.top >= 0, true);
@@ -1156,7 +1156,7 @@ void main() {
         l.expectLogged('started feedback', data: {'feedback': true});
         expect(find.byIcon(Icons.thumb_up), findsOneWidget);
         expect(find.byIcon(Icons.thumb_down), findsNothing);
-        await tester.pump(Duration(milliseconds: 1000));
+        await tester.pump(const Duration(milliseconds: 1000));
         l.expectLogged('finished feedback');
       }
 
@@ -1183,7 +1183,7 @@ void main() {
       l.expectLogged('started feedback', data: {'feedback': false});
       expect(find.byIcon(Icons.thumb_up), findsNothing);
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
-      await tester.pump(Duration(milliseconds: 1000));
+      await tester.pump(const Duration(milliseconds: 1000));
       l.expectLogged('finished feedback');
 
       l.expectDoneLogging();

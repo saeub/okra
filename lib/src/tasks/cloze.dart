@@ -59,7 +59,7 @@ class Cloze extends Task {
                     ),
                   TextSpan(text: segment.post),
                 ]),
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: fontSize,
                 ),
                 textAlign: TextAlign.center,
@@ -73,7 +73,7 @@ class Cloze extends Task {
           maintainSize: true,
           maintainState: true,
           child: ElevatedButton.icon(
-            icon: Icon(Icons.arrow_forward),
+            icon: const Icon(Icons.arrow_forward),
             label: Text(S.of(context).taskAdvance),
             onPressed: !_feedbacking
                 ? () async {
@@ -86,7 +86,7 @@ class Cloze extends Task {
                       setState(() {
                         _feedbacking = true;
                       });
-                      await Future.delayed(Duration(milliseconds: 600));
+                      await Future.delayed(const Duration(milliseconds: 600));
                       logger.log('finished feedback',
                           {'segment': _currentSegmentIndex});
                       _feedbacking = false;
@@ -163,14 +163,14 @@ class ClozeBlank extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: EdgeInsets.all(5.0),
+          padding: const EdgeInsets.all(5.0),
           child: text != null
               ? Text(
                   text,
                   style: TextStyle(fontSize: fontSize),
                 )
               : ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: 50.0),
+                  constraints: const BoxConstraints(minWidth: 50.0),
                   child: Text(
                     '',
                     style: TextStyle(fontSize: fontSize),
@@ -190,13 +190,13 @@ class Segment {
 
   static final RegExp blankPattern = RegExp(r'\{\{(.+?)\}\}');
 
-  Segment(this.pre, this.post, this.options, [this.correctOptionIndex]);
+  const Segment(this.pre, this.post, this.options, [this.correctOptionIndex]);
 
   static Segment fromJson(Map<String, dynamic> json) {
     var text = json['text'];
     var blankPosition = json['blankPosition'];
     if (blankPosition == null) {
-      return Segment(text, "", []);
+      return Segment(text, '', const []);
     }
     var pre = text.substring(0, blankPosition);
     var post = text.substring(blankPosition);

@@ -30,7 +30,7 @@ class ErrorMessage extends StatelessWidget {
         Text(message),
         if (retry != null)
           TextButton.icon(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             label: Text(S.of(context).errorRetry),
             onPressed: retry,
           ),
@@ -100,7 +100,7 @@ class ReadingWidth extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 700.0),
+      constraints: const BoxConstraints(maxWidth: 700.0),
       child: child,
     );
   }

@@ -51,16 +51,18 @@ class QuestionAnswering extends Task {
     _questionsExpanded = false;
 
     // TODO: Refactor widget building
-    var focusCallback = () {
+    focusCallback() {
       setState(() {
         _questionsExpanded = false;
       });
-    };
-    var progressCallback = (progress) {
+    }
+
+    progressCallback(progress) {
       setState(() {
         _progress = progress;
       });
-    };
+    }
+
     void Function()? finishedReadingCallback;
     if (_questions.isEmpty) {
       finishedReadingCallback = () {
@@ -71,14 +73,15 @@ class QuestionAnswering extends Task {
         });
       };
     }
-    var firstStageFinishedReadingCallback = () {
+    firstStageFinishedReadingCallback() {
       logger.log('finished reading', {'stage': 0});
       setState(() {
         _stage = _QuestionAnsweringStage.ratingsBeforeQuestions;
         _progress = null;
       });
       logger.log('started ratings before questions');
-    };
+    }
+
     switch (readingType) {
       case 'normal':
         _firstStageReadingWidget = NormalReading(text, logger,
@@ -210,7 +213,7 @@ class Question {
   final List<String> answers;
   final int? correctAnswerIndex;
 
-  Question(this.question, this.answers, [this.correctAnswerIndex]);
+  const Question(this.question, this.answers, [this.correctAnswerIndex]);
 
   static Question fromJson(Map<String, dynamic> json) {
     return Question(
@@ -301,7 +304,7 @@ class _NormalReadingState extends State<NormalReading> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: ElevatedButton.icon(
-                          icon: Icon(Icons.arrow_forward),
+                          icon: const Icon(Icons.arrow_forward),
                           label: Text(S.of(context).taskAdvance),
                           onPressed: widget.onFinishedReading,
                         ),
@@ -378,7 +381,7 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: [
-            Spacer(),
+            const Spacer(),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ReadingWidth(
@@ -393,7 +396,7 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
           ],
         ),
       ),
@@ -574,9 +577,8 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                                           widget.questions[i]
                                               .correctAnswerIndex &&
                                       j == _chosenAnswerIndices[i])
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
                                       child: Icon(Icons.check,
                                           color: Colors.green),
                                     )
@@ -584,9 +586,8 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                                       j ==
                                           widget
                                               .questions[i].correctAnswerIndex)
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
                                       child: Icon(Icons.arrow_forward,
                                           color: Colors.red),
                                     ),
@@ -614,7 +615,7 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                   ),
                 ),
               ElevatedButton.icon(
-                icon: Icon(Icons.arrow_forward),
+                icon: const Icon(Icons.arrow_forward),
                 label: Text(S.of(context).taskFinish),
                 onPressed: !_chosenAnswerIndices.contains(null)
                     ? () {

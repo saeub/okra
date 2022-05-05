@@ -46,11 +46,11 @@ class LexicalDecision extends Task {
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                Spacer(),
+                const Spacer(),
                 _currentWordIndex == -1
                     ? Text(
                         _countdown.toString(),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 30.0,
                         ),
                       )
@@ -58,22 +58,22 @@ class LexicalDecision extends Task {
                         ? Text(
                             _words[_currentWordIndex],
                             textAlign: TextAlign.center,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 30.0,
                             ),
                           )
                         : _feedback == true
-                            ? Icon(
+                            ? const Icon(
                                 Icons.thumb_up,
                                 color: Colors.green,
                                 size: 50.0,
                               )
-                            : Icon(
+                            : const Icon(
                                 Icons.thumb_down,
                                 color: Colors.red,
                                 size: 50.0,
                               ),
-                Spacer(),
+                const Spacer(),
                 Flexible(
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -82,7 +82,7 @@ class LexicalDecision extends Task {
                         child: Padding(
                           padding: const EdgeInsets.only(right: 4.0),
                           child: ElevatedButton.icon(
-                            icon: Icon(Icons.check),
+                            icon: const Icon(Icons.check),
                             label: Text(S.of(context).taskLexicalDecisionWord),
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
@@ -97,7 +97,7 @@ class LexicalDecision extends Task {
                         child: Padding(
                           padding: const EdgeInsets.only(left: 4.0),
                           child: ElevatedButton.icon(
-                            icon: Icon(Icons.clear),
+                            icon: const Icon(Icons.clear),
                             label:
                                 Text(S.of(context).taskLexicalDecisionNonword),
                             style: ButtonStyle(
@@ -127,7 +127,7 @@ class LexicalDecision extends Task {
       setState(() {
         _countdown--;
       });
-      await Future.delayed(Duration(seconds: 1));
+      await Future.delayed(const Duration(seconds: 1));
     }
   }
 
@@ -141,7 +141,7 @@ class LexicalDecision extends Task {
       setState(() {
         _feedback = answer == _correctAnswers[_currentWordIndex];
       });
-      await Future.delayed(Duration(milliseconds: 600));
+      await Future.delayed(const Duration(milliseconds: 600));
       logger.log('finished feedback', {'word': _currentWordIndex});
       _feedback = null;
     }

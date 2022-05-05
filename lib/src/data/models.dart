@@ -14,7 +14,7 @@ class Experiment {
   final bool hasPracticeTask;
   final List<TaskRating>? ratings;
 
-  Experiment(this.api, this.id,
+  const Experiment(this.api, this.id,
       {required this.type,
       required this.title,
       this.coverImageUrl,
@@ -49,7 +49,7 @@ class TaskData {
   final String id;
   final Map<String, dynamic> data;
 
-  TaskData(this.id, this.data);
+  const TaskData(this.id, this.data);
 
   static TaskData fromJson(Map<String, dynamic> json) {
     return TaskData(
@@ -84,7 +84,7 @@ class TaskRating {
   final TaskRatingType type;
   final String? lowExtreme, highExtreme;
 
-  TaskRating(this.question, this.type, {this.lowExtreme, this.highExtreme});
+  const TaskRating(this.question, this.type, {this.lowExtreme, this.highExtreme});
 
   static TaskRating fromJson(Map<String, dynamic> json) {
     var type = typeMap[json['type']];
@@ -136,7 +136,7 @@ class TaskEvent {
   final String label;
   final Map<String, dynamic>? data;
 
-  TaskEvent(this.time, this.label, [this.data]);
+  const TaskEvent(this.time, this.label, [this.data]);
 
   Map<String, dynamic> toJson() {
     return {
