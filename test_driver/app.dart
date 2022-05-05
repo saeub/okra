@@ -2,34 +2,35 @@ import 'dart:convert';
 
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:http/http.dart' as http;
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:okra/main.dart' as app;
 import 'package:okra/src/data/api.dart' as api;
+import 'app.mocks.dart';
 
-class MockClient extends Mock implements http.Client {}
-
+@GenerateMocks([http.Client])
 void main() async {
   enableFlutterDriverExtension();
 
   // Mock HTTP client
-  api.client = MockClient();
-  when(api.client.post(
+  var client = MockClient();
+  when(client.post(
     any,
     headers: anyNamed('headers'),
     body: anyNamed('body'),
   )).thenAnswer((invocation) async {
-    if (!Uri.tryParse(invocation.positionalArguments[0]).isAbsolute) {
+    if (!(Uri.tryParse(invocation.positionalArguments[0])?.isAbsolute ?? false)) {
       throw FormatException();
     }
     return http.Response('', 404);
   });
-  when(api.client.post(
-    'https://mock.api/register',
+  when(client.post(
+    Uri.parse('https://mock.api/register'),
     headers: anyNamed('headers'),
     body: anyNamed('body'),
   )).thenAnswer((_) async => http.Response('', 401));
-  when(api.client.post(
-    'https://mock.api/register',
+  when(client.post(
+    Uri.parse('https://mock.api/register'),
     headers: {
       'Content-Type': 'application/json',
     },
@@ -44,8 +45,8 @@ void main() async {
         'deviceKey': 'mock_key'
       }),
       200));
-  when(api.client.get(
-    'https://mock.api/experiments',
+  when(client.get(
+    Uri.parse('https://mock.api/experiments'),
     headers: {
       'Content-Type': 'application/json',
       'X-Participant-ID': 'mock_participant',
@@ -65,8 +66,8 @@ void main() async {
         ]
       }),
       200));
-  when(api.client.get(
-    'https://mock.api/experiments/mock_experiment',
+  when(client.get(
+    Uri.parse('https://mock.api/experiments/mock_experiment'),
     headers: {
       'Content-Type': 'application/json',
       'X-Participant-ID': 'mock_participant',
@@ -82,8 +83,8 @@ void main() async {
         'nTasksDone': 1
       }),
       200));
-  when(api.client.post(
-    'https://mock.api/experiments/mock_experiment/start',
+  when(client.post(
+    Uri.parse('https://mock.api/experiments/mock_experiment/start'),
     headers: {
       'Content-Type': 'application/json',
       'X-Participant-ID': 'mock_participant',
@@ -109,8 +110,8 @@ void main() async {
         },
       }),
       200));
-  when(api.client.post(
-    'https://mock.api/tasks/mock_task/finish',
+  when(client.post(
+    Uri.parse('https://mock.api/tasks/mock_task/finish'),
     headers: {
       'Content-Type': 'application/json',
       'X-Participant-ID': 'mock_participant',
@@ -118,6 +119,7 @@ void main() async {
     },
     body: anyNamed('body'),
   )).thenAnswer((_) async => http.Response(jsonEncode({}), 200));
+  api.client = client;
 
   app.main();
 }

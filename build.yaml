@@ -1,0 +1,7 @@
+targets:
+  $default:
+    sources:
+      - lib/**
+      - test/**
+      - test_driver/**
+      - $package$

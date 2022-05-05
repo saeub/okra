@@ -7,7 +7,7 @@ SerializableFinder findTextAncestor(String text, String type) {
 
 void main() {
   group('API registration', () {
-    FlutterDriver driver;
+    late FlutterDriver driver;
 
     var findApiUrl = findTextAncestor('API URL', 'TextField');
     var findParticipantId = findTextAncestor('Participant ID', 'TextField');
@@ -65,7 +65,7 @@ void main() {
   });
 
   group('Task', () {
-    FlutterDriver driver;
+    late FlutterDriver driver;
 
     setUpAll(() async {
       driver = await FlutterDriver.connect();

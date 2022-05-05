@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/image.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -48,8 +45,8 @@ Widget getApp(Widget widget) {
 
 class TestApi extends Api {
   final bool unstable;
-  TaskResults taskResults;
-  int nRetries;
+  TaskResults? taskResults;
+  late int nRetries;
 
   TestApi({this.unstable = false}) {
     nRetries = 0;
@@ -69,7 +66,7 @@ class TestApi extends Api {
   }
 
   @override
-  Image getIcon() {
+  Image? getIcon() {
     return null;
   }
 
@@ -153,11 +150,11 @@ void main() {
       // Results
       expect(find.text('The next task will count!'), findsNothing);
       expect(find.text('REPEAT PRACTICE TASK'), findsNothing);
-      expect(testApi.taskResults.data, {
+      expect(testApi.taskResults?.data, {
         'chosenOptionIndices': [1],
       });
-      expect(testApi.taskResults.ratingAnswers, [0.5]);
-      expect(testApi.taskResults.events.length, 3);
+      expect(testApi.taskResults?.ratingAnswers, [0.5]);
+      expect(testApi.taskResults?.events.length, 3);
     });
 
     testWidgets('supports practice tasks', (WidgetTester tester) async {
@@ -178,11 +175,11 @@ void main() {
       // Results
       expect(find.text('The next task will count!'), findsOneWidget);
       expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
-      expect(testApi.taskResults.data, {
+      expect(testApi.taskResults?.data, {
         'chosenOptionIndices': [1],
       });
-      expect(testApi.taskResults.ratingAnswers, null);
-      expect(testApi.taskResults.events.length, 3);
+      expect(testApi.taskResults?.ratingAnswers, null);
+      expect(testApi.taskResults?.events.length, 3);
 
       // Repeat
       await tester.tap(find.text('REPEAT PRACTICE TASK'));
@@ -198,11 +195,11 @@ void main() {
       // Results
       expect(find.text('The next task will count!'), findsOneWidget);
       expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
-      expect(testApi.taskResults.data, {
+      expect(testApi.taskResults?.data, {
         'chosenOptionIndices': [0],
       });
-      expect(testApi.taskResults.ratingAnswers, null);
-      expect(testApi.taskResults.events.length, 3);
+      expect(testApi.taskResults?.ratingAnswers, null);
+      expect(testApi.taskResults?.events.length, 3);
     });
 
     // TODO: This doesn't work because of async exceptions
@@ -228,11 +225,11 @@ void main() {
       // Results
       expect(find.text('The next task will count!'), findsNothing);
       expect(find.text('REPEAT PRACTICE TASK'), findsNothing);
-      expect(unstableTestApi.taskResults.data, {
+      expect(unstableTestApi.taskResults?.data, {
         'chosenOptionIndices': [1],
       });
-      expect(unstableTestApi.taskResults.ratingAnswers, [0.5]);
-      expect(unstableTestApi.taskResults.events.length, 3);
+      expect(unstableTestApi.taskResults?.ratingAnswers, [0.5]);
+      expect(unstableTestApi.taskResults?.events.length, 3);
     }, skip: true);
   });
 
@@ -243,6 +240,7 @@ void main() {
         packageName: 'mock.okra',
         version: '1.2.3',
         buildNumber: '',
+        buildSignature: '',
       );
 
       await tester.pumpWidget(getApp(SettingsPage()));

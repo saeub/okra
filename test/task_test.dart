@@ -29,20 +29,20 @@ MaterialApp getTaskApp(String taskType, Map<String, dynamic> data,
 
 class LoggerTester {
   final TaskEventLogger logger;
-  int _eventIndex;
+  late int _eventIndex;
 
   LoggerTester(this.logger) {
     _eventIndex = 0;
   }
 
-  Map<String, dynamic> expectLogged(String label,
-      {Map<String, dynamic> data, bool allowAdditionalKeys = false}) {
+  Map<String, dynamic>? expectLogged(String label,
+      {Map<String, dynamic>? data, bool allowAdditionalKeys = false}) {
     expect(logger.events[_eventIndex].label, label);
     var actualData = logger.events[_eventIndex].data;
     if (data != null) {
       if (allowAdditionalKeys) {
         for (var key in data.keys) {
-          expect(logger.events[_eventIndex].data[key], data[key]);
+          expect(logger.events[_eventIndex].data?[key], data[key]);
         }
       } else {
         expect(logger.events[_eventIndex].data, data);
@@ -204,8 +204,8 @@ void main() {
         },
         logger,
         ({data, message}) {
-          expect(data['answers'], [true, false]);
-          expect(data['durations'].length, 2);
+          expect(data?['answers'], [true, false]);
+          expect(data?['durations'].length, 2);
           expect(message, null);
         },
       ));
@@ -253,8 +253,8 @@ void main() {
         },
         logger,
         ({data, message}) {
-          expect(data['answers'], [true, false, true, false]);
-          expect(data['durations'].length, 4);
+          expect(data?['answers'], [true, false, true, false]);
+          expect(data?['durations'].length, 4);
           expect(message, null);
         },
       ));
@@ -1025,7 +1025,7 @@ void main() {
         },
         logger,
         ({data, message}) {
-          for (var reactionTime in data['reactionTimes']) {
+          for (var reactionTime in data?['reactionTimes']) {
             expect(reactionTime >= 0 && reactionTime < 0.5, true);
           }
           expect(message, null);
@@ -1073,7 +1073,7 @@ void main() {
       for (var i = 0; i < 10000; i++) {
         task.randomizeStimulusPosition(
             BoxConstraints(maxWidth: 800, maxHeight: 300));
-        var hitbox = task.getStimulusHitbox();
+        var hitbox = task.getStimulusHitbox()!;
         expect(hitbox.left >= 0, true);
         expect(hitbox.top >= 0, true);
         expect(hitbox.right < 800, true);
@@ -1127,7 +1127,7 @@ void main() {
 
       await tester.pumpWidget(getTaskApp(
         'simon-game',
-        null,
+        {},
         logger,
         ({data, message}) {
           expect(data, {'maxCorrectItems': 3});
@@ -1141,7 +1141,7 @@ void main() {
       // 3 correct sequences
       for (var i = 0; i < 3; i++) {
         var loggedData = l.expectLogged('started watching');
-        sequence = loggedData['sequence'];
+        sequence = loggedData?['sequence'];
         await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
         l.expectLogged('finished watching');
         l.expectLogged('started repeating', data: {'sequence': sequence});
@@ -1162,7 +1162,7 @@ void main() {
 
       // Incorrect 4th sequence
       var loggedData = l.expectLogged('started watching');
-      sequence = loggedData['sequence'].toList(); // copy
+      sequence = loggedData?['sequence'].toList(); // copy
       await tester.tap(find.byKey(ValueKey(SimonGame.colors[0]))); // disabled
       await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
       l.expectLogged('finished watching');
