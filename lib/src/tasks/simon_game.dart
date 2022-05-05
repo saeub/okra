@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -38,11 +37,11 @@ class SimonGame extends Task {
         .shift(Offset(0, 0.2)),
   ];
 
-  List<int> _sequence;
-  int _currentRepetitionIndex;
-  int _highlight;
-  bool _feedback;
-  Random _random;
+  late List<int> _sequence;
+  int? _currentRepetitionIndex;
+  int? _highlight;
+  bool? _feedback;
+  late Random _random;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -52,10 +51,11 @@ class SimonGame extends Task {
   }
 
   @override
-  double getProgress() => null;
+  double? getProgress() => null;
 
   @override
   Widget build(BuildContext context) {
+    var _feedback = this._feedback;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Stack(
@@ -157,6 +157,7 @@ class SimonGame extends Task {
   }
 
   void _onTap(int index) {
+    var _currentRepetitionIndex = this._currentRepetitionIndex!;
     if (index == _sequence[_currentRepetitionIndex]) {
       _currentRepetitionIndex++;
       if (_currentRepetitionIndex >= _sequence.length) {

@@ -17,12 +17,12 @@ class _TutorialExperiment {
   int progress;
 
   _TutorialExperiment(this.api, this.id,
-      {@required this.type,
-      @required this.title,
-      @required this.instructions,
-      @required this.ratings,
-      @required this.tasks,
-      @required this.progress});
+      {required this.type,
+      required this.title,
+      required this.instructions,
+      required this.ratings,
+      required this.tasks,
+      required this.progress});
 
   Experiment toExperiment() {
     return Experiment(
@@ -47,9 +47,9 @@ class _TutorialExperiment {
 
 class TutorialApi extends Api {
   final Storage storage;
-  Map<String, _TutorialExperiment> _experiments;
+  late Map<String, _TutorialExperiment> _experiments;
 
-  TutorialApi(this.storage, [Map<String, int> progress]) {
+  TutorialApi(this.storage, [Map<String, int>? progress]) {
     progress ??= {};
     // TODO: Translate
     _experiments = {
@@ -174,7 +174,7 @@ to the next sentence.**
   }
 
   @override
-  Image getIcon() {
+  Image? getIcon() {
     return null;
   }
 
@@ -187,14 +187,14 @@ to the next sentence.**
 
   @override
   Future<Experiment> getExperiment(String experimentId) async {
-    return _experiments[experimentId].toExperiment();
+    return _experiments[experimentId]!.toExperiment();
   }
 
   @override
   Future<TaskData> startTask(String experimentId,
       {bool practice = false}) async {
-    var taskId = _experiments[experimentId].progress;
-    return _experiments[experimentId].tasks[taskId];
+    var taskId = _experiments[experimentId]!.progress;
+    return _experiments[experimentId]!.tasks[taskId];
   }
 
   @override

@@ -7,11 +7,11 @@ import '../util.dart';
 class Cloze extends Task {
   static const double fontSize = 30.0;
 
-  List<Segment> _segments;
-  int _currentSegmentIndex;
-  bool _feedbacking;
-  int _chosenOptionIndex;
-  List<int> _chosenOptionIndices;
+  late List<Segment> _segments;
+  late int _currentSegmentIndex;
+  late bool _feedbacking;
+  int? _chosenOptionIndex;
+  late List<int> _chosenOptionIndices;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -25,13 +25,14 @@ class Cloze extends Task {
   }
 
   @override
-  double getProgress() => !_feedbacking
+  double? getProgress() => !_feedbacking
       ? _currentSegmentIndex / _segments.length
       : (_currentSegmentIndex + 1) / _segments.length;
 
   @override
   Widget build(BuildContext context) {
     var segment = _segments[_currentSegmentIndex];
+    var _chosenOptionIndex = this._chosenOptionIndex;
     var feedback =
         _feedbacking ? _chosenOptionIndex == segment.correctOptionIndex : null;
     return Column(
@@ -78,7 +79,7 @@ class Cloze extends Task {
                 ? () async {
                     logger.log(
                         'finished segment', {'segment': _currentSegmentIndex});
-                    _chosenOptionIndices.add(_chosenOptionIndex);
+                    _chosenOptionIndices.add(_chosenOptionIndex!);
                     if (segment.correctOptionIndex != null) {
                       logger.log('started feedback',
                           {'segment': _currentSegmentIndex});
@@ -90,7 +91,7 @@ class Cloze extends Task {
                           {'segment': _currentSegmentIndex});
                       _feedbacking = false;
                     }
-                    _chosenOptionIndex = null;
+                    this._chosenOptionIndex = null;
                     if (_currentSegmentIndex < _segments.length - 1) {
                       setState(() {
                         _currentSegmentIndex++;
@@ -120,7 +121,7 @@ class Cloze extends Task {
                           logger.log('chose option',
                               {'segment': _currentSegmentIndex, 'option': i});
                           setState(() {
-                            _chosenOptionIndex = i;
+                            this._chosenOptionIndex = i;
                           });
                         },
                         feedback: i != _chosenOptionIndex &&
@@ -140,17 +141,19 @@ class Cloze extends Task {
 }
 
 class ClozeBlank extends StatelessWidget {
-  final String text;
+  final String? text;
   final double fontSize;
-  final VoidCallback onTap;
-  final bool feedback;
+  final VoidCallback? onTap;
+  final bool? feedback;
 
   const ClozeBlank(this.text,
-      {this.fontSize = Cloze.fontSize, this.onTap, this.feedback, Key key})
+      {this.fontSize = Cloze.fontSize, this.onTap, this.feedback, Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var feedback = this.feedback;
+    var text = this.text;
     return Card(
       color: feedback != null
           ? feedback
@@ -183,7 +186,7 @@ class ClozeBlank extends StatelessWidget {
 class Segment {
   final String pre, post;
   final List<String> options;
-  final int correctOptionIndex;
+  final int? correctOptionIndex;
 
   static final RegExp blankPattern = RegExp(r'\{\{(.+?)\}\}');
 
@@ -193,7 +196,7 @@ class Segment {
     var text = json['text'];
     var blankPosition = json['blankPosition'];
     if (blankPosition == null) {
-      return Segment(text, null, []);
+      return Segment(text, "", []);
     }
     var pre = text.substring(0, blankPosition);
     var post = text.substring(blankPosition);

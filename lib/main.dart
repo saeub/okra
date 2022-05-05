@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localstorage/localstorage.dart';
@@ -41,7 +40,7 @@ class StorageWrapper extends StatefulWidget {
 }
 
 class _StorageWrapperState extends State<StorageWrapper> {
-  Future<LocalStorage> _localStorageFuture;
+  late Future<LocalStorage> _localStorageFuture;
 
   @override
   void initState() {
@@ -57,7 +56,7 @@ class _StorageWrapperState extends State<StorageWrapper> {
         if (snapshot.hasData) {
           Storage storage;
           try {
-            storage = Storage(snapshot.data);
+            storage = Storage(snapshot.data!);
           } on IncompatibleStorageError catch (e) {
             return Scaffold(
               body: Padding(
@@ -85,7 +84,7 @@ class _StorageWrapperState extends State<StorageWrapper> {
                       // color: Colors.red,
                       // textColor: Colors.white,
                       onPressed: () async {
-                        await snapshot.data.clear();
+                        await snapshot.data!.clear();
                         setState(() {
                           _localStorageFuture = Storage.loadLocalStorage();
                         });
@@ -102,7 +101,7 @@ class _StorageWrapperState extends State<StorageWrapper> {
           );
         } else if (snapshot.hasError) {
           return Center(
-              child: Text(S.of(context).errorGeneric(snapshot.error)));
+              child: Text(S.of(context).errorGeneric(snapshot.error!)));
         } else {
           return Center(child: CircularProgressIndicator());
         }

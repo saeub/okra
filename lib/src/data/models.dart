@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
 
 import '../tasks/types.dart';
 import 'api.dart';
@@ -9,24 +8,25 @@ class Experiment {
   final Api api;
   final String id;
   final TaskType type;
-  final String title, coverImageUrl, instructions, instructionsAudioUrl;
+  final String title, instructions;
+  final String? coverImageUrl, instructionsAudioUrl;
   final int nTasks, nTasksDone;
   final bool hasPracticeTask;
-  final List<TaskRating> ratings;
+  final List<TaskRating>? ratings;
 
   Experiment(this.api, this.id,
-      {@required this.type,
-      @required this.title,
+      {required this.type,
+      required this.title,
       this.coverImageUrl,
-      @required this.instructions,
+      required this.instructions,
       this.instructionsAudioUrl,
-      @required this.nTasks,
-      @required this.nTasksDone,
-      @required this.hasPracticeTask,
+      required this.nTasks,
+      required this.nTasksDone,
+      required this.hasPracticeTask,
       this.ratings});
 
   static Experiment fromJson(Api api, Map<String, dynamic> json) {
-    List<Map<String, dynamic>> ratingsData =
+    List<Map<String, dynamic>>? ratingsData =
         json['ratings']?.cast<Map<String, dynamic>>();
     return Experiment(
       api,
@@ -39,7 +39,7 @@ class Experiment {
       nTasks: json['nTasks'],
       nTasksDone: json['nTasksDone'],
       hasPracticeTask: json['hasPracticeTask'],
-      ratings: ratingsData?.map(TaskRating.fromJson)?.toList(),
+      ratings: ratingsData?.map(TaskRating.fromJson).toList(),
     );
   }
 }
@@ -82,14 +82,18 @@ class TaskRating {
 
   final String question;
   final TaskRatingType type;
-  final String lowExtreme, highExtreme;
+  final String? lowExtreme, highExtreme;
 
   TaskRating(this.question, this.type, {this.lowExtreme, this.highExtreme});
 
   static TaskRating fromJson(Map<String, dynamic> json) {
+    var type = typeMap[json['type']];
+    if (type == null) {
+      throw ArgumentError('Unknown rating type "${json['type']}"');
+    }
     return TaskRating(
       json['question'],
-      typeMap[json['type']],
+      type,
       lowExtreme: json['lowExtreme'],
       highExtreme: json['highExtreme'],
     );
@@ -104,14 +108,14 @@ enum TaskRatingType {
 }
 
 class TaskResults {
-  Map<String, dynamic> data;
+  Map<String, dynamic>? data;
   List<TaskEvent> events;
-  String message;
-  List<num> ratingAnswers;
+  String? message;
+  List<num>? ratingAnswers;
 
   TaskResults({
     this.data,
-    this.events,
+    this.events = const [],
     this.message,
     this.ratingAnswers,
   });
@@ -130,7 +134,7 @@ class TaskResults {
 class TaskEvent {
   final DateTime time;
   final String label;
-  final Map<String, dynamic> data;
+  final Map<String, dynamic>? data;
 
   TaskEvent(this.time, this.label, [this.data]);
 

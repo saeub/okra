@@ -15,7 +15,7 @@ typedef TaskFactory<T extends Task> = T Function();
 class TaskType {
   final IconData icon;
   final TaskFactory taskFactory;
-  final Orientation forceOrientation;
+  final Orientation? forceOrientation;
 
   TaskType(this.icon, this.taskFactory, {this.forceOrientation});
 

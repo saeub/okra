@@ -11,7 +11,6 @@ import '../data/storage.dart';
 import '../data/tutorial.dart';
 import '../pages/settings.dart';
 import '../pages/task.dart';
-import '../qr/qr.dart';
 import '../util.dart';
 import 'registration.dart';
 
@@ -23,7 +22,7 @@ class ExperimentsMenuPage extends StatefulWidget {
 }
 
 class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
-  LinkedHashMap<Api, Future<List<Experiment>>> _experiments;
+  late LinkedHashMap<Api, Future<List<Experiment>>> _experiments;
 
   LinkedHashMap<Api, Future<List<Experiment>>> loadExperiments() {
     var storage = context.read<Storage>();
@@ -55,8 +54,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
               icon: Icon(Icons.settings),
               tooltip: S.of(context).settingsPageTitle,
               onPressed: () async {
-                await Navigator.push(
-                  context,
+                await Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) => ChangeNotifierProvider.value(
                           value: storage, child: SettingsPage())),
@@ -79,24 +77,22 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
     return Center(
       child: ElevatedButton.icon(
         onPressed: () async {
-          RegistrationData registrationData;
           try {
-            registrationData = await scanRegistrationCode(context);
+            var registrationData = await Navigator.of(context)
+                .push<RegistrationData>(MaterialPageRoute(
+                    builder: (context) => RegistrationCodeScanner()));
+            if (registrationData != null) {
+              var api = await WebApi.register(
+                  registrationData.url,
+                  registrationData.participantId,
+                  registrationData.registrationKey);
+              context.read<Storage>().addWebApi(api);
+              setState(() {
+                _experiments = loadExperiments();
+              });
+            }
           } on QrScanError catch (e) {
             showErrorSnackBar(context, e.message);
-          } catch (_) {
-            // TODO: Report error
-            showErrorSnackBar(context, S.of(context).errorUnknown);
-          }
-          try {
-            var api = await WebApi.register(
-                registrationData.url,
-                registrationData.participantId,
-                registrationData.registrationKey);
-            context.read<Storage>().addWebApi(api);
-            setState(() {
-              _experiments = loadExperiments();
-            });
           } on ApiError catch (e) {
             showErrorSnackBar(
               context,
@@ -104,10 +100,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
             );
           } catch (_) {
             // TODO: Report error
-            showErrorSnackBar(
-              context,
-              S.of(context).errorUnknown,
-            );
+            showErrorSnackBar(context, S.of(context).errorUnknown);
           }
         },
         icon: Icon(Icons.camera_alt),
@@ -130,9 +123,9 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
             FutureBuilder<List<Experiment>>(
               future: _experiments[api],
               builder: (context, snapshot) {
-                Widget content;
+                Widget? content;
                 if (snapshot.hasData) {
-                  var visibleExperiments = snapshot.data
+                  var visibleExperiments = snapshot.data!
                       .where((experiment) =>
                           showCompleted ||
                           experiment.nTasksDone < experiment.nTasks)
@@ -146,8 +139,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                         columns[i % nColumns].add(ExperimentCard(
                           visibleExperiments[i],
                           onTap: () async {
-                            await Navigator.push(
-                              context,
+                            await Navigator.of(context).push(
                               MaterialPageRoute(
                                 builder: (context) =>
                                     TaskPage(visibleExperiments[i]),
@@ -189,7 +181,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                   }
                 } else if (snapshot.hasError) {
                   content = ErrorMessage(
-                      S.of(context).errorGeneric(snapshot.error), retry: () {
+                      S.of(context).errorGeneric(snapshot.error!), retry: () {
                     setState(() {
                       _experiments = loadExperiments();
                     });
@@ -222,7 +214,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
 class ApiTitle extends StatelessWidget {
   final Api api;
 
-  const ApiTitle(this.api, {Key key}) : super(key: key);
+  const ApiTitle(this.api, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -249,21 +241,22 @@ class ApiTitle extends StatelessWidget {
 
 class ExperimentCard extends StatelessWidget {
   final Experiment experiment;
-  final GestureTapCallback onTap;
+  final GestureTapCallback? onTap;
 
-  const ExperimentCard(this.experiment, {this.onTap, Key key})
+  const ExperimentCard(this.experiment, {this.onTap, Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var coverImageUrl = experiment.coverImageUrl;
     Widget content = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(
           height: 150.0,
-          child: experiment.coverImageUrl != null
+          child: coverImageUrl != null
               ? Image.network(
-                  experiment.coverImageUrl,
+                  coverImageUrl,
                   fit: BoxFit.cover,
                 )
               : ClipRect(
@@ -326,7 +319,8 @@ class ExperimentCard extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 highlightColor: Colors.transparent,
-                splashColor: Theme.of(context).accentColor.withOpacity(0.5),
+                splashColor:
+                    Theme.of(context).colorScheme.secondary.withOpacity(0.5),
                 onTap: enabled ? onTap : null,
               ),
             ),

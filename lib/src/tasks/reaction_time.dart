@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -13,15 +14,15 @@ class ReactionTime extends Task {
   static const maxWidth = 600.0;
   static const maxHeight = 600.0;
 
-  Stimulus _stimulus;
-  Offset _stimulusPosition;
-  bool _stimulusTapped;
-  int _nStimuli, _nStimuliDone;
-  int _minMillisecondsBetweenStimuli, _maxMillisecondsBetweenStimuli;
-  bool _starting;
-  Random _random;
-  DateTime _stimulusStart;
-  List<Duration> _reactionTimes;
+  late Stimulus _stimulus;
+  Offset? _stimulusPosition;
+  late bool _stimulusTapped;
+  late int _nStimuli, _nStimuliDone;
+  late int _minMillisecondsBetweenStimuli, _maxMillisecondsBetweenStimuli;
+  late bool _starting;
+  late Random _random;
+  DateTime? _stimulusStart;
+  late List<Duration> _reactionTimes;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -44,7 +45,7 @@ class ReactionTime extends Task {
   @override
   Future<void> loadAssets() async {
     if (testMode) {
-      _stimulus = Stimulus(null, null, width: 100, height: 100);
+      _stimulus = await Stimulus.test(width: 100, height: 100);
     } else {
       var balloon = await loadImage('assets/images/balloon.png');
       var balloonPopped = await loadImage('assets/images/balloon_popped.png');
@@ -61,7 +62,7 @@ class ReactionTime extends Task {
   }
 
   @override
-  double getProgress() => _nStimuliDone / _nStimuli;
+  double? getProgress() => _nStimuliDone / _nStimuli;
 
   @override
   Widget build(BuildContext context) {
@@ -70,9 +71,10 @@ class ReactionTime extends Task {
         constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
         child: LayoutBuilder(builder: (context, constraints) {
           if (_starting) {
-            _stimulusPosition =
+            this._stimulusPosition =
                 Offset(constraints.maxWidth / 2, constraints.maxHeight / 2);
           }
+          var _stimulusPosition = this._stimulusPosition;
           return GestureDetector(
             onTapDown: (details) async {
               logger.log('tapped screen', {
@@ -83,7 +85,8 @@ class ReactionTime extends Task {
                 'stimulus': _starting ? null : _nStimuliDone,
               });
               var hitbox = getStimulusHitbox();
-              if (hitbox.contains(details.localPosition)) {
+              if (hitbox != null && hitbox.contains(details.localPosition)) {
+                var _stimulusStart = this._stimulusStart;
                 if (_stimulusStart != null) {
                   _reactionTimes.add(DateTime.now().difference(_stimulusStart));
                   _stimulusStart = null;
@@ -101,7 +104,7 @@ class ReactionTime extends Task {
                 await Future.delayed(Duration(milliseconds: 100));
                 setState(() {
                   _stimulusTapped = false;
-                  _stimulusPosition = null;
+                  this._stimulusPosition = null;
                 });
                 if (_nStimuliDone < _nStimuli) {
                   await Future.delayed(generateRandomStimulusDelay());
@@ -168,13 +171,19 @@ class ReactionTime extends Task {
     return (await codec.getNextFrame()).image;
   }
 
-  Rect getStimulusHitbox() {
-    return Rect.fromLTWH(
-      _stimulusPosition.dx - _stimulus.centerOffset.dx + _stimulus.hitbox.left,
-      _stimulusPosition.dy - _stimulus.centerOffset.dy + _stimulus.hitbox.top,
-      _stimulus.hitbox.width,
-      _stimulus.hitbox.height,
-    );
+  Rect? getStimulusHitbox() {
+    var _stimulusPosition = this._stimulusPosition;
+    if (_stimulusPosition != null) {
+      return Rect.fromLTWH(
+        _stimulusPosition.dx -
+            _stimulus.centerOffset.dx +
+            _stimulus.hitbox.left,
+        _stimulusPosition.dy - _stimulus.centerOffset.dy + _stimulus.hitbox.top,
+        _stimulus.hitbox.width,
+        _stimulus.hitbox.height,
+      );
+    }
+    return null;
   }
 
   void randomizeStimulusPosition(BoxConstraints constraints) {
@@ -199,12 +208,12 @@ class ReactionTime extends Task {
 
 class Stimulus {
   final ui.Image image, tappedImage;
-  double width, height;
-  Offset centerOffset;
-  Rect hitbox;
+  late final double width, height;
+  late final Offset centerOffset;
+  late final Rect hitbox;
 
   Stimulus(this.image, this.tappedImage,
-      {this.width, this.height, this.centerOffset, this.hitbox}) {
+      {double? width, double? height, Offset? centerOffset, Rect? hitbox}) {
     if (width == null) {
       if (height != null) {
         width = image.width * height / image.height;
@@ -213,14 +222,23 @@ class Stimulus {
       }
     }
     if (height == null) {
-      if (width != null) {
-        height = image.height * width / image.width;
-      } else {
-        height = image.height.toDouble();
-      }
+      height = image.height * width / image.width;
     }
-    centerOffset ??= Offset(width / 2, height / 2);
-    hitbox ??= Rect.fromLTWH(0, 0, width, height);
+    this.width = width;
+    this.height = height;
+    this.centerOffset = centerOffset ?? Offset(width / 2, height / 2);
+    this.hitbox = hitbox ?? Rect.fromLTWH(0, 0, width, height);
+  }
+
+  static Future<Stimulus> test(
+      {required double width, required double height}) async {
+    var completer = Completer<ui.Image>();
+    ui.decodeImageFromPixels(Uint8List(1), 1, 1, ui.PixelFormat.rgba8888,
+        (result) {
+      completer.complete(result);
+    });
+    var image = await completer.future;
+    return Stimulus(image, image, width: width, height: height);
   }
 }
 
@@ -233,25 +251,23 @@ class StimulusPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (stimulus.image != null) {
-      var topLeft = position - stimulus.centerOffset;
-      canvas.drawImageRect(
-        tapped ? stimulus.tappedImage : stimulus.image,
-        Rect.fromLTWH(
-          0,
-          0,
-          stimulus.image.width.toDouble(),
-          stimulus.image.height.toDouble(),
-        ),
-        Rect.fromLTWH(
-          topLeft.dx,
-          topLeft.dy,
-          stimulus.width,
-          stimulus.height,
-        ),
-        Paint(),
-      );
-    }
+    var topLeft = position - stimulus.centerOffset;
+    canvas.drawImageRect(
+      tapped ? stimulus.tappedImage : stimulus.image,
+      Rect.fromLTWH(
+        0,
+        0,
+        stimulus.image.width.toDouble(),
+        stimulus.image.height.toDouble(),
+      ),
+      Rect.fromLTWH(
+        topLeft.dx,
+        topLeft.dy,
+        stimulus.width,
+        stimulus.height,
+      ),
+      Paint(),
+    );
   }
 
   @override

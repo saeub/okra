@@ -27,13 +27,13 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
-  TaskPageMode _mode;
-  String _taskId;
-  TaskEventLogger _logger;
-  TaskResults _results;
-  bool _practicing;
-  Future<TaskData> _taskFuture;
-  Future<void> _taskFinishedFuture;
+  late TaskPageMode _mode;
+  String? _taskId;
+  late TaskEventLogger _logger;
+  TaskResults? _results;
+  late bool _practicing;
+  Future<TaskData>? _taskFuture;
+  Future<void>? _taskFinishedFuture;
 
   @override
   void initState() {
@@ -63,12 +63,12 @@ class _TaskPageState extends State<TaskPage> {
   void finishTask() {
     setState(() {
       _taskFinishedFuture = widget.experiment.api.finishTask(
-        _taskId,
-        _results,
+        _taskId!,
+        _results!,
       );
       _mode = TaskPageMode.results;
     });
-    _taskFinishedFuture.then((_) {
+    _taskFinishedFuture!.then((_) {
       setState(() {
         _mode = TaskPageMode.results;
       });
@@ -77,6 +77,7 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: Refactor into several widgets to avoid modes and excessive non-null assertions
     Widget content;
     switch (_mode) {
       case TaskPageMode.instructions:
@@ -99,19 +100,18 @@ class _TaskPageState extends State<TaskPage> {
               if (_taskFinishedFuture == null) {
                 return TaskWidget(
                   widget.experiment.type.taskFactory,
-                  snapshot.data.data,
+                  snapshot.data!.data,
                   _logger,
                   ({data, message}) {
                     _logger.stopwatch.stop();
-                    _taskId = snapshot.data.id;
+                    _taskId = snapshot.data!.id;
                     _results = TaskResults(
                       data: data,
                       events: _logger.events,
                       message: message,
                     );
-                    if (widget.experiment.ratings != null &&
-                        widget.experiment.ratings.isNotEmpty &&
-                        !_practicing) {
+                    var ratings = widget.experiment.ratings;
+                    if (ratings != null && ratings.isNotEmpty && !_practicing) {
                       startRatings();
                     } else {
                       finishTask();
@@ -125,7 +125,7 @@ class _TaskPageState extends State<TaskPage> {
             } else if (snapshot.hasError) {
               return Center(
                 child: ErrorMessage(
-                  S.of(context).errorGeneric(snapshot.error),
+                  S.of(context).errorGeneric(snapshot.error!),
                   retry: () => startTask(_practicing),
                 ),
               );
@@ -138,9 +138,9 @@ class _TaskPageState extends State<TaskPage> {
 
       case TaskPageMode.ratings:
         content = RatingsWidget(
-          widget.experiment.ratings,
+          widget.experiment.ratings!,
           onFinished: (answers) {
-            _results.ratingAnswers = answers;
+            _results!.ratingAnswers = answers;
             finishTask();
           },
         );
@@ -154,7 +154,7 @@ class _TaskPageState extends State<TaskPage> {
                 !snapshot.hasError) {
               return ResultsWidget(
                 experiment: widget.experiment,
-                message: _results.message,
+                message: _results!.message,
                 practice: _practicing,
                 onContinuePressed: () => startTask(false),
                 onRepeatPracticePressed: () => startTask(true),
@@ -163,7 +163,7 @@ class _TaskPageState extends State<TaskPage> {
                 snapshot.hasError) {
               return Center(
                 child: ErrorMessage(
-                  S.of(context).errorGeneric(snapshot.error),
+                  S.of(context).errorGeneric(snapshot.error!),
                   retry: () => finishTask(),
                 ),
               );
@@ -185,29 +185,30 @@ class _TaskPageState extends State<TaskPage> {
             if (_mode == TaskPageMode.task || _mode == TaskPageMode.ratings) {
               _logger.log('aborting task');
               return await showDialog<bool>(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(S.of(context).taskAbortDialogTitle),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        _logger.log('declined aborting task');
-                        Navigator.of(context).pop(false);
-                      },
-                      child: Text(S.of(context).dialogNo),
+                    barrierDismissible: false,
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text(S.of(context).taskAbortDialogTitle),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            _logger.log('declined aborting task');
+                            Navigator.of(context).pop(false);
+                          },
+                          child: Text(S.of(context).dialogNo),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _logger.log('confirmed aborting task');
+                            Navigator.of(context).pop(true);
+                            // TODO: Send aborted task
+                          },
+                          child: Text(S.of(context).dialogYes),
+                        ),
+                      ],
                     ),
-                    TextButton(
-                      onPressed: () {
-                        _logger.log('confirmed aborting task');
-                        Navigator.of(context).pop(true);
-                        // TODO: Send aborted task
-                      },
-                      child: Text(S.of(context).dialogYes),
-                    ),
-                  ],
-                ),
-              );
+                  ) ??
+                  false;
             } else {
               return true;
             }
@@ -244,19 +245,19 @@ class _TaskPageState extends State<TaskPage> {
 class ReadAloudWidget extends StatefulWidget {
   final String audioUrl;
 
-  const ReadAloudWidget(this.audioUrl, {Key key}) : super(key: key);
+  const ReadAloudWidget(this.audioUrl, {Key? key}) : super(key: key);
 
   @override
   _ReadAloudWidgetState createState() => _ReadAloudWidgetState();
 }
 
 class _ReadAloudWidgetState extends State<ReadAloudWidget> {
-  bool _playing;
-  AudioPlayer _player;
-  Future<Duration> _loadingFuture;
+  late bool _playing;
+  late AudioPlayer _player;
+  late Future<void> _loadingFuture;
 
-  Future<Duration> loadAudio() async {
-    return _player.setUrl(widget.audioUrl);
+  Future<void> loadAudio() async {
+    await _player.setUrl(widget.audioUrl);
   }
 
   @override
@@ -335,17 +336,19 @@ class _ReadAloudWidgetState extends State<ReadAloudWidget> {
 
 class InstructionsWidget extends StatelessWidget {
   final Experiment experiment;
-  final VoidCallback onStartPressed, onStartPracticePressed;
+  final VoidCallback onStartPressed;
+  final VoidCallback? onStartPracticePressed;
 
   const InstructionsWidget(
-      {this.experiment,
-      this.onStartPressed,
+      {required this.experiment,
+      required this.onStartPressed,
       this.onStartPracticePressed,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var audioUrl = experiment.instructionsAudioUrl;
     return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -360,8 +363,7 @@ class InstructionsWidget extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline4,
                   ),
                 ),
-                if (experiment.instructionsAudioUrl != null)
-                  ReadAloudWidget(experiment.instructionsAudioUrl),
+                if (audioUrl != null) ReadAloudWidget(audioUrl),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24.0),
                   child: MarkdownBody(
@@ -422,7 +424,7 @@ class TaskWidget extends StatefulWidget {
   final bool practice;
 
   const TaskWidget(this.taskFactory, this.data, this.logger, this.onFinished,
-      {this.practice = false, Key key})
+      {this.practice = false, Key? key})
       : super(key: key);
 
   @override
@@ -430,8 +432,8 @@ class TaskWidget extends StatefulWidget {
 }
 
 class _TaskWidgetState extends State<TaskWidget> {
-  Task _task;
-  Future<void> _taskLoadingFuture;
+  late Task _task;
+  late Future<void> _taskLoadingFuture;
 
   @override
   void initState() {
@@ -497,7 +499,7 @@ class _TaskWidgetState extends State<TaskWidget> {
         } else if (snapshot.hasError) {
           return Center(
             child: ErrorMessage(
-              S.of(context).errorGeneric(snapshot.error),
+              S.of(context).errorGeneric(snapshot.error!),
             ),
           );
         } else {
@@ -514,7 +516,7 @@ class RatingsWidget extends StatefulWidget {
   final List<TaskRating> ratings;
   final void Function(List<num> answers) onFinished;
 
-  const RatingsWidget(this.ratings, {this.onFinished, Key key})
+  const RatingsWidget(this.ratings, {required this.onFinished, Key? key})
       : super(key: key);
 
   @override
@@ -522,8 +524,8 @@ class RatingsWidget extends StatefulWidget {
 }
 
 class _RatingsWidgetState extends State<RatingsWidget> {
-  int _currentRatingIndex;
-  List<num> _answers;
+  late int _currentRatingIndex;
+  late List<num?> _answers;
 
   @override
   void initState() {
@@ -555,7 +557,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (var i = 0; i < TaskRating.radioLevels; i++)
-              Radio(
+              Radio<num>(
                 value: i,
                 groupValue: _answers[_currentRatingIndex],
                 onChanged: (value) {
@@ -570,7 +572,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
 
       case TaskRatingType.slider:
         inputWidget = Slider(
-          value: _answers[_currentRatingIndex],
+          value: _answers[_currentRatingIndex]!.toDouble(),
           onChanged: (value) {
             setState(() {
               _answers[_currentRatingIndex] = value;
@@ -626,7 +628,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                       _currentRatingIndex++;
                     });
                   } else {
-                    widget.onFinished(_answers);
+                    widget.onFinished(_answers.cast<num>());
                   }
                 }
               : null,
@@ -638,10 +640,11 @@ class _RatingsWidgetState extends State<RatingsWidget> {
 
   static Color _getEmoticonColor(int index, int variant) {
     return HSVColor.lerp(
-      HSVColor.fromColor(Colors.red[variant]),
-      HSVColor.fromColor(Colors.green[variant]),
+      HSVColor.fromColor(Colors.red[variant]!),
+      HSVColor.fromColor(Colors.green[variant]!),
       index / TaskRating.emoticons.length,
-    ).toColor();
+    )!
+        .toColor();
   }
 
   Widget _getEmoticons({bool reversed = false}) {
@@ -685,17 +688,18 @@ class _RatingsWidgetState extends State<RatingsWidget> {
 
 class ResultsWidget extends StatefulWidget {
   final Experiment experiment;
-  final String message;
+  final String? message;
   final bool practice;
-  final VoidCallback onContinuePressed, onRepeatPracticePressed;
+  final VoidCallback onContinuePressed;
+  final VoidCallback? onRepeatPracticePressed;
 
   const ResultsWidget({
-    this.experiment,
+    required this.experiment,
     this.message,
     this.practice = false,
-    this.onContinuePressed,
+    required this.onContinuePressed,
     this.onRepeatPracticePressed,
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -703,8 +707,8 @@ class ResultsWidget extends StatefulWidget {
 }
 
 class _ResultsWidgetState extends State<ResultsWidget> {
-  String _message;
-  Future<Experiment> _experimentFuture;
+  late String _message;
+  late Future<Experiment> _experimentFuture;
 
   /// Reload and return the experiment for checking the new `nTasksDone`
   Future<Experiment> loadUpdatedExperiment() {
@@ -737,7 +741,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
               style: TextStyle(
                 fontSize: 30.0,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).accentColor,
+                color: Theme.of(context).colorScheme.secondary,
               ),
             ),
             Spacer(flex: 1),
@@ -745,7 +749,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
               future: _experimentFuture,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (snapshot.data.nTasksDone < snapshot.data.nTasks) {
+                  if (snapshot.data!.nTasksDone < snapshot.data!.nTasks) {
                     // Still tasks left
                     return Column(
                       children: [
@@ -806,7 +810,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                   }
                 } else if (snapshot.hasError) {
                   return ErrorMessage(
-                    S.of(context).errorGeneric(snapshot.error),
+                    S.of(context).errorGeneric(snapshot.error!),
                     retry: () {
                       setState(() {
                         _experimentFuture = loadUpdatedExperiment();

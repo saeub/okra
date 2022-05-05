@@ -1,19 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/widgets.dart';
-import 'task.dart';
 
 import '../../generated/l10n.dart';
+import 'task.dart';
 
 class LexicalDecision extends Task {
-  List<String> _words;
-  int _currentWordIndex;
-  List<bool> _correctAnswers;
-  int _countdown;
-  bool _feedback;
-  DateTime _answerStart;
-  List<bool> _answers;
-  List<Duration> _answerDurations;
+  late List<String> _words;
+  late int _currentWordIndex;
+  List<bool>? _correctAnswers;
+  late int _countdown;
+  bool? _feedback;
+  late DateTime _answerStart;
+  late List<bool> _answers;
+  late List<Duration> _answerDurations;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -33,7 +31,7 @@ class LexicalDecision extends Task {
   }
 
   @override
-  double getProgress() => _feedback == null
+  double? getProgress() => _feedback == null
       ? _currentWordIndex / _words.length
       : (_currentWordIndex + 1) / _words.length;
 
@@ -137,6 +135,7 @@ class LexicalDecision extends Task {
     _answerDurations.add(DateTime.now().difference(_answerStart));
     logger.log('finished word', {'word': _currentWordIndex, 'answer': answer});
     _answers.add(answer);
+    var _correctAnswers = this._correctAnswers;
     if (_correctAnswers != null) {
       logger.log('started feedback', {'word': _currentWordIndex});
       setState(() {

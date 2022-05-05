@@ -16,7 +16,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  Future<PackageInfo> _packageInfoFuture;
+  late Future<PackageInfo> _packageInfoFuture;
 
   @override
   void initState() {
@@ -46,10 +46,63 @@ class _SettingsPageState extends State<SettingsPage> {
                 tooltip: S.of(context).settingsDeleteApi,
                 onPressed: () async {
                   var confirmed = await showDialog<bool>(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title:
+                              Text(S.of(context).settingsDeleteApiDialogTitle),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                              child: Text(S.of(context).dialogNo),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                              child: Text(S.of(context).dialogYes),
+                            ),
+                          ],
+                        ),
+                      ) ??
+                      false;
+                  if (confirmed) {
+                    storage.removeWebApi(api);
+                  }
+                },
+              ),
+            ),
+          ListTile(
+            leading: Icon(Icons.add),
+            title: Text(S.of(context).settingsAddApi),
+            onTap: () async {
+              var newApi = await Navigator.of(context).push<WebApi>(
+                  MaterialPageRoute(builder: (context) => RegistrationPage()));
+              if (newApi != null) {
+                storage.addWebApi(newApi);
+              }
+            },
+          ),
+          CheckboxListTile(
+            title: Text('Show completed experiments'),
+            value: storage.showCompleted,
+            onChanged: (checked) => storage.setShowCompleted(checked ?? false),
+          ),
+          Divider(),
+          ListHeadingTile(S.of(context).settingsTutorialHeading),
+          ListTile(
+            leading: Icon(Icons.undo),
+            title: Text(S.of(context).settingsResetTutorial),
+            enabled: storage.tutorialApi.isResettable(),
+            onTap: () async {
+              var confirmed = await showDialog<bool>(
                     barrierDismissible: false,
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text(S.of(context).settingsDeleteApiDialogTitle),
+                      title:
+                          Text(S.of(context).settingsResetTutorialDialogTitle),
                       actions: [
                         TextButton(
                           onPressed: () {
@@ -65,57 +118,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ],
                     ),
-                  );
-                  if (confirmed) {
-                    storage.removeWebApi(api);
-                  }
-                },
-              ),
-            ),
-          ListTile(
-            leading: Icon(Icons.add),
-            title: Text(S.of(context).settingsAddApi),
-            onTap: () async {
-              var newApi = await Navigator.push<WebApi>(context,
-                  MaterialPageRoute(builder: (context) => RegistrationPage()));
-              if (newApi != null) {
-                storage.addWebApi(newApi);
-              }
-            },
-          ),
-          CheckboxListTile(
-            title: Text('Show completed experiments'),
-            value: storage.showCompleted,
-            onChanged: storage.setShowCompleted,
-          ),
-          Divider(),
-          ListHeadingTile(S.of(context).settingsTutorialHeading),
-          ListTile(
-            leading: Icon(Icons.undo),
-            title: Text(S.of(context).settingsResetTutorial),
-            enabled: storage.tutorialApi.isResettable(),
-            onTap: () async {
-              var confirmed = await showDialog<bool>(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(S.of(context).settingsResetTutorialDialogTitle),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                      child: Text(S.of(context).dialogNo),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      },
-                      child: Text(S.of(context).dialogYes),
-                    ),
-                  ],
-                ),
-              );
+                  ) ??
+                  false;
               if (confirmed) {
                 storage.resetTutorial();
               }
@@ -129,7 +133,7 @@ class _SettingsPageState extends State<SettingsPage> {
               if (snapshot.hasData) {
                 return AboutListTile(
                   icon: Icon(Icons.info),
-                  applicationVersion: snapshot.data.version,
+                  applicationVersion: snapshot.data!.version,
                   aboutBoxChildren: [
                     Text(S.of(context).settingsAboutText),
                   ],

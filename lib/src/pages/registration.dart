@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 import '../../generated/l10n.dart';
 import '../data/api.dart';
-import '../qr/qr.dart';
 import '../util.dart';
 
 class RegistrationData {
@@ -20,9 +20,9 @@ class RegistrationPage extends StatefulWidget {
 
 class _RegistrationPageState extends State<RegistrationPage> {
   TextEditingController _urlController = TextEditingController();
-  TextEditingController _participantIdController;
-  TextEditingController _registrationKeyController;
-  bool _loading;
+  late TextEditingController _participantIdController;
+  late TextEditingController _registrationKeyController;
+  late bool _loading;
 
   @override
   void initState() {
@@ -92,11 +92,15 @@ class _RegistrationPageState extends State<RegistrationPage> {
           label: Text(S.of(context).registrationScanQrCode),
           onPressed: () async {
             try {
-              var registrationData = await scanRegistrationCode(context);
-              _urlController.text = registrationData.url;
-              _participantIdController.text = registrationData.participantId;
-              _registrationKeyController.text =
-                  registrationData.registrationKey;
+              var registrationData = await Navigator.of(context)
+                  .push<RegistrationData>(MaterialPageRoute(
+                      builder: (context) => RegistrationCodeScanner()));
+              if (registrationData != null) {
+                _urlController.text = registrationData.url;
+                _participantIdController.text = registrationData.participantId;
+                _registrationKeyController.text =
+                    registrationData.registrationKey;
+              }
             } on QrScanError catch (e) {
               showErrorSnackBar(context, e.message);
             } catch (_) {
@@ -116,7 +120,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
       });
       var api = await WebApi.register(_urlController.text,
           _participantIdController.text, _registrationKeyController.text);
-      Navigator.pop<WebApi>(context, api);
+      Navigator.of(context).pop<WebApi>(api);
     } on ApiError catch (e) {
       setState(() {
         _loading = false;
@@ -137,5 +141,33 @@ class _RegistrationPageState extends State<RegistrationPage> {
         retry: () => register(context),
       );
     }
+  }
+}
+
+class RegistrationCodeScanner extends StatelessWidget {
+  const RegistrationCodeScanner({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MobileScanner(
+      onDetect: (barcode, args) {
+        var data = barcode.rawValue?.split("\n");
+        if (data == null || data.length != 3) {
+          throw QrScanError(S.of(context).registrationInvalidQrCode);
+        }
+        Navigator.of(context).pop(RegistrationData(data[0], data[1], data[2]));
+      },
+    );
+  }
+}
+
+class QrScanError implements Exception {
+  final String message;
+
+  QrScanError(this.message);
+
+  @override
+  String toString() {
+    return message;
   }
 }

@@ -4,20 +4,20 @@ import 'package:flutter/widgets.dart';
 import '../data/models.dart';
 
 typedef FinishCallback = void Function({
-  Map<String, dynamic> data,
-  String message,
+  Map<String, dynamic>? data,
+  String? message,
 });
 
 abstract class Task {
-  TaskEventLogger logger;
-  StateSetter _setState;
-  FinishCallback _finish;
+  late TaskEventLogger logger;
+  late StateSetter _setState;
+  late FinishCallback _finish;
 
   void init(Map<String, dynamic> data);
 
   Future<void> loadAssets() async {}
 
-  double getProgress();
+  double? getProgress();
 
   Widget build(BuildContext context);
 
@@ -34,7 +34,7 @@ abstract class Task {
 
   void setState(VoidCallback fn) => _setState(fn);
 
-  void finish({Map<String, dynamic> data, String message}) =>
+  void finish({Map<String, dynamic>? data, String? message}) =>
       _finish(data: data, message: message);
 }
 
@@ -48,7 +48,7 @@ class TaskEventLogger {
 
   List<TaskEvent> get events => _events;
 
-  void log(String label, [Map<String, dynamic> data]) {
+  void log(String label, [Map<String, dynamic>? data]) {
     if (!kReleaseMode) {
       print('TaskEventLogger: $label $data');
     }
