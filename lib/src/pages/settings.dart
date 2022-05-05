@@ -79,7 +79,8 @@ class _SettingsPageState extends State<SettingsPage> {
             title: Text(S.of(context).settingsAddApi),
             onTap: () async {
               var newApi = await Navigator.of(context).push<WebApi>(
-                  MaterialPageRoute(builder: (context) => const RegistrationPage()));
+                  MaterialPageRoute(
+                      builder: (context) => const RegistrationPage()));
               if (newApi != null) {
                 storage.addWebApi(newApi);
               }

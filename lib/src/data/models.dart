@@ -84,7 +84,8 @@ class TaskRating {
   final TaskRatingType type;
   final String? lowExtreme, highExtreme;
 
-  const TaskRating(this.question, this.type, {this.lowExtreme, this.highExtreme});
+  const TaskRating(this.question, this.type,
+      {this.lowExtreme, this.highExtreme});
 
   static TaskRating fromJson(Map<String, dynamic> json) {
     var type = typeMap[json['type']];

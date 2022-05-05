@@ -19,7 +19,8 @@ void main() async {
     headers: anyNamed('headers'),
     body: anyNamed('body'),
   )).thenAnswer((invocation) async {
-    if (!(Uri.tryParse(invocation.positionalArguments[0])?.isAbsolute ?? false)) {
+    if (!(Uri.tryParse(invocation.positionalArguments[0])?.isAbsolute ??
+        false)) {
       throw const FormatException();
     }
     return http.Response('', 404);
