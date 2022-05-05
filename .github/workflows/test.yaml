@@ -20,7 +20,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: stable
-          flutter-version: '2.0.2'
+          flutter-version: '2.10.5'
       - run: flutter format -n --set-exit-if-changed lib/main.dart lib/src/ test/ test_driver/
       - run: flutter analyze
   test:
@@ -32,7 +32,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: stable
-          flutter-version: '2.0.2'
+          flutter-version: '2.10.5'
       - run: sudo apt-get update && sudo apt-get install -y lcov
       - run: flutter test --coverage
       - run: lcov --remove coverage/lcov.info 'lib/generated/*' > coverage/lcov_nogen.info
@@ -56,7 +56,7 @@ jobs:
   #     - uses: subosito/flutter-action@v1
   #       with:
   #         channel: stable
-  #         flutter-version: '2.0.2'
+  #         flutter-version: '2.10.5'
   #     - uses: reactivecircus/android-emulator-runner@v2
   #       with:
   #         api-level: ${{ matrix.api-level }}
