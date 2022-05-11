@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../generated/l10n.dart';
-import '../../main.dart';
 import 'task.dart';
 
 class ReactionTime extends Task {
@@ -44,21 +43,17 @@ class ReactionTime extends Task {
 
   @override
   Future<void> loadAssets() async {
-    if (testMode) {
-      _stimulus = await Stimulus.test(width: 100, height: 100);
-    } else {
-      var balloon = await loadImage('assets/images/balloon.png');
-      var balloonPopped = await loadImage('assets/images/balloon_popped.png');
-      var stimulusWidth = 100.0;
-      var scale = stimulusWidth / balloon.width;
-      _stimulus = Stimulus(
-        balloon,
-        balloonPopped,
-        width: stimulusWidth,
-        centerOffset: const Offset(50, 40),
-        hitbox: Rect.fromLTWH(99 * scale, 34 * scale, 312 * scale, 393 * scale),
-      );
-    }
+    var balloon = await loadImage('assets/images/balloon.png');
+    var balloonPopped = await loadImage('assets/images/balloon_popped.png');
+    var stimulusWidth = 100.0;
+    var scale = stimulusWidth / balloon.width;
+    _stimulus = Stimulus(
+      balloon,
+      balloonPopped,
+      width: stimulusWidth,
+      centerOffset: const Offset(50, 40),
+      hitbox: Rect.fromLTWH(99 * scale, 34 * scale, 312 * scale, 393 * scale),
+    );
   }
 
   @override
@@ -222,17 +217,6 @@ class Stimulus {
     this.height = height ?? image.height * this.width / image.width;
     this.centerOffset = centerOffset ?? Offset(this.width / 2, this.height / 2);
     this.hitbox = hitbox ?? Rect.fromLTWH(0, 0, this.width, this.height);
-  }
-
-  static Future<Stimulus> test(
-      {required double width, required double height}) async {
-    var completer = Completer<ui.Image>();
-    ui.decodeImageFromPixels(Uint8List(1), 1, 1, ui.PixelFormat.rgba8888,
-        (result) {
-      completer.complete(result);
-    });
-    var image = await completer.future;
-    return Stimulus(image, image, width: width, height: height);
   }
 }
 

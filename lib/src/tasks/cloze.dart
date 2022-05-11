@@ -11,7 +11,7 @@ class Cloze extends Task {
   late int _currentSegmentIndex;
   late bool _feedbacking;
   int? _chosenOptionIndex;
-  late List<int> _chosenOptionIndices;
+  late List<int?> _chosenOptionIndices;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -79,7 +79,7 @@ class Cloze extends Task {
                 ? () async {
                     logger.log(
                         'finished segment', {'segment': _currentSegmentIndex});
-                    _chosenOptionIndices.add(_chosenOptionIndex!);
+                    _chosenOptionIndices.add(_chosenOptionIndex);
                     if (segment.correctOptionIndex != null) {
                       logger.log('started feedback',
                           {'segment': _currentSegmentIndex});

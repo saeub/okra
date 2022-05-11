@@ -7,8 +7,6 @@ import 'generated/l10n.dart';
 import 'src/data/storage.dart';
 import 'src/pages/experiments.dart';
 
-var testMode = false;
-
 void main() {
   runApp(const App());
 }

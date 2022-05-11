@@ -145,7 +145,9 @@ class SimonGame extends Task {
       setState(() {
         _highlight = null;
       });
-      await Future.delayed(const Duration(milliseconds: 300));
+      if (i < _sequence.length - 1) {
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
     }
     logger.log('finished watching');
     setState(() {
@@ -157,10 +159,9 @@ class SimonGame extends Task {
   }
 
   void _onTap(int index) {
-    var _currentRepetitionIndex = this._currentRepetitionIndex!;
-    if (index == _sequence[_currentRepetitionIndex]) {
-      _currentRepetitionIndex++;
-      if (_currentRepetitionIndex >= _sequence.length) {
+    if (index == _sequence[_currentRepetitionIndex!]) {
+      _currentRepetitionIndex = _currentRepetitionIndex! + 1;
+      if (_currentRepetitionIndex! >= _sequence.length) {
         logger.log('finished repeating');
         setState(() {
           _feedback = true;

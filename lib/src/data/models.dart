@@ -54,7 +54,7 @@ class TaskData {
   static TaskData fromJson(Map<String, dynamic> json) {
     return TaskData(
       json['id'],
-      json['data'],
+      json['data'] ?? {},
     );
   }
 }

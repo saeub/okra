@@ -127,7 +127,7 @@ class PictureNaming extends Task {
                             {'subtask': _currentSubtaskIndex});
                         _feedbacking = false;
                       }
-                      _chosenPictureIndex = null;
+                      this._chosenPictureIndex = null;
                       if (_currentSubtaskIndex < _subtasks.length - 1) {
                         setState(() {
                           _currentSubtaskIndex++;
