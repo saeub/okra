@@ -49,7 +49,7 @@ jobs:
       matrix:
         api-level:
           - 21
-          - 32
+          - 29
     needs: test
     steps:
       - uses: actions/checkout@v2
