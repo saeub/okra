@@ -25,7 +25,7 @@ abstract class Api {
 }
 
 /// Global variable to allow mocking responses in tests
-http.Client client = http.Client();
+var client = http.Client();
 
 class WebApi extends Api {
   final String name;

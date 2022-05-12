@@ -3,5 +3,5 @@ targets:
     sources:
       - lib/**
       - test/**
-      - test_driver/**
+      - integration_test/**
       - $package$
