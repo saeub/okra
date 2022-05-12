@@ -100,8 +100,7 @@ void mockApiClient() {
 
     // POST /tasks/mock_task/finish
     if (request.method == 'POST' &&
-        request.url ==
-            Uri.parse('https://mock.api/tasks/mock_task/finish')) {
+        request.url == Uri.parse('https://mock.api/tasks/mock_task/finish')) {
       if (!authorized(request)) {
         return http.Response('', 401);
       }

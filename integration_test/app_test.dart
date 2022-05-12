@@ -24,7 +24,8 @@ void main() {
   group('API registration', () {
     var findApiUrl = find.widgetWithText(TextField, 'API URL');
     var findParticipantId = find.widgetWithText(TextField, 'Participant ID');
-    var findRegistrationKey = find.widgetWithText(TextField, 'Registration key');
+    var findRegistrationKey =
+        find.widgetWithText(TextField, 'Registration key');
 
     testWidgets('allows adding and removing APIs', (WidgetTester tester) async {
       app.main();
@@ -87,9 +88,12 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Add API'));
       await tester.pumpAndSettle();
-      await tester.enterText(find.widgetWithText(TextField, 'API URL'), 'https://mock.api');
-      await tester.enterText(find.widgetWithText(TextField, 'Participant ID'), 'mock_participant');
-      await tester.enterText(find.widgetWithText(TextField, 'Registration key'), 'mock_key');
+      await tester.enterText(
+          find.widgetWithText(TextField, 'API URL'), 'https://mock.api');
+      await tester.enterText(
+          find.widgetWithText(TextField, 'Participant ID'), 'mock_participant');
+      await tester.enterText(
+          find.widgetWithText(TextField, 'Registration key'), 'mock_key');
       await tester.ensureVisible(find.text('OK'));
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
