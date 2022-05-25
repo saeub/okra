@@ -5,8 +5,8 @@ import '../generated/l10n.dart';
 typedef Translatable = String Function(S);
 
 void showErrorSnackBar(BuildContext context, String message,
-    {VoidCallback retry}) {
-  SnackBarAction action;
+    {VoidCallback? retry}) {
+  SnackBarAction? action;
   if (retry != null) {
     action = SnackBarAction(label: S.of(context).errorRetry, onPressed: retry);
   }
@@ -18,9 +18,9 @@ void showErrorSnackBar(BuildContext context, String message,
 
 class ErrorMessage extends StatelessWidget {
   final String message;
-  final VoidCallback retry;
+  final VoidCallback? retry;
 
-  const ErrorMessage(this.message, {this.retry, Key key}) : super(key: key);
+  const ErrorMessage(this.message, {this.retry, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class ErrorMessage extends StatelessWidget {
         Text(message),
         if (retry != null)
           TextButton.icon(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             label: Text(S.of(context).errorRetry),
             onPressed: retry,
           ),
@@ -47,7 +47,7 @@ class AnimatedLinearProgressIndicator extends StatefulWidget {
   const AnimatedLinearProgressIndicator(this.progress,
       {this.duration = const Duration(milliseconds: 300),
       this.height = 8.0,
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
@@ -57,7 +57,7 @@ class AnimatedLinearProgressIndicator extends StatefulWidget {
 
 class _AnimatedLinearProgressIndicatorState
     extends State<AnimatedLinearProgressIndicator> {
-  double _progress, _previousProgress;
+  late double _progress, _previousProgress;
 
   @override
   void initState() {
@@ -79,7 +79,7 @@ class _AnimatedLinearProgressIndicatorState
 
   @override
   Widget build(BuildContext context) {
-    return TweenAnimationBuilder(
+    return TweenAnimationBuilder<double>(
       tween: Tween<double>(begin: _previousProgress, end: _progress),
       duration: widget.duration,
       builder: (context, progress, _) {
@@ -95,12 +95,12 @@ class _AnimatedLinearProgressIndicatorState
 class ReadingWidth extends StatelessWidget {
   final Widget child;
 
-  const ReadingWidth({@required this.child, Key key}) : super(key: key);
+  const ReadingWidth({required this.child, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: BoxConstraints(maxWidth: 700.0),
+      constraints: const BoxConstraints(maxWidth: 700.0),
       child: child,
     );
   }

@@ -10,12 +10,12 @@ import 'task.dart';
 class PictureNaming extends Task {
   static const double chosenCardMargin = 16.0;
 
-  List<Subtask> _subtasks;
-  int _currentSubtaskIndex;
-  bool _showQuestionMark;
-  bool _feedbacking;
-  int _chosenPictureIndex;
-  List<int> _chosenPictureIndices;
+  late List<Subtask> _subtasks;
+  late int _currentSubtaskIndex;
+  late bool _showQuestionMark;
+  late bool _feedbacking;
+  int? _chosenPictureIndex;
+  late List<int> _chosenPictureIndices;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -30,7 +30,7 @@ class PictureNaming extends Task {
   }
 
   @override
-  double getProgress() => !_feedbacking
+  double? getProgress() => !_feedbacking
       ? _currentSubtaskIndex / _subtasks.length
       : (_currentSubtaskIndex + 1) / _subtasks.length;
 
@@ -39,6 +39,7 @@ class PictureNaming extends Task {
     var subtask = _subtasks[_currentSubtaskIndex];
     var nCards = subtask.pictures.length;
     if (_showQuestionMark) nCards++;
+    var _chosenPictureIndex = this._chosenPictureIndex;
     var feedback = _feedbacking
         ? _chosenPictureIndex == subtask.correctPictureIndex
         : null;
@@ -48,7 +49,7 @@ class PictureNaming extends Task {
           padding: const EdgeInsets.all(8.0),
           child: Text(
             subtask.text,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 30.0,
             ),
           ),
@@ -108,25 +109,25 @@ class PictureNaming extends Task {
             maintainAnimation: true,
             maintainState: true,
             child: ElevatedButton.icon(
-              icon: Icon(Icons.arrow_forward),
+              icon: const Icon(Icons.arrow_forward),
               label: Text(S.of(context).taskAdvance),
               onPressed: !_feedbacking
                   ? () async {
                       logger.log('finished subtask',
                           {'subtask': _currentSubtaskIndex});
-                      _chosenPictureIndices.add(_chosenPictureIndex);
+                      _chosenPictureIndices.add(_chosenPictureIndex!);
                       if (subtask.correctPictureIndex != null) {
                         logger.log('started feedback',
                             {'subtask': _currentSubtaskIndex});
                         setState(() {
                           _feedbacking = true;
                         });
-                        await Future.delayed(Duration(milliseconds: 600));
+                        await Future.delayed(const Duration(milliseconds: 600));
                         logger.log('finished feedback',
                             {'subtask': _currentSubtaskIndex});
                         _feedbacking = false;
                       }
-                      _chosenPictureIndex = null;
+                      this._chosenPictureIndex = null;
                       if (_currentSubtaskIndex < _subtasks.length - 1) {
                         setState(() {
                           _currentSubtaskIndex++;
@@ -159,21 +160,22 @@ class PictureNaming extends Task {
 class PictureCard<T> extends StatelessWidget {
   static const double chosenMargin = 16.0;
 
-  final Image picture;
+  final Image? picture;
   final T value;
   final T chosenValue;
   final void Function(T value) onTap;
-  final bool feedback;
+  final bool? feedback;
 
   const PictureCard(this.picture, this.value, this.chosenValue, this.onTap,
-      {this.feedback, Key key})
+      {this.feedback, Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    var feedback = this.feedback;
     var card = Card(
       margin: chosenValue == value || feedback != null
-          ? EdgeInsets.all(chosenMargin)
+          ? const EdgeInsets.all(chosenMargin)
           : null,
       clipBehavior: Clip.antiAlias,
       child: Stack(
@@ -223,9 +225,9 @@ class PictureCard<T> extends StatelessWidget {
 class Subtask {
   final String text;
   final List<Image> pictures;
-  final int correctPictureIndex;
+  final int? correctPictureIndex;
 
-  Subtask(this.text, this.pictures, [this.correctPictureIndex]);
+  const Subtask(this.text, this.pictures, [this.correctPictureIndex]);
 
   static Subtask fromJson(Map<String, dynamic> json) {
     List<String> pictures = json['pictures'].cast<String>();

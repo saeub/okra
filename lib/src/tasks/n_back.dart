@@ -1,20 +1,21 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
+
 import 'task.dart';
 
 class NBack extends Task {
   static const initialDelayDuration = Duration(milliseconds: 500);
   static const feedbackDuration = Duration(milliseconds: 500);
 
-  int _n;
-  Duration _stimulusDuration, _betweenStimuliDuration;
-  List<String> _stimuli;
-  int _currentStimulusIndex;
-  bool _stimulusVisible;
-  bool _feedback, _feedbacked;
-  int _nTruePositives, _nFalsePositives;
+  late int _n;
+  late Duration _stimulusDuration, _betweenStimuliDuration;
+  late List<String> _stimuli;
+  late int _currentStimulusIndex;
+  late bool _stimulusVisible;
+  bool? _feedback;
+  late bool _feedbacked;
+  late int _nTruePositives, _nFalsePositives;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -46,7 +47,7 @@ class NBack extends Task {
   }
 
   @override
-  double getProgress() {
+  double? getProgress() {
     return _currentStimulusIndex / _stimuli.length;
   }
 
@@ -109,7 +110,7 @@ class NBack extends Task {
                     _currentStimulusIndex >= 0
                         ? _stimuli[_currentStimulusIndex]
                         : '',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 50.0,
                     ),
                   ),

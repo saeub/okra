@@ -15,13 +15,13 @@ enum _QuestionAnsweringStage {
 }
 
 class QuestionAnswering extends Task {
-  List<Question> _questions;
-  List<TaskRating> _ratingsBeforeQuestions;
-  List<num> _ratingsBeforeQuestionsAnswers;
-  _QuestionAnsweringStage _stage;
-  bool _questionsExpanded;
-  double _progress;
-  Widget _firstStageReadingWidget, _readingWidget, _questionsWidget;
+  late List<Question> _questions;
+  late List<TaskRating>? _ratingsBeforeQuestions;
+  List<num>? _ratingsBeforeQuestionsAnswers;
+  late _QuestionAnsweringStage _stage;
+  late bool _questionsExpanded;
+  double? _progress;
+  late Widget _firstStageReadingWidget, _readingWidget, _questionsWidget;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -38,10 +38,10 @@ class QuestionAnswering extends Task {
     }
     _questions = questionData.map(Question.fromJson).toList();
 
-    List<Map<String, dynamic>> ratingsBeforeQuestionsData =
+    List<Map<String, dynamic>>? ratingsBeforeQuestionsData =
         data['ratingsBeforeQuestions']?.cast<Map<String, dynamic>>();
     _ratingsBeforeQuestions =
-        ratingsBeforeQuestionsData?.map(TaskRating.fromJson)?.toList();
+        ratingsBeforeQuestionsData?.map(TaskRating.fromJson).toList();
     if (_ratingsBeforeQuestions != null) {
       _stage = _QuestionAnsweringStage.textOnly;
     } else {
@@ -51,17 +51,19 @@ class QuestionAnswering extends Task {
     _questionsExpanded = false;
 
     // TODO: Refactor widget building
-    var focusCallback = () {
+    focusCallback() {
       setState(() {
         _questionsExpanded = false;
       });
-    };
-    var progressCallback = (progress) {
+    }
+
+    progressCallback(progress) {
       setState(() {
         _progress = progress;
       });
-    };
-    Function() finishedReadingCallback;
+    }
+
+    void Function()? finishedReadingCallback;
     if (_questions.isEmpty) {
       finishedReadingCallback = () {
         logger.log('finished reading', {'stage': 1});
@@ -71,29 +73,33 @@ class QuestionAnswering extends Task {
         });
       };
     }
-    var firstStageFinishedReadingCallback = () {
+    firstStageFinishedReadingCallback() {
       logger.log('finished reading', {'stage': 0});
       setState(() {
         _stage = _QuestionAnsweringStage.ratingsBeforeQuestions;
         _progress = null;
       });
       logger.log('started ratings before questions');
-    };
+    }
+
     switch (readingType) {
       case 'normal':
-        _firstStageReadingWidget = NormalReading(
-            text, logger, null, firstStageFinishedReadingCallback,
+        _firstStageReadingWidget = NormalReading(text, logger,
+            onFinishedReading: firstStageFinishedReadingCallback,
             fontSize: fontSize);
-        _readingWidget = NormalReading(
-            text, logger, focusCallback, finishedReadingCallback,
+        _readingWidget = NormalReading(text, logger,
+            onFocus: focusCallback,
+            onFinishedReading: finishedReadingCallback,
             fontSize: fontSize);
         break;
       case 'self-paced':
-        _firstStageReadingWidget = SelfPacedReading(
-            text, logger, progressCallback, firstStageFinishedReadingCallback,
+        _firstStageReadingWidget = SelfPacedReading(text, logger,
+            onProgress: progressCallback,
+            onFinishedReading: firstStageFinishedReadingCallback,
             fontSize: fontSize);
-        _readingWidget = SelfPacedReading(
-            text, logger, progressCallback, finishedReadingCallback,
+        _readingWidget = SelfPacedReading(text, logger,
+            onProgress: progressCallback,
+            onFinishedReading: finishedReadingCallback,
             fontSize: fontSize);
         _progress = 0;
         break;
@@ -114,7 +120,7 @@ class QuestionAnswering extends Task {
   }
 
   @override
-  double getProgress() => _progress;
+  double? getProgress() => _progress;
 
   @override
   // FIXME: null-safety
@@ -126,7 +132,7 @@ class QuestionAnswering extends Task {
 
       case _QuestionAnsweringStage.ratingsBeforeQuestions:
         return RatingsWidget(
-          _ratingsBeforeQuestions,
+          _ratingsBeforeQuestions!,
           onFinished: (answers) {
             logger.log('finished ratings before questions');
             _ratingsBeforeQuestionsAnswers = answers;
@@ -205,9 +211,9 @@ class QuestionAnswering extends Task {
 class Question {
   final String question;
   final List<String> answers;
-  final int correctAnswerIndex;
+  final int? correctAnswerIndex;
 
-  Question(this.question, this.answers, [this.correctAnswerIndex]);
+  const Question(this.question, this.answers, [this.correctAnswerIndex]);
 
   static Question fromJson(Map<String, dynamic> json) {
     return Question(
@@ -221,13 +227,12 @@ class Question {
 class NormalReading extends StatefulWidget {
   final String text;
   final TaskEventLogger logger;
-  final void Function() onFocus;
-  final VoidCallback onFinishedReading;
+  final void Function()? onFocus;
+  final VoidCallback? onFinishedReading;
   final double fontSize;
 
-  const NormalReading(
-      this.text, this.logger, this.onFocus, this.onFinishedReading,
-      {@required this.fontSize, Key key})
+  const NormalReading(this.text, this.logger,
+      {this.onFocus, this.onFinishedReading, required this.fontSize, Key? key})
       : super(key: key);
 
   @override
@@ -237,7 +242,7 @@ class NormalReading extends StatefulWidget {
 class _NormalReadingState extends State<NormalReading> {
   static const logScrollDistanceThreshold = 50.0;
 
-  double _distanceScrolled;
+  late double _distanceScrolled;
 
   @override
   void initState() {
@@ -251,7 +256,7 @@ class _NormalReadingState extends State<NormalReading> {
       onTap: widget.onFocus,
       child: NotificationListener<ScrollUpdateNotification>(
         onNotification: (notification) {
-          _distanceScrolled += notification.scrollDelta.abs();
+          _distanceScrolled += notification.scrollDelta?.abs() ?? 0;
           if (_distanceScrolled >= logScrollDistanceThreshold) {
             widget.logger.log('scrolled text', {
               'extentBefore': notification.metrics.extentBefore,
@@ -262,7 +267,10 @@ class _NormalReadingState extends State<NormalReading> {
               _distanceScrolled -= logScrollDistanceThreshold;
             }
           }
-          widget.onFocus();
+          var onFocus = widget.onFocus;
+          if (onFocus != null) {
+            onFocus();
+          }
           return false;
         },
         child: SingleChildScrollView(
@@ -296,7 +304,7 @@ class _NormalReadingState extends State<NormalReading> {
                       Padding(
                         padding: const EdgeInsets.only(top: 16.0),
                         child: ElevatedButton.icon(
-                          icon: Icon(Icons.arrow_forward),
+                          icon: const Icon(Icons.arrow_forward),
                           label: Text(S.of(context).taskAdvance),
                           onPressed: widget.onFinishedReading,
                         ),
@@ -315,13 +323,15 @@ class _NormalReadingState extends State<NormalReading> {
 class SelfPacedReading extends StatefulWidget {
   final String text;
   final TaskEventLogger logger;
-  final void Function(double progress) onProgress;
-  final VoidCallback onFinishedReading;
+  final void Function(double progress)? onProgress;
+  final VoidCallback? onFinishedReading;
   final double fontSize;
 
-  const SelfPacedReading(
-      this.text, this.logger, this.onProgress, this.onFinishedReading,
-      {@required this.fontSize, Key key})
+  const SelfPacedReading(this.text, this.logger,
+      {this.onProgress,
+      this.onFinishedReading,
+      required this.fontSize,
+      Key? key})
       : super(key: key);
 
   @override
@@ -329,8 +339,8 @@ class SelfPacedReading extends StatefulWidget {
 }
 
 class _SelfPacedReadingState extends State<SelfPacedReading> {
-  List<String> _segments;
-  int _currentSegmentIndex;
+  late List<String> _segments;
+  late int _currentSegmentIndex;
 
   @override
   void initState() {
@@ -356,16 +366,22 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
               if (_currentSegmentIndex < _segments.length) _currentSegmentIndex,
             ]
           });
-          widget.onProgress(_currentSegmentIndex / _segments.length);
+          var onProgress = widget.onProgress;
+          if (onProgress != null) {
+            onProgress(_currentSegmentIndex / _segments.length);
+          }
         } else {
-          widget.onFinishedReading();
+          var onFinishedReading = widget.onFinishedReading;
+          if (onFinishedReading != null) {
+            onFinishedReading();
+          }
         }
       },
       child: ColoredBox(
         color: Theme.of(context).scaffoldBackgroundColor,
         child: Column(
           children: [
-            Spacer(),
+            const Spacer(),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ReadingWidth(
@@ -380,7 +396,7 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
           ],
         ),
       ),
@@ -395,10 +411,10 @@ class AnimatedSegments extends StatefulWidget {
   final Duration duration;
 
   const AnimatedSegments(this.previousSegment, this.currentSegment,
-      {@required this.fontSize,
+      {required this.fontSize,
       this.segmentHeight = 150.0,
       this.duration = const Duration(milliseconds: 200),
-      Key key})
+      Key? key})
       : super(key: key);
 
   @override
@@ -407,17 +423,17 @@ class AnimatedSegments extends StatefulWidget {
 
 class _AnimatedSegmentsState extends State<AnimatedSegments>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  Animation<double> _animation;
+  late AnimationController _controller;
+  late Animation<double> _animation;
 
   void _startAnimation() {
     _controller.reset();
     _animation = CurveTween(curve: Curves.easeInOut)
         .chain(Tween<double>(begin: 1.0, end: 0.0))
         .animate(_controller)
-          ..addListener(() {
-            setState(() {});
-          });
+      ..addListener(() {
+        setState(() {});
+      });
     _controller.forward();
   }
 
@@ -503,7 +519,7 @@ class QuestionsWidget extends StatefulWidget {
   final FinishedAnsweringCallback onFinishedAnswering;
 
   const QuestionsWidget(this.questions, this.logger, this.onFinishedAnswering,
-      {Key key})
+      {Key? key})
       : super(key: key);
 
   @override
@@ -511,8 +527,8 @@ class QuestionsWidget extends StatefulWidget {
 }
 
 class _QuestionsWidgetState extends State<QuestionsWidget> {
-  List<int> _chosenAnswerIndices;
-  bool _feedbacking;
+  late List<int?> _chosenAnswerIndices;
+  late bool _feedbacking;
 
   @override
   void initState() {
@@ -561,9 +577,8 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                                           widget.questions[i]
                                               .correctAnswerIndex &&
                                       j == _chosenAnswerIndices[i])
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
                                       child: Icon(Icons.check,
                                           color: Colors.green),
                                     )
@@ -571,9 +586,8 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                                       j ==
                                           widget
                                               .questions[i].correctAnswerIndex)
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
+                                    const Padding(
+                                      padding: EdgeInsets.only(right: 8.0),
                                       child: Icon(Icons.arrow_forward,
                                           color: Colors.red),
                                     ),
@@ -601,13 +615,14 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                   ),
                 ),
               ElevatedButton.icon(
-                icon: Icon(Icons.arrow_forward),
+                icon: const Icon(Icons.arrow_forward),
                 label: Text(S.of(context).taskFinish),
                 onPressed: !_chosenAnswerIndices.contains(null)
                     ? () {
                         if (_feedbacking) {
                           widget.logger.log('finished feedback');
-                          widget.onFinishedAnswering(_chosenAnswerIndices);
+                          widget.onFinishedAnswering(
+                              _chosenAnswerIndices.cast<int>());
                         } else {
                           widget.logger.log('finished reading', {'stage': 1});
                           for (var i = 0; i < widget.questions.length; i++) {
@@ -620,7 +635,8 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                           }
                           setState(() {});
                           if (!_feedbacking) {
-                            widget.onFinishedAnswering(_chosenAnswerIndices);
+                            widget.onFinishedAnswering(
+                                _chosenAnswerIndices.cast<int>());
                           }
                         }
                       }

@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
@@ -14,35 +13,35 @@ class SimonGame extends Task {
     Colors.blue,
   ];
   static final shapes = <Path>[
-    Path()..addOval(Rect.fromLTRB(-1.1, -1.1, 1.1, 1.1)),
+    Path()..addOval(const Rect.fromLTRB(-1.1, -1.1, 1.1, 1.1)),
     Path()
       ..addPolygon([
-        Offset(-1.0, -1.0),
-        Offset(1.0, -1.0),
-        Offset(1.0, 1.0),
-        Offset(-1.0, 1.0),
+        const Offset(-1.0, -1.0),
+        const Offset(1.0, -1.0),
+        const Offset(1.0, 1.0),
+        const Offset(-1.0, 1.0),
       ], true),
     Path()
       ..addPolygon([
-        Offset(0, -1.4),
-        Offset(1.4, 0),
-        Offset(0, 1.4),
-        Offset(-1.4, 0),
+        const Offset(0, -1.4),
+        const Offset(1.4, 0),
+        const Offset(0, 1.4),
+        const Offset(-1.4, 0),
       ], true),
     (Path()
           ..addPolygon([
-            Offset(0, -1.4),
+            const Offset(0, -1.4),
             Offset(1.4 * cos(pi * 1 / 6), 1.4 * sin(pi * 1 / 6)),
             Offset(-1.4 * cos(pi * 1 / 6), 1.4 * sin(pi * 1 / 6)),
           ], true))
-        .shift(Offset(0, 0.2)),
+        .shift(const Offset(0, 0.2)),
   ];
 
-  List<int> _sequence;
-  int _currentRepetitionIndex;
-  int _highlight;
-  bool _feedback;
-  Random _random;
+  late List<int> _sequence;
+  int? _currentRepetitionIndex;
+  int? _highlight;
+  bool? _feedback;
+  late Random _random;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -52,10 +51,11 @@ class SimonGame extends Task {
   }
 
   @override
-  double getProgress() => null;
+  double? getProgress() => null;
 
   @override
   Widget build(BuildContext context) {
+    var _feedback = this._feedback;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Stack(
@@ -136,16 +136,18 @@ class SimonGame extends Task {
     _sequence.add(nextItem);
     logger.log(
         'started watching', {'sequence': _sequence.toList(growable: false)});
-    await Future.delayed(Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 500));
     for (var i = 0; i < _sequence.length; i++) {
       setState(() {
         _highlight = _sequence[i];
       });
-      await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 500));
       setState(() {
         _highlight = null;
       });
-      await Future.delayed(Duration(milliseconds: 300));
+      if (i < _sequence.length - 1) {
+        await Future.delayed(const Duration(milliseconds: 300));
+      }
     }
     logger.log('finished watching');
     setState(() {
@@ -157,15 +159,15 @@ class SimonGame extends Task {
   }
 
   void _onTap(int index) {
-    if (index == _sequence[_currentRepetitionIndex]) {
-      _currentRepetitionIndex++;
-      if (_currentRepetitionIndex >= _sequence.length) {
+    if (index == _sequence[_currentRepetitionIndex!]) {
+      _currentRepetitionIndex = _currentRepetitionIndex! + 1;
+      if (_currentRepetitionIndex! >= _sequence.length) {
         logger.log('finished repeating');
         setState(() {
           _feedback = true;
         });
         logger.log('started feedback', {'feedback': _feedback});
-        Future.delayed(Duration(milliseconds: 1000)).then((_) {
+        Future.delayed(const Duration(milliseconds: 1000)).then((_) {
           logger.log('finished feedback');
           _nextSequence();
         });
@@ -176,7 +178,7 @@ class SimonGame extends Task {
         _feedback = false;
       });
       logger.log('started feedback', {'feedback': _feedback});
-      Future.delayed(Duration(milliseconds: 1000)).then((_) {
+      Future.delayed(const Duration(milliseconds: 1000)).then((_) {
         logger.log('finished feedback', {'feedback': _feedback});
         finish(data: {
           'maxCorrectItems': _sequence.length - 1,

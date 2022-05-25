@@ -23,9 +23,9 @@ class Storage extends ChangeNotifier {
   static const showCompletedKey = 'showCompleted';
 
   final LocalStorage storage;
-  List<WebApi> _webApis;
-  TutorialApi _tutorialApi;
-  bool _showCompleted;
+  late List<WebApi> _webApis;
+  late TutorialApi _tutorialApi;
+  late bool _showCompleted;
 
   Storage(this.storage) {
     List<dynamic> apiJsons = storage.getItem(apisKey) ?? [];

@@ -55,7 +55,7 @@ To create and conduct experiments, you need to:
 Requirements:
 
 - [Flutter](https://flutter.dev/)
-- Android/iOS emulator or a real device for testing
+- Android/iOS emulator, Google Chrome, or a real device for testing
 - Flutter Intl ([extension for VS Code](https://marketplace.visualstudio.com/items?itemName=localizely.flutter-intl) or [plugin for IntelliJ](https://plugins.jetbrains.com/plugin/13666-flutter-intl)) for i18n code generation
 
 While developing, you can use the dummy server under `dev_server/` and connect to it from the app on your emulator (`http://10.0.2.2:<port>` on Android) or device.
@@ -63,10 +63,10 @@ While developing, you can use the dummy server under `dev_server/` and connect t
 Running tests:
 
 - Unit: `flutter test`
-- Integration: `flutter driver --target test_driver/app.dart`
+- Integration: `flutter test integration_test/app_test.dart`
 
 Code formatting / static analysis:
 
-- `flutter format lib/main.dart lib/src/ test/ test_driver/`
+- `flutter format lib/main.dart lib/src/ test/ integration_test/`
 - `flutter analyze`
 - Keep translation files (`lib/i10n/*.arb`) files sorted

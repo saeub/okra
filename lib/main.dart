@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localstorage/localstorage.dart';
@@ -8,13 +7,13 @@ import 'generated/l10n.dart';
 import 'src/data/storage.dart';
 import 'src/pages/experiments.dart';
 
-var testMode = false;
-
 void main() {
-  runApp(App());
+  runApp(const App());
 }
 
 class App extends StatelessWidget {
+  const App({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -23,8 +22,8 @@ class App extends StatelessWidget {
         primarySwatch: Colors.green,
         primaryColor: Colors.green[600],
       ),
-      home: StorageWrapper(),
-      localizationsDelegates: <LocalizationsDelegate>[
+      home: const StorageWrapper(),
+      localizationsDelegates: const <LocalizationsDelegate>[
         S.delegate,
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -36,12 +35,14 @@ class App extends StatelessWidget {
 }
 
 class StorageWrapper extends StatefulWidget {
+  const StorageWrapper({Key? key}) : super(key: key);
+
   @override
   _StorageWrapperState createState() => _StorageWrapperState();
 }
 
 class _StorageWrapperState extends State<StorageWrapper> {
-  Future<LocalStorage> _localStorageFuture;
+  late Future<LocalStorage> _localStorageFuture;
 
   @override
   void initState() {
@@ -57,7 +58,7 @@ class _StorageWrapperState extends State<StorageWrapper> {
         if (snapshot.hasData) {
           Storage storage;
           try {
-            storage = Storage(snapshot.data);
+            storage = Storage(snapshot.data!);
           } on IncompatibleStorageError catch (e) {
             return Scaffold(
               body: Padding(
@@ -76,8 +77,8 @@ class _StorageWrapperState extends State<StorageWrapper> {
                       style: Theme.of(context).textTheme.headline6,
                     ),
                     ElevatedButton.icon(
-                      icon: Icon(Icons.delete),
-                      label: Text('YES, DELETE'),
+                      icon: const Icon(Icons.delete),
+                      label: const Text('YES, DELETE'),
                       style: ButtonStyle(
                         backgroundColor:
                             MaterialStateProperty.all<Color>(Colors.red),
@@ -85,7 +86,7 @@ class _StorageWrapperState extends State<StorageWrapper> {
                       // color: Colors.red,
                       // textColor: Colors.white,
                       onPressed: () async {
-                        await snapshot.data.clear();
+                        await snapshot.data!.clear();
                         setState(() {
                           _localStorageFuture = Storage.loadLocalStorage();
                         });
@@ -98,13 +99,13 @@ class _StorageWrapperState extends State<StorageWrapper> {
           }
           return ChangeNotifierProvider.value(
             value: storage,
-            child: ExperimentsMenuPage(),
+            child: const ExperimentsMenuPage(),
           );
         } else if (snapshot.hasError) {
           return Center(
-              child: Text(S.of(context).errorGeneric(snapshot.error)));
+              child: Text(S.of(context).errorGeneric(snapshot.error!)));
         } else {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );
