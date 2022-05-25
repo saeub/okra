@@ -3,11 +3,11 @@ name: Test
 on:
   pull_request:
     branches:
-      - master
+      - main
       - dev
   push:
     branches:
-      - master
+      - main
       - dev
 
 jobs:
@@ -20,8 +20,8 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: stable
-          flutter-version: '2.0.2'
-      - run: flutter format -n --set-exit-if-changed lib/main.dart lib/src/ test/ test_driver/
+          flutter-version: '2.10.5'
+      - run: flutter format -n --set-exit-if-changed lib/main.dart lib/src/ test/ integration_test/
       - run: flutter analyze
   test:
     name: Unit tests
@@ -32,7 +32,7 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: stable
-          flutter-version: '2.0.2'
+          flutter-version: '2.10.5'
       - run: sudo apt-get update && sudo apt-get install -y lcov
       - run: flutter test --coverage
       - run: lcov --remove coverage/lcov.info 'lib/generated/*' > coverage/lcov_nogen.info
@@ -40,24 +40,24 @@ jobs:
         with:
           files: coverage/lcov_nogen.info
           fail_ci_if_error: true
-  # drive-android:
-  #   name: Integration tests
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 30
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       api-level:
-  #         - 18
-  #         - 28
-  #   needs: test
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - uses: subosito/flutter-action@v1
-  #       with:
-  #         channel: stable
-  #         flutter-version: '2.0.2'
-  #     - uses: reactivecircus/android-emulator-runner@v2
-  #       with:
-  #         api-level: ${{ matrix.api-level }}
-  #         script: flutter drive --target test_driver/app.dart
+  integration-test-android:
+    name: Integration tests
+    runs-on: macos-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        api-level:
+          - 21
+          - 29
+    needs: test
+    steps:
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: stable
+          flutter-version: '2.10.5'
+      - uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api-level }}
+          script: flutter test integration_test/app_test.dart

@@ -8,7 +8,7 @@
 One segment of text is shown at a time, with a blank which has to be filled in by one of the options provided.
 
 - Identifier: `cloze`
-- Implementation: [`lib/src/tasks/cloze.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/cloze.dart)
+- Implementation: [`lib/src/tasks/cloze.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/cloze.dart)
 - Data structure:
   ```json
   {
@@ -40,7 +40,7 @@ One segment of text is shown at a time, with a blank which has to be filled in b
 One word is shown at a time. The task is to determine whether it is a real word or a non-word. Similar to the original experiment described by [Meyer and Schvaneveldt (1971)](https://psycnet.apa.org/record/1972-04123-001), but showing single words instead of word pairs (though the task implementation allows newlines in words to display pairs).
 
 - Identifier: `lexical-decision`
-- Implementation: [`lib/src/tasks/lexical_decision.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/lexical_decision.dart)
+- Implementation: [`lib/src/tasks/lexical_decision.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/lexical_decision.dart)
 - Data structure:
   ```json
   {
@@ -63,7 +63,7 @@ One word is shown at a time. The task is to determine whether it is a real word 
 A single textual stimulus (usually a letter) is shown for 500 milliseconds with 2500 milliseconds between stimuli (these durations can be configured to different values). The participant taps the screen whenever they see the same stimulus as _n_ stimuli back (a "positive" stimulus). Immediate positive or negative feedback is shown after each tap. The sequence of stimuli is randomly generated before each task.
 
 - Identifier: `n-back`
-- Implementation: [`lib/src/tasks/n_back.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/n_back.dart)
+- Implementation: [`lib/src/tasks/n_back.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/n_back.dart)
 - Data structure:
   ```json
   {
@@ -89,7 +89,7 @@ A single textual stimulus (usually a letter) is shown for 500 milliseconds with 
 A textual stimulus is shown above a number of pictures. One of the pictures (or optionally a question mark, meaning "don't know") has to be selected.
 
 - Identifier: `picture-naming`
-- Implementation: [`lib/src/tasks/picture_naming.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/picture_naming.dart)
+- Implementation: [`lib/src/tasks/picture_naming.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/picture_naming.dart)
 - Data structure:
   ```json
   {
@@ -124,7 +124,7 @@ A text is presented, and several single-answer multiple-choice questions have to
 **NOTE:** The `self-paced` reading type is currently neither optimized nor well tested. At the moment, using it for smaller screen sizes is a bad idea.
 
 - Identifier: `question-answering`
-- Implementation: [`lib/src/tasks/question_answering.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/question_answering.dart)
+- Implementation: [`lib/src/tasks/question_answering.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/question_answering.dart)
 - Data structure:
   ```json
   {
@@ -166,7 +166,7 @@ A text is presented, and several single-answer multiple-choice questions have to
 A single picture of a red balloon is shown at a time, which disappears with a popping animation as soon as it is being touched. A new one then appears in a (uniformly distributed) random location after a configurable amount of time.
 
 - Identifier: `reaction-time`
-- Implementation: [`lib/src/tasks/reaction_time.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/reaction_time.dart)
+- Implementation: [`lib/src/tasks/reaction_time.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/reaction_time.dart)
 - Data structure:
   ```json
   {
@@ -189,7 +189,7 @@ A single picture of a red balloon is shown at a time, which disappears with a po
 Four buttons are shown. They light up in a specific sequence, which has to be repeated by pressing the buttons in the same order. After each successful repetition, a random item is added to the sequence, and the sequence is shown again. Inspired by the electronic game [Simon](https://en.wikipedia.org/wiki/Simon_(game)).
 
 - Identifier: `simon-game`
-- Implementation: [`lib/src/tasks/simon_game.dart`](https://github.com/saeub/okra/blob/master/lib/src/tasks/simon_game.dart)
+- Implementation: [`lib/src/tasks/simon_game.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/simon_game.dart)
 - Data structure: (no data)
 - Results data structure:
   ```json

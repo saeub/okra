@@ -13,7 +13,7 @@ import 'models.dart';
 abstract class Api {
   String getName();
 
-  Image getIcon();
+  Image? getIcon();
 
   Future<List<Experiment>> getExperiments();
 
@@ -25,11 +25,11 @@ abstract class Api {
 }
 
 /// Global variable to allow mocking responses in tests
-http.Client client = http.Client();
+var client = http.Client();
 
 class WebApi extends Api {
   final String name;
-  final String iconUrl;
+  final String? iconUrl;
   final String baseUrl;
   final String participantId;
   final String deviceKey;
@@ -38,7 +38,7 @@ class WebApi extends Api {
 
   WebApi(this.name, this.iconUrl, this.baseUrl, this.participantId,
       this.deviceKey, this.added,
-      [String storageKey])
+      [String? storageKey])
       : _storageKey = storageKey ?? _randomStorageKey();
 
   static String _randomStorageKey() {
@@ -79,7 +79,7 @@ class WebApi extends Api {
     try {
       response = await client
           .post(
-            '$baseUrl/register',
+            Uri.parse('$baseUrl/register'),
             headers: {
               'Content-Type': 'application/json',
             },
@@ -88,7 +88,7 @@ class WebApi extends Api {
               'registrationKey': registrationKey,
             }),
           )
-          .timeout(Duration(seconds: 30));
+          .timeout(const Duration(seconds: 30));
     } on ArgumentError {
       throw ApiError(message: (s) => s.apiErrorInvalidUrl);
     } on FormatException {
@@ -128,7 +128,10 @@ class WebApi extends Api {
   String getName() => name;
 
   @override
-  Image getIcon() => iconUrl != null ? Image.network(iconUrl) : null;
+  Image? getIcon() {
+    var iconUrl = this.iconUrl;
+    return iconUrl != null ? Image.network(iconUrl) : null;
+  }
 
   @override
   Future<List<Experiment>> getExperiments() async {
@@ -160,7 +163,7 @@ class WebApi extends Api {
     http.Response response;
     try {
       response = await client.get(
-        url,
+        Uri.parse(url),
         headers: {
           'Content-Type': 'application/json',
           'X-Participant-ID': participantId,
@@ -189,7 +192,7 @@ class WebApi extends Api {
     try {
       response = await client
           .post(
-            url,
+            Uri.parse(url),
             headers: {
               'Content-Type': 'application/json',
               'X-Participant-ID': participantId,
@@ -230,7 +233,7 @@ class ApiError implements Exception {
   final int statusCode;
   final bool retriable;
 
-  ApiError({Translatable message, this.statusCode, this.retriable = false})
+  ApiError({Translatable? message, this.statusCode = 0, this.retriable = false})
       : message = message ?? ((s) => s.apiErrorGeneric(statusCode));
 
   @override

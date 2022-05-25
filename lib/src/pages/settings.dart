@@ -9,14 +9,14 @@ import '../data/storage.dart';
 import 'registration.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage();
+  const SettingsPage({Key? key}) : super(key: key);
 
   @override
   _SettingsPageState createState() => _SettingsPageState();
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  Future<PackageInfo> _packageInfoFuture;
+  late Future<PackageInfo> _packageInfoFuture;
 
   @override
   void initState() {
@@ -42,14 +42,68 @@ class _SettingsPageState extends State<SettingsPage> {
                       DateFormat.Hm().format(api.added)) +
                   ' (ID: ${api.participantId})'),
               trailing: IconButton(
-                icon: Icon(Icons.delete),
+                icon: const Icon(Icons.delete),
                 tooltip: S.of(context).settingsDeleteApi,
                 onPressed: () async {
                   var confirmed = await showDialog<bool>(
+                        barrierDismissible: false,
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title:
+                              Text(S.of(context).settingsDeleteApiDialogTitle),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(false);
+                              },
+                              child: Text(S.of(context).dialogNo),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop(true);
+                              },
+                              child: Text(S.of(context).dialogYes),
+                            ),
+                          ],
+                        ),
+                      ) ??
+                      false;
+                  if (confirmed) {
+                    storage.removeWebApi(api);
+                  }
+                },
+              ),
+            ),
+          ListTile(
+            leading: const Icon(Icons.add),
+            title: Text(S.of(context).settingsAddApi),
+            onTap: () async {
+              var newApi = await Navigator.of(context).push<WebApi>(
+                  MaterialPageRoute(
+                      builder: (context) => const RegistrationPage()));
+              if (newApi != null) {
+                storage.addWebApi(newApi);
+              }
+            },
+          ),
+          CheckboxListTile(
+            title: const Text('Show completed experiments'),
+            value: storage.showCompleted,
+            onChanged: (checked) => storage.setShowCompleted(checked ?? false),
+          ),
+          const Divider(),
+          ListHeadingTile(S.of(context).settingsTutorialHeading),
+          ListTile(
+            leading: const Icon(Icons.undo),
+            title: Text(S.of(context).settingsResetTutorial),
+            enabled: storage.tutorialApi.isResettable(),
+            onTap: () async {
+              var confirmed = await showDialog<bool>(
                     barrierDismissible: false,
                     context: context,
                     builder: (context) => AlertDialog(
-                      title: Text(S.of(context).settingsDeleteApiDialogTitle),
+                      title:
+                          Text(S.of(context).settingsResetTutorialDialogTitle),
                       actions: [
                         TextButton(
                           onPressed: () {
@@ -65,71 +119,22 @@ class _SettingsPageState extends State<SettingsPage> {
                         ),
                       ],
                     ),
-                  );
-                  if (confirmed) {
-                    storage.removeWebApi(api);
-                  }
-                },
-              ),
-            ),
-          ListTile(
-            leading: Icon(Icons.add),
-            title: Text(S.of(context).settingsAddApi),
-            onTap: () async {
-              var newApi = await Navigator.push<WebApi>(context,
-                  MaterialPageRoute(builder: (context) => RegistrationPage()));
-              if (newApi != null) {
-                storage.addWebApi(newApi);
-              }
-            },
-          ),
-          CheckboxListTile(
-            title: Text('Show completed experiments'),
-            value: storage.showCompleted,
-            onChanged: storage.setShowCompleted,
-          ),
-          Divider(),
-          ListHeadingTile(S.of(context).settingsTutorialHeading),
-          ListTile(
-            leading: Icon(Icons.undo),
-            title: Text(S.of(context).settingsResetTutorial),
-            enabled: storage.tutorialApi.isResettable(),
-            onTap: () async {
-              var confirmed = await showDialog<bool>(
-                barrierDismissible: false,
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: Text(S.of(context).settingsResetTutorialDialogTitle),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(false);
-                      },
-                      child: Text(S.of(context).dialogNo),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(true);
-                      },
-                      child: Text(S.of(context).dialogYes),
-                    ),
-                  ],
-                ),
-              );
+                  ) ??
+                  false;
               if (confirmed) {
                 storage.resetTutorial();
               }
             },
           ),
-          Divider(),
+          const Divider(),
           ListHeadingTile(S.of(context).settingsAboutHeading),
           FutureBuilder<PackageInfo>(
             future: _packageInfoFuture,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 return AboutListTile(
-                  icon: Icon(Icons.info),
-                  applicationVersion: snapshot.data.version,
+                  icon: const Icon(Icons.info),
+                  applicationVersion: snapshot.data!.version,
                   aboutBoxChildren: [
                     Text(S.of(context).settingsAboutText),
                   ],
@@ -137,7 +142,7 @@ class _SettingsPageState extends State<SettingsPage> {
               } else if (snapshot.hasError) {
                 return Text('Error: ${snapshot.error}');
               } else {
-                return CircularProgressIndicator();
+                return const CircularProgressIndicator();
               }
             },
           ),
@@ -150,7 +155,7 @@ class _SettingsPageState extends State<SettingsPage> {
 class ListHeadingTile extends StatelessWidget {
   final String text;
 
-  const ListHeadingTile(this.text);
+  const ListHeadingTile(this.text, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
