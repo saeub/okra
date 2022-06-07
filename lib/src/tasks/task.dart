@@ -52,3 +52,58 @@ class TaskEventLogger {
     _events.add(TaskEvent(DateTime.now(), label, data));
   }
 }
+
+abstract class MultistageTask extends Task {
+  TaskStage? _currentStage;
+
+  @override
+  @mustCallSuper
+  void init(Map<String, dynamic> data) {
+    _startNextStage();
+  }
+
+  void _startNextStage() {
+    var nextStage = getNextStage(_currentStage);
+    if (nextStage != null) {
+      setState(() {
+        nextStage.injectDependencies(this, _setState, _startNextStage);
+        _currentStage = nextStage;
+      });
+    }
+  }
+
+  TaskStage? getNextStage(TaskStage? previousStage);
+
+  @override
+  Widget build(BuildContext context) {
+    return _currentStage!.build(context);
+  }
+
+  @override
+  double? getProgress() {
+    return _currentStage!.getProgress();
+  }
+}
+
+abstract class TaskStage {
+  late TaskEventLogger logger;
+  late MultistageTask _task;
+  late StateSetter _setState;
+  late void Function() _finish;
+
+  void injectDependencies(
+      MultistageTask task, StateSetter setState, void Function() finish) {
+    _task = task;
+    logger = _task.logger;
+    _setState = setState;
+    _finish = finish;
+  }
+
+  double? getProgress();
+
+  Widget build(BuildContext context);
+
+  void setState(VoidCallback fn) => _setState(fn);
+
+  void finish({Map<String, dynamic>? data, String? message}) => _finish();
+}
