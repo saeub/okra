@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../util.dart';
 import 'task.dart';
 
 class Reading extends MultistageTask {
@@ -38,7 +39,7 @@ class ScrollingTextStage extends TaskStage {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.only(left: 8.0),
       child: Column(
         children: [
           Expanded(
@@ -140,6 +141,18 @@ class _ScrollingLinesState extends State<ScrollingLines>
     }
   }
 
+  void _scrollTop() {
+    setState(() {
+      _currentLineIndex = 0;
+    });
+  }
+
+  void _scrollBottom() {
+    setState(() {
+      _currentLineIndex = _linesLength - widget.nVisibleLines;
+    });
+  }
+
   void _scrollUp() {
     setState(() {
       _currentLineIndex--;
@@ -160,6 +173,9 @@ class _ScrollingLinesState extends State<ScrollingLines>
 
   @override
   Widget build(BuildContext context) {
+    var scrollableUp = _currentLineIndex > 0;
+    var scrollableDown =
+        _currentLineIndex < _linesLength - widget.nVisibleLines;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -246,15 +262,32 @@ class _ScrollingLinesState extends State<ScrollingLines>
           mainAxisSize: MainAxisSize.min,
           children: [
             IconButton(
-                onPressed: _currentLineIndex > 0 ? _scrollUp : null,
-                icon: const Icon(Icons.arrow_upward)),
+              onPressed: scrollableUp ? _scrollTop : null,
+              icon: const Icon(Icons.vertical_align_top),
+            ),
+            const Spacer(),
             IconButton(
-                onPressed:
-                    _currentLineIndex < _linesLength - widget.nVisibleLines
-                        ? _scrollDown
-                        : null,
-                icon: const Icon(Icons.arrow_downward)),
+              onPressed: scrollableUp ? _scrollUp : null,
+              icon: const Icon(Icons.arrow_upward),
+            ),
+            IconButton(
+              onPressed: scrollableDown ? _scrollDown : null,
+              icon: const Icon(Icons.arrow_downward),
+            ),
+            const Spacer(),
+            IconButton(
+              onPressed: scrollableDown ? _scrollBottom : null,
+              icon: const Icon(Icons.vertical_align_bottom),
+            ),
           ],
+        ),
+        RotatedBox(
+          quarterTurns: 1,
+          child: AnimatedLinearProgressIndicator(
+            _currentLineIndex / (_linesLength - widget.nVisibleLines),
+            height: 4.0,
+            duration: const Duration(milliseconds: 200),
+          ),
         ),
       ],
     );
