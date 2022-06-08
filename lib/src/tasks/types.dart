@@ -8,6 +8,7 @@ import 'picture_naming.dart';
 import 'question_answering.dart';
 import 'simon_game.dart';
 import 'task.dart';
+import 'trail_making.dart';
 
 typedef TaskFactory<T extends Task> = T Function();
 
@@ -50,6 +51,10 @@ class TaskType {
     Icons.grid_view,
     () => SimonGame(),
   );
+  static final TaskType trailMaking = TaskType(
+    Icons.scatter_plot,
+    () => TrailMaking(),
+  );
 
   static TaskType fromString(String identifier) {
     switch (identifier) {
@@ -67,6 +72,8 @@ class TaskType {
         return reactionTime;
       case 'simon-game':
         return simonGame;
+      case 'trail-making':
+        return trailMaking;
       default:
         throw ArgumentError('Task type "$identifier" is not implemented');
     }
