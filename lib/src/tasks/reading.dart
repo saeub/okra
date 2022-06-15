@@ -91,7 +91,8 @@ class ScrollableTextStage extends TaskStage {
                         logger.log('scrolled text', {
                           'visibleRange': [visibleRange.start, visibleRange.end]
                         });
-                        if (!_scrolledToBottom && visibleRange.end == text.length) {
+                        if (!_scrolledToBottom &&
+                            visibleRange.end >= text.length) {
                           setState(() {
                             _scrolledToBottom = true;
                           });
@@ -265,7 +266,7 @@ class QuestionsStage extends TaskStage {
       required this.text,
       required this.textWidth,
       required this.textHeight,
-      this.fontSize = 20})
+      required this.fontSize})
       : _currentQuestionIndex = 0,
         _selectedAnswerIndices = [
           for (var i = 0; i < questions.length; i++) null
@@ -276,7 +277,9 @@ class QuestionsStage extends TaskStage {
     var text = this.text;
     var pageController = PageController();
     pageController.addListener(() {
-      _currentQuestionIndex = pageController.page!.round();
+      setState(() {
+        _currentQuestionIndex = pageController.page!.round();
+      });
     });
     return ColoredBox(
       color: Colors.grey.shade300,
@@ -293,10 +296,14 @@ class QuestionsStage extends TaskStage {
                         text: text,
                         width: textWidth,
                         height: textHeight,
-                        style: TextStyle(fontSize: fontSize, color: Colors.black),
+                        style:
+                            TextStyle(fontSize: fontSize, color: Colors.black),
                         onVisibleRangeChanged: (visibleRange) {
                           logger.log('scrolled text', {
-                            'visibleRange': [visibleRange.start, visibleRange.end]
+                            'visibleRange': [
+                              visibleRange.start,
+                              visibleRange.end
+                            ]
                           });
                         },
                       ),
@@ -314,13 +321,15 @@ class QuestionsStage extends TaskStage {
                   IconButton(
                     alignment: Alignment.centerRight,
                     icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      pageController.animateToPage(
-                        _currentQuestionIndex - 1,
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOut,
-                      );
-                    },
+                    onPressed: _currentQuestionIndex > 0
+                        ? () {
+                            pageController.animateToPage(
+                              _currentQuestionIndex - 1,
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeOut,
+                            );
+                          }
+                        : null,
                   ),
                   Expanded(
                     child: PageView(
@@ -342,26 +351,28 @@ class QuestionsStage extends TaskStage {
                   IconButton(
                     alignment: Alignment.centerLeft,
                     icon: const Icon(Icons.arrow_forward),
-                    onPressed: () {
-                      pageController.animateToPage(
-                        _currentQuestionIndex + 1,
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOut,
-                      );
-                    },
+                    onPressed: _currentQuestionIndex < questions.length - 1
+                        ? () {
+                            pageController.animateToPage(
+                              _currentQuestionIndex + 1,
+                              duration: const Duration(milliseconds: 200),
+                              curve: Curves.easeOut,
+                            );
+                          }
+                        : null,
                   ),
                 ],
               ),
             ),
           ),
-            Visibility(
-              visible: !_selectedAnswerIndices.contains(null),
-              child: ElevatedButton.icon(
-                onPressed: finish,
-                icon: const Icon(Icons.arrow_forward),
-                label: Text(S.of(context).taskAdvance),
-              ),
-            )
+          Visibility(
+            visible: !_selectedAnswerIndices.contains(null),
+            child: ElevatedButton.icon(
+              onPressed: finish,
+              icon: const Icon(Icons.arrow_forward),
+              label: Text(S.of(context).taskAdvance),
+            ),
+          )
         ],
       ),
     );
