@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
@@ -10,27 +8,33 @@ class Reading extends MultistageTask {
   late final String _text;
   late final List<Question> _questions;
 
-  late final ScrollingTextStage _textStage;
+  late final ScrollableTextStage _textStage;
   late final QuestionsStage? _questionsStage;
 
   @override
   void init(Map<String, dynamic> data) {
     _text = data['text'];
-    int nVisibleLines = data['nVisibleLines'];
+    double textWidth = data['textWidth'].toDouble();
+    double textHeight = data['textHeight'].toDouble();
     double fontSize = data['fontSize'] ?? 20.0;
-    double lineSpacing = 1.2;
-    _textStage = ScrollingTextStage(_text, nVisibleLines,
-        fontSize: fontSize, lineSpacing: lineSpacing);
+    _textStage = ScrollableTextStage(
+      text: _text,
+      textWidth: textWidth,
+      textHeight: textHeight,
+      fontSize: fontSize,
+    );
 
     List<Map<String, dynamic>> questionData;
     if (data['questions'] != null) {
       questionData = data['questions'].cast<Map<String, dynamic>>();
       _questions = questionData.map(Question.fromJson).toList();
-      _questionsStage = QuestionsStage(_questions,
-          text: _text,
-          nVisibleLines: nVisibleLines,
-          fontSize: fontSize,
-          lineSpacing: lineSpacing);
+      _questionsStage = QuestionsStage(
+        questions: _questions,
+        text: _text,
+        textWidth: textWidth,
+        textHeight: textHeight,
+        fontSize: fontSize,
+      );
     } else {
       _questions = [];
       _questionsStage = null;
@@ -51,45 +55,50 @@ class Reading extends MultistageTask {
   }
 }
 
-// Scrolling text
+// Scrollable text
 
-class ScrollingTextStage extends TaskStage {
+class ScrollableTextStage extends TaskStage {
   final String text;
-  final int nVisibleLines;
+  final double textWidth, textHeight;
   final double fontSize;
-  final double lineSpacing;
   bool _scrolledToBottom;
 
-  ScrollingTextStage(this.text, this.nVisibleLines,
-      {this.fontSize = 20, this.lineSpacing = 1.2})
+  ScrollableTextStage(
+      {required this.text,
+      required this.textWidth,
+      required this.textHeight,
+      required this.fontSize})
       : _scrolledToBottom = false;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8.0),
+    return ColoredBox(
+      color: Colors.grey.shade300,
       child: Column(
         children: [
           Expanded(
-            child: Center(
-              child: ReadingWidth(
-                child: ScrollingLines(
-                  text,
-                  nVisibleLines,
-                  Theme.of(context)
-                      .textTheme
-                      .bodyMedium!
-                      .copyWith(fontSize: fontSize, height: lineSpacing),
-                  onScrolled: (visibleRange) {
-                    logger.log('scrolled text', {
-                      'visibleRange': [visibleRange.start, visibleRange.end]
-                    });
-                    if (!_scrolledToBottom && visibleRange.end == text.length) {
-                      setState(() {
-                        _scrolledToBottom = true;
-                      });
-                    }
-                  },
+            child: ReadingWidth(
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.contain,
+                  child: Card(
+                    child: ScrollableText(
+                      text: text,
+                      width: textWidth,
+                      height: textHeight,
+                      style: TextStyle(fontSize: fontSize, color: Colors.black),
+                      onVisibleRangeChanged: (visibleRange) {
+                        logger.log('scrolled text', {
+                          'visibleRange': [visibleRange.start, visibleRange.end]
+                        });
+                        if (!_scrolledToBottom && visibleRange.end == text.length) {
+                          setState(() {
+                            _scrolledToBottom = true;
+                          });
+                        }
+                      },
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -99,8 +108,11 @@ class ScrollingTextStage extends TaskStage {
             maintainAnimation: true,
             maintainSize: true,
             maintainState: true,
-            child: ElevatedButton(
-                onPressed: finish, child: Text(S.of(context).taskAdvance)),
+            child: ElevatedButton.icon(
+              onPressed: finish,
+              icon: const Icon(Icons.arrow_forward),
+              label: Text(S.of(context).taskAdvance),
+            ),
           )
         ],
       ),
@@ -111,299 +123,113 @@ class ScrollingTextStage extends TaskStage {
   double? getProgress() => null;
 }
 
-class ScrollingLines extends StatefulWidget {
+class ScrollableText extends StatefulWidget {
   final String text;
-  final int nVisibleLines;
-  final TextStyle style;
-  final Function(TextRange visibleRange)? onScrolled;
+  final double width, height;
+  final TextStyle? style;
+  final Function(TextRange visibleRange)? onVisibleRangeChanged;
 
-  const ScrollingLines(this.text, this.nVisibleLines, this.style,
-      {this.onScrolled, Key? key})
+  const ScrollableText(
+      {required this.text,
+      required this.width,
+      required this.height,
+      this.style,
+      this.onVisibleRangeChanged,
+      Key? key})
       : super(key: key);
 
   @override
-  State<ScrollingLines> createState() => _ScrollingLinesState();
+  State<ScrollableText> createState() => _ScrollableTextState();
 }
 
-class _ScrollingLinesState extends State<ScrollingLines>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  late int _currentLineIndex;
-  late bool _scrollingUp, _scrollingDown;
-  late int _linesLength;
+class _ScrollableTextState extends State<ScrollableText> {
+  late TextPainter _painter;
+  late TextRange _visibleRange;
 
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 200));
-
-    _currentLineIndex = 0;
-    _scrollingUp = false;
-    _scrollingDown = false;
-    _linesLength = 0;
-    _animate();
+    _updatePainter();
+    _visibleRange = _getVisibleRange(0, widget.height);
   }
 
-  double? _cachedMinWidth, _cachedMaxWidth;
-  List<TextRange>? _cachedLineRanges;
-  List<String>? _cachedLines;
-
-  List<String> _getTextLines(double minWidth, maxWidth) {
-    if (minWidth == _cachedMinWidth && maxWidth == _cachedMaxWidth) {
-      return _cachedLines!;
+  @override
+  void didUpdateWidget(ScrollableText oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.text != oldWidget.text ||
+        widget.width != oldWidget.width ||
+        widget.height != oldWidget.height) {
+      _updatePainter();
     }
-    // TODO: Generalize text direction
-    var painter = TextPainter(
+  }
+
+  void _updatePainter() {
+    _painter = TextPainter(
         text: TextSpan(text: widget.text, style: widget.style),
         textDirection: TextDirection.ltr);
-    painter.layout(minWidth: minWidth, maxWidth: maxWidth);
-    var lines = <String>[];
-    var lineRanges = <TextRange>[];
-    var offset = 0;
-    while (true) {
-      var range = painter.getLineBoundary(TextPosition(offset: offset + 1));
-      lineRanges.add(range);
-      lines.add(range.textInside(widget.text));
-      offset = range.end;
-      if (offset >= widget.text.length) {
-        break;
-      }
-    }
-    _cachedMinWidth = minWidth;
-    _cachedMaxWidth = maxWidth;
-    _cachedLineRanges = lineRanges;
-    _cachedLines = lines;
-    return lines;
+    _painter.layout(minWidth: widget.width, maxWidth: widget.width);
   }
 
-  void _animate() {
-    _animation = CurveTween(curve: Curves.easeInOut).animate(_controller)
-      ..addListener(() {
-        setState(() {});
-      })
-      ..addStatusListener((status) {
-        if (status == AnimationStatus.completed) {
-          _scrollingUp = false;
-          _scrollingDown = false;
-        }
-      });
-    _controller.reset();
-    if (_scrollingUp || _scrollingDown) {
-      _controller.forward();
-    } else {
-      _controller.value = 1;
-    }
+  TextRange _getVisibleRange(double topEdge, double bottomEdge) {
+    // Consider a line visible if at least 3/4 of its height is on screen
+    var start = _painter.getPositionForOffset(
+        Offset(0, topEdge + _painter.preferredLineHeight * 0.75));
+    var end = _painter.getPositionForOffset(
+        Offset(widget.width, bottomEdge - _painter.preferredLineHeight * 0.75));
+    return TextRange(start: start.offset, end: end.offset);
   }
 
-  void _scrollTop() {
-    setState(() {
-      _currentLineIndex = 0;
-    });
-    _emitOnScrolled();
-  }
-
-  void _scrollBottom() {
-    setState(() {
-      _currentLineIndex = _linesLength - widget.nVisibleLines;
-    });
-    _emitOnScrolled();
-  }
-
-  void _scrollUp() {
-    setState(() {
-      _currentLineIndex--;
-      _scrollingUp = true;
-      _scrollingDown = false;
-    });
-    _emitOnScrolled();
-    _animate();
-  }
-
-  void _scrollDown() {
-    setState(() {
-      _currentLineIndex++;
-      _scrollingUp = false;
-      _scrollingDown = true;
-    });
-    _emitOnScrolled();
-    _animate();
-  }
-
-  void _emitOnScrolled() {
-    var onScrolled = widget.onScrolled;
-    var _cachedLineRanges = this._cachedLineRanges;
-    if (onScrolled != null && _cachedLineRanges != null) {
-      var firstVisibleLineIndex = max(_currentLineIndex, 0);
-      var lastVisibleLineIndex = min(
-          _currentLineIndex + widget.nVisibleLines - 1,
-          _cachedLineRanges.length);
-      onScrolled(TextRange(
-          start: _cachedLineRanges[firstVisibleLineIndex].start,
-          end: _cachedLineRanges[lastVisibleLineIndex].end));
+  void _emitVisibleRangeChanged() {
+    var onVisibleRangeChanged = widget.onVisibleRangeChanged;
+    if (onVisibleRangeChanged != null) {
+      onVisibleRangeChanged(_visibleRange);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var scrollableUp = _currentLineIndex > 0;
-    var scrollableDown =
-        _currentLineIndex < _linesLength - widget.nVisibleLines;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Expanded(
-          child: Center(
-            child: ReadingWidth(
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  var lines =
-                      _getTextLines(constraints.minWidth, constraints.maxWidth);
-                  if (lines.length != _linesLength) {
-                    // Number of lines has changed due to layout change; try to map
-                    // `_currentLineIndex` so that roughly the same text will be visible
-                    // as before. This needs to be done after `build()`, as it needs to call
-                    // `setState` and rebuild again.
-                    WidgetsBinding.instance!.addPostFrameCallback((_) {
-                      setState(() {
-                        if (_linesLength > 0) {
-                          _currentLineIndex =
-                              (_currentLineIndex / _linesLength * lines.length)
-                                  .round();
-                        }
-                        _linesLength = lines.length;
-                      });
-                    });
-                  }
-                  return AnimatedBuilder(
-                    animation: _animation,
-                    builder: (context, child) {
-                      var firstLineIndex = _scrollingDown
-                          ? _currentLineIndex - 1
-                          : _currentLineIndex;
-                      var lastLineIndex = _scrollingUp
-                          ? _currentLineIndex + widget.nVisibleLines + 1
-                          : _currentLineIndex + widget.nVisibleLines;
-                      var visibleLines = lines.sublist(
-                          firstLineIndex.clamp(0, lines.length),
-                          lastLineIndex.clamp(0, lines.length));
-                      if (firstLineIndex < 0) {
-                        visibleLines.insertAll(0, [
-                          for (var i = 0;
-                              i < min(-firstLineIndex, widget.nVisibleLines);
-                              i++)
-                            ''
-                        ]);
-                      }
-                      if (lastLineIndex >= lines.length) {
-                        visibleLines.addAll([
-                          for (var i = 0;
-                              i <
-                                  min(lastLineIndex - lines.length,
-                                      widget.nVisibleLines);
-                              i++)
-                            ''
-                        ]);
-                      }
-                      var offset = _scrollingDown
-                          ? -_animation.value
-                          : _animation.value - 1;
-                      var firstLineOpacity = _scrollingDown
-                          ? 1 - _animation.value
-                          : _animation.value;
-                      var lastLineOpacity = _scrollingUp
-                          ? 1 - _animation.value
-                          : _animation.value;
-                      var linesHeight = widget.style.fontSize! *
-                          widget.style.height! *
-                          widget.nVisibleLines;
-                      if (constraints.maxHeight < linesHeight) {
-                        debugPrint('too small!');
-                        // TODO: Ask to rotate device
-                      }
-                      return CustomPaint(
-                        painter: LinePainter(visibleLines, offset,
-                            firstLineOpacity, lastLineOpacity, widget.style),
-                        size: Size(constraints.maxWidth, linesHeight),
-                      );
-                    },
-                  );
-                },
-              ),
+    const padding = 8.0;
+    return SizedBox(
+      width: widget.width + 2 * padding,
+      height: widget.height + 2 * padding,
+      child: NotificationListener<ScrollUpdateNotification>(
+        onNotification: (notification) {
+          var topEdge = notification.metrics.extentBefore - padding;
+          var bottomEdge = topEdge + notification.metrics.extentInside;
+          var newVisibleRange = _getVisibleRange(topEdge, bottomEdge);
+          if (newVisibleRange != _visibleRange) {
+            _visibleRange = newVisibleRange;
+            _emitVisibleRangeChanged();
+          }
+          return false;
+        },
+        child: Scrollbar(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(padding),
+            child: CustomPaint(
+              size: Size(widget.width, _painter.height),
+              painter: CustomTextPainter(_painter),
             ),
           ),
         ),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              onPressed: scrollableUp ? _scrollTop : null,
-              icon: const Icon(Icons.vertical_align_top),
-            ),
-            const Spacer(),
-            IconButton(
-              onPressed: scrollableUp ? _scrollUp : null,
-              icon: const Icon(Icons.arrow_upward),
-            ),
-            IconButton(
-              onPressed: scrollableDown ? _scrollDown : null,
-              icon: const Icon(Icons.arrow_downward),
-            ),
-            const Spacer(),
-            IconButton(
-              onPressed: scrollableDown ? _scrollBottom : null,
-              icon: const Icon(Icons.vertical_align_bottom),
-            ),
-          ],
-        ),
-        RotatedBox(
-          quarterTurns: 1,
-          child: AnimatedLinearProgressIndicator(
-            _currentLineIndex / (_linesLength - widget.nVisibleLines),
-            height: 4.0,
-            duration: const Duration(milliseconds: 200),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }
 
-class LinePainter extends CustomPainter {
-  final List<String> lines;
-  final double offset;
-  final double firstLineOpacity, lastLineOpacity;
-  final TextStyle style;
+class CustomTextPainter extends CustomPainter {
+  final TextPainter painter;
 
-  LinePainter(this.lines, this.offset, this.firstLineOpacity,
-      this.lastLineOpacity, this.style);
+  CustomTextPainter(this.painter);
 
   @override
   void paint(Canvas canvas, Size size) {
-    for (var i = 0; i < lines.length; i++) {
-      var lineStyle = style;
-      if (i == 0 && firstLineOpacity != 1) {
-        lineStyle = style.copyWith(
-            color:
-                Color.lerp(Colors.transparent, style.color, firstLineOpacity));
-      } else if (i == lines.length - 1 && lastLineOpacity != 1) {
-        lineStyle = style.copyWith(
-            color:
-                Color.lerp(Colors.transparent, style.color, lastLineOpacity));
-      }
-      var painter = TextPainter(
-          text: TextSpan(text: lines[i], style: lineStyle),
-          textDirection: TextDirection.ltr);
-      painter.layout();
-      var lineHeight = painter.computeLineMetrics().first.height;
-      painter.paint(canvas, Offset(0, (i + offset) * lineHeight));
-    }
+    painter.paint(canvas, Offset.zero);
   }
 
   @override
-  bool shouldRepaint(LinePainter oldDelegate) {
-    return lines != oldDelegate.lines || offset != oldDelegate.offset;
+  bool shouldRepaint(CustomTextPainter oldDelegate) {
+    return painter != oldDelegate.painter;
   }
 }
 
@@ -429,17 +255,17 @@ class Question {
 class QuestionsStage extends TaskStage {
   final List<Question> questions;
   final String? text;
-  final int nVisibleLines;
+  final double textWidth, textHeight;
   final double fontSize;
-  final double lineSpacing;
   int _currentQuestionIndex;
   final List<int?> _selectedAnswerIndices;
 
-  QuestionsStage(this.questions,
-      {this.text,
-      this.nVisibleLines = 0,
-      this.fontSize = 20,
-      this.lineSpacing = 1.2})
+  QuestionsStage(
+      {required this.questions,
+      required this.text,
+      required this.textWidth,
+      required this.textHeight,
+      this.fontSize = 20})
       : _currentQuestionIndex = 0,
         _selectedAnswerIndices = [
           for (var i = 0; i < questions.length; i++) null
@@ -452,78 +278,92 @@ class QuestionsStage extends TaskStage {
     pageController.addListener(() {
       _currentQuestionIndex = pageController.page!.round();
     });
-    return Column(
-      children: [
-        if (text != null)
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 8.0),
-              child: Center(
-                child: ReadingWidth(
-                  child: ScrollingLines(
-                    text,
-                    nVisibleLines,
-                    TextStyle(
-                        fontSize: fontSize,
-                        height: lineSpacing,
-                        color: Colors.black),
+    return ColoredBox(
+      color: Colors.grey.shade300,
+      child: Column(
+        children: [
+          if (text != null)
+            Expanded(
+              child: ReadingWidth(
+                child: Center(
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: Card(
+                      child: ScrollableText(
+                        text: text,
+                        width: textWidth,
+                        height: textHeight,
+                        style: TextStyle(fontSize: fontSize, color: Colors.black),
+                        onVisibleRangeChanged: (visibleRange) {
+                          logger.log('scrolled text', {
+                            'visibleRange': [visibleRange.start, visibleRange.end]
+                          });
+                        },
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        Container(
-          color: Theme.of(context).highlightColor,
-          height: 200,
-          alignment: Alignment.center,
-          child: ReadingWidth(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                IconButton(
-                  alignment: Alignment.centerRight,
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    pageController.animateToPage(
-                      _currentQuestionIndex - 1,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeOut,
-                    );
-                  },
-                ),
-                Expanded(
-                  child: PageView(
-                    controller: pageController,
-                    children: [
-                      for (var i = 0; i < questions.length; i++)
-                        QuestionCard(
-                          questions[i],
-                          selectedAnswerIndex: _selectedAnswerIndices[i],
-                          onAnswerChanged: (answerIndex) {
-                            setState(() {
-                              _selectedAnswerIndices[i] = answerIndex;
-                            });
-                          },
-                        ),
-                    ],
+          SizedBox(
+            height: 200,
+            child: ReadingWidth(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  IconButton(
+                    alignment: Alignment.centerRight,
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () {
+                      pageController.animateToPage(
+                        _currentQuestionIndex - 1,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOut,
+                      );
+                    },
                   ),
-                ),
-                IconButton(
-                  alignment: Alignment.centerLeft,
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: () {
-                    pageController.animateToPage(
-                      _currentQuestionIndex + 1,
-                      duration: const Duration(milliseconds: 200),
-                      curve: Curves.easeOut,
-                    );
-                  },
-                ),
-              ],
+                  Expanded(
+                    child: PageView(
+                      controller: pageController,
+                      children: [
+                        for (var i = 0; i < questions.length; i++)
+                          QuestionCard(
+                            questions[i],
+                            selectedAnswerIndex: _selectedAnswerIndices[i],
+                            onAnswerChanged: (answerIndex) {
+                              setState(() {
+                                _selectedAnswerIndices[i] = answerIndex;
+                              });
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    alignment: Alignment.centerLeft,
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: () {
+                      pageController.animateToPage(
+                        _currentQuestionIndex + 1,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeOut,
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+            Visibility(
+              visible: !_selectedAnswerIndices.contains(null),
+              child: ElevatedButton.icon(
+                onPressed: finish,
+                icon: const Icon(Icons.arrow_forward),
+                label: Text(S.of(context).taskAdvance),
+              ),
+            )
+        ],
+      ),
     );
   }
 
