@@ -63,12 +63,18 @@ abstract class MultistageTask extends Task {
   }
 
   void _startNextStage() {
+    if (_currentStage != null) {
+      logger.log(
+          'finished stage', {'type': _currentStage.runtimeType.toString()});
+    }
     var nextStage = getNextStage(_currentStage);
     if (nextStage != null) {
+      nextStage.injectDependencies(this, _setState, _startNextStage);
       setState(() {
-        nextStage.injectDependencies(this, _setState, _startNextStage);
         _currentStage = nextStage;
       });
+      logger
+          .log('started stage', {'type': _currentStage.runtimeType.toString()});
     }
   }
 
