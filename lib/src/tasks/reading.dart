@@ -92,8 +92,11 @@ class ScrollableTextStage extends TaskStage {
                       height: textHeight,
                       style: TextStyle(fontSize: fontSize, color: Colors.black),
                       onVisibleRangeChanged: (visibleRange) {
-                        logger.log('scrolled text', {
-                          'visibleRange': [visibleRange.start, visibleRange.end]
+                        logger.log('visible range', {
+                          'characterRange': [
+                            visibleRange.start,
+                            visibleRange.end
+                          ]
                         });
                         if (!_scrolledToBottom &&
                             visibleRange.end >= text.length) {
@@ -281,9 +284,15 @@ class QuestionsStage extends TaskStage {
         ] {
     _pageController = PageController()
       ..addListener(() {
-        setState(() {
-          _currentQuestionIndex = _pageController.page!.round();
-        });
+        var oldQuestionIndex = _currentQuestionIndex;
+        var newQuestionIndex = _pageController.page!.round();
+        if (oldQuestionIndex != newQuestionIndex) {
+          setState(() {
+            _currentQuestionIndex = newQuestionIndex;
+          });
+          logger.log(
+              'turned to question', {'questionIndex': _currentQuestionIndex});
+        }
       });
   }
 
@@ -305,11 +314,16 @@ class QuestionsStage extends TaskStage {
         questionIndicesToCorrect.add(i);
       }
     }
+    logger.log('submitted answers', {
+      'answerIndices': _selectedAnswerIndices,
+      'questionIndicesToCorrect': questionIndicesToCorrect.toList()
+    });
     if (questionIndicesToCorrect.isNotEmpty) {
       setState(() {
         _questionIndicesToCorrect = questionIndicesToCorrect;
         _pageToQuestion(questionIndicesToCorrect.reduce(min));
       });
+      logger.log('showing correction dialog');
       showDialog(
         context: context,
         builder: (context) {
@@ -327,9 +341,10 @@ class QuestionsStage extends TaskStage {
             content: const Text('Please correct your answers.'),
           );
         },
+      ).then(
+        (_) => logger.log('dismissed correction dialog'),
       );
     } else {
-      // TODO: Pass data
       finish();
     }
   }
@@ -371,8 +386,8 @@ class QuestionsStage extends TaskStage {
                         style:
                             TextStyle(fontSize: fontSize, color: Colors.black),
                         onVisibleRangeChanged: (visibleRange) {
-                          logger.log('scrolled text', {
-                            'visibleRange': [
+                          logger.log('visible range', {
+                            'characterRange': [
                               visibleRange.start,
                               visibleRange.end
                             ]
@@ -428,6 +443,10 @@ class QuestionsStage extends TaskStage {
                             onAnswerChanged: (answerIndex) {
                               setState(() {
                                 _selectedAnswerIndices[i] = answerIndex;
+                              });
+                              logger.log('selected answer', {
+                                'questionIndex': i,
+                                'answerIndex': answerIndex
                               });
                             },
                           ),

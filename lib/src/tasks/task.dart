@@ -111,5 +111,5 @@ abstract class TaskStage {
 
   void setState(VoidCallback fn) => _setState(fn);
 
-  void finish({Map<String, dynamic>? data, String? message}) => _finish();
+  void finish() => _finish();
 }
