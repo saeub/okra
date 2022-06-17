@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
@@ -310,22 +311,23 @@ class QuestionsStage extends TaskStage {
         _pageToQuestion(questionIndicesToCorrect.reduce(min));
       });
       showDialog(
-          context: context,
-          builder: (context) {
-            var nIncorrect = questionIndicesToCorrect.length;
-            return AlertDialog(
-              actions: [
-                TextButton(
-                  child: const Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-              title: Text('$nIncorrect incorrect'),
-              content: const Text('Please correct your answers.'),
-            );
-          });
+        context: context,
+        builder: (context) {
+          var nIncorrect = questionIndicesToCorrect.length;
+          return AlertDialog(
+            actions: [
+              TextButton(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              )
+            ],
+            title: Text('$nIncorrect incorrect'),
+            content: const Text('Please correct your answers.'),
+          );
+        },
+      );
     } else {
       // TODO: Pass data
       finish();
@@ -336,6 +338,19 @@ class QuestionsStage extends TaskStage {
   Widget build(BuildContext context) {
     var text = this.text;
     var _questionIndicesToCorrect = this._questionIndicesToCorrect;
+    var nToAnswerLeft = 0;
+    var nToAnswerRight = 0;
+    for (var i = 0; i < questions.length; i++) {
+      if (_selectedAnswerIndices[i] == null ||
+          (_questionIndicesToCorrect != null &&
+              _questionIndicesToCorrect.contains(i))) {
+        if (i < _currentQuestionIndex) {
+          nToAnswerLeft++;
+        } else if (i > _currentQuestionIndex) {
+          nToAnswerRight++;
+        }
+      }
+    }
 
     return Container(
       alignment: Alignment.center,
@@ -373,18 +388,29 @@ class QuestionsStage extends TaskStage {
             height: 200,
             child: ReadingWidth(
               child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  IconButton(
-                    alignment: Alignment.centerRight,
-                    icon: const Icon(Icons.arrow_back),
-                    onPressed: _currentQuestionIndex > 0
-                        ? () {
-                            _pageToQuestion(
-                              _currentQuestionIndex - 1,
-                            );
-                          }
-                        : null,
+                  Badge(
+                    showBadge: nToAnswerLeft > 0,
+                    position: BadgePosition.topStart(top: 0, start: 0),
+                    // badgeContent: Text(
+                    //   nToAnswerLeft.toString(),
+                    //   style: const TextStyle(
+                    //     color: Colors.white,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
+                    toAnimate: false,
+                    child: IconButton(
+                      alignment: Alignment.centerRight,
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: _currentQuestionIndex > 0
+                          ? () {
+                              _pageToQuestion(
+                                _currentQuestionIndex - 1,
+                              );
+                            }
+                          : null,
+                    ),
                   ),
                   Expanded(
                     child: PageView(
@@ -408,16 +434,26 @@ class QuestionsStage extends TaskStage {
                       ],
                     ),
                   ),
-                  IconButton(
-                    alignment: Alignment.centerLeft,
-                    icon: const Icon(Icons.arrow_forward),
-                    onPressed: _currentQuestionIndex < questions.length - 1
-                        ? () {
-                            _pageToQuestion(
-                              _currentQuestionIndex + 1,
-                            );
-                          }
-                        : null,
+                  Badge(
+                    showBadge: nToAnswerRight > 0,
+                    position: BadgePosition.topEnd(top: 0, end: 0),
+                    // badgeContent: Text(
+                    //   nToAnswerRight.toString(),
+                    //   style: const TextStyle(
+                    //       color: Colors.white, fontWeight: FontWeight.bold),
+                    // ),
+                    toAnimate: false,
+                    child: IconButton(
+                      alignment: Alignment.centerLeft,
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: _currentQuestionIndex < questions.length - 1
+                          ? () {
+                              _pageToQuestion(
+                                _currentQuestionIndex + 1,
+                              );
+                            }
+                          : null,
+                    ),
                   ),
                 ],
               ),
@@ -461,6 +497,7 @@ class QuestionCard extends StatelessWidget {
         fontSize = 15.0;
       }
       var disabled = correct == true;
+
       return Card(
         child: SingleChildScrollView(
           child: Padding(
