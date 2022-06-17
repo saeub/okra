@@ -130,6 +130,7 @@ class ScrollableTextStage extends TaskStage {
 class ScrollableText extends StatefulWidget {
   final String text;
   final double width, height;
+  final double padding;
   final TextStyle? style;
   final Function(TextRange visibleRange)? onVisibleRangeChanged;
 
@@ -137,6 +138,7 @@ class ScrollableText extends StatefulWidget {
       {required this.text,
       required this.width,
       required this.height,
+      this.padding = 8.0,
       this.style,
       this.onVisibleRangeChanged,
       Key? key})
@@ -154,7 +156,8 @@ class _ScrollableTextState extends State<ScrollableText> {
   void initState() {
     super.initState();
     _updatePainter();
-    _visibleRange = _getVisibleRange(0, widget.height);
+    _visibleRange = _getVisibleRange(0, widget.height + widget.padding);
+    _emitVisibleRangeChanged();
   }
 
   @override
@@ -192,13 +195,12 @@ class _ScrollableTextState extends State<ScrollableText> {
 
   @override
   Widget build(BuildContext context) {
-    const padding = 8.0;
     return SizedBox(
-      width: widget.width + 2 * padding,
-      height: widget.height + 2 * padding,
+      width: widget.width + 2 * widget.padding,
+      height: widget.height + 2 * widget.padding,
       child: NotificationListener<ScrollUpdateNotification>(
         onNotification: (notification) {
-          var topEdge = notification.metrics.extentBefore - padding;
+          var topEdge = notification.metrics.extentBefore - widget.padding;
           var bottomEdge = topEdge + notification.metrics.extentInside;
           var newVisibleRange = _getVisibleRange(topEdge, bottomEdge);
           if (newVisibleRange != _visibleRange) {
@@ -209,7 +211,7 @@ class _ScrollableTextState extends State<ScrollableText> {
         },
         child: Scrollbar(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(padding),
+            padding: EdgeInsets.all(widget.padding),
             child: CustomPaint(
               size: Size(widget.width, _painter.height),
               painter: CustomTextPainter(_painter),
