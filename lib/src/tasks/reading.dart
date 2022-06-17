@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
@@ -72,7 +74,8 @@ class ScrollableTextStage extends TaskStage {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
+    return Container(
+      alignment: Alignment.center,
       color: Colors.grey.shade300,
       child: Column(
         children: [
@@ -258,8 +261,10 @@ class QuestionsStage extends TaskStage {
   final String? text;
   final double textWidth, textHeight;
   final double fontSize;
+  late final PageController _pageController;
   int _currentQuestionIndex;
   final List<int?> _selectedAnswerIndices;
+  Set<int>? _questionIndicesToCorrect;
 
   QuestionsStage(
       {required this.questions,
@@ -270,18 +275,68 @@ class QuestionsStage extends TaskStage {
       : _currentQuestionIndex = 0,
         _selectedAnswerIndices = [
           for (var i = 0; i < questions.length; i++) null
-        ];
+        ] {
+    _pageController = PageController()
+      ..addListener(() {
+        setState(() {
+          _currentQuestionIndex = _pageController.page!.round();
+        });
+      });
+  }
+
+  void _pageToQuestion(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+    );
+  }
+
+  void _checkAnswers(BuildContext context) {
+    var questionIndicesToCorrect = <int>{};
+    for (var i = 0; i < questions.length; i++) {
+      var selectedAnswerIndex = _selectedAnswerIndices[i];
+      var correctAnswerIndex = questions[i].correctAnswerIndex;
+      if (correctAnswerIndex != null &&
+          selectedAnswerIndex != correctAnswerIndex) {
+        questionIndicesToCorrect.add(i);
+      }
+    }
+    if (questionIndicesToCorrect.isNotEmpty) {
+      setState(() {
+        _questionIndicesToCorrect = questionIndicesToCorrect;
+        _pageToQuestion(questionIndicesToCorrect.reduce(min));
+      });
+      showDialog(
+          context: context,
+          builder: (context) {
+            var nIncorrect = questionIndicesToCorrect.length;
+            return AlertDialog(
+              actions: [
+                TextButton(
+                  child: const Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                )
+              ],
+              title: Text('$nIncorrect incorrect'),
+              content: const Text('Please correct your answers.'),
+            );
+          });
+    } else {
+      // TODO: Pass data
+      finish();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     var text = this.text;
-    var pageController = PageController();
-    pageController.addListener(() {
-      setState(() {
-        _currentQuestionIndex = pageController.page!.round();
-      });
-    });
-    return ColoredBox(
+    var _questionIndicesToCorrect = this._questionIndicesToCorrect;
+
+    return Container(
+      alignment: Alignment.center,
       color: Colors.grey.shade300,
       child: Column(
         children: [
@@ -323,22 +378,25 @@ class QuestionsStage extends TaskStage {
                     icon: const Icon(Icons.arrow_back),
                     onPressed: _currentQuestionIndex > 0
                         ? () {
-                            pageController.animateToPage(
+                            _pageToQuestion(
                               _currentQuestionIndex - 1,
-                              duration: const Duration(milliseconds: 200),
-                              curve: Curves.easeOut,
                             );
                           }
                         : null,
                   ),
                   Expanded(
                     child: PageView(
-                      controller: pageController,
+                      controller: _pageController,
                       children: [
                         for (var i = 0; i < questions.length; i++)
                           QuestionCard(
                             questions[i],
                             selectedAnswerIndex: _selectedAnswerIndices[i],
+                            correct: _questionIndicesToCorrect != null
+                                ? _questionIndicesToCorrect.contains(i)
+                                    ? false
+                                    : true
+                                : null,
                             onAnswerChanged: (answerIndex) {
                               setState(() {
                                 _selectedAnswerIndices[i] = answerIndex;
@@ -353,10 +411,8 @@ class QuestionsStage extends TaskStage {
                     icon: const Icon(Icons.arrow_forward),
                     onPressed: _currentQuestionIndex < questions.length - 1
                         ? () {
-                            pageController.animateToPage(
+                            _pageToQuestion(
                               _currentQuestionIndex + 1,
-                              duration: const Duration(milliseconds: 200),
-                              curve: Curves.easeOut,
                             );
                           }
                         : null,
@@ -368,7 +424,7 @@ class QuestionsStage extends TaskStage {
           Visibility(
             visible: !_selectedAnswerIndices.contains(null),
             child: ElevatedButton.icon(
-              onPressed: finish,
+              onPressed: () => _checkAnswers(context),
               icon: const Icon(Icons.arrow_forward),
               label: Text(S.of(context).taskAdvance),
             ),
@@ -385,10 +441,12 @@ class QuestionsStage extends TaskStage {
 class QuestionCard extends StatelessWidget {
   final Question question;
   final int? selectedAnswerIndex;
+  final bool? correct;
   final Function(int?) onAnswerChanged;
 
   const QuestionCard(this.question,
       {required this.selectedAnswerIndex,
+      this.correct,
       required this.onAnswerChanged,
       Key? key})
       : super(key: key);
@@ -400,6 +458,7 @@ class QuestionCard extends StatelessWidget {
       if (constraints.maxWidth < 500) {
         fontSize = 15.0;
       }
+      var disabled = correct == true;
       return Card(
         child: SingleChildScrollView(
           child: Padding(
@@ -408,10 +467,56 @@ class QuestionCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  question.question,
-                  style: TextStyle(
-                      fontSize: fontSize, fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        question.question,
+                        style: TextStyle(
+                            fontSize: fontSize, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    if (correct == true)
+                      Row(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child:
+                                Icon(Icons.check, color: Colors.green.shade700),
+                          ),
+                          Text(
+                            'CORRECT',
+                            style: TextStyle(
+                              color: Colors.green.shade700,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      )
+                    else if (correct == false)
+                      Row(
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 4.0),
+                            child:
+                                Icon(Icons.clear, color: Colors.red.shade700),
+                          ),
+                          Text(
+                            'INCORRECT',
+                            style: TextStyle(
+                              color: Colors.red.shade700,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                  ],
                 ),
                 for (var i = 0; i < question.answers.length; i++)
                   Row(
@@ -419,11 +524,11 @@ class QuestionCard extends StatelessWidget {
                       Radio(
                         value: i,
                         groupValue: selectedAnswerIndex,
-                        onChanged: onAnswerChanged,
+                        onChanged: disabled ? null : onAnswerChanged,
                       ),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () => onAnswerChanged(i),
+                          onTap: disabled ? null : () => onAnswerChanged(i),
                           child: Text(
                             question.answers[i],
                             style: TextStyle(fontSize: fontSize),
