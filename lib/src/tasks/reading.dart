@@ -4,14 +4,16 @@ import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
+import '../data/models.dart';
+import '../pages/task.dart';
 import '../util.dart';
 import 'task.dart';
 
 class Reading extends MultistageTask {
   late final String _text;
-  late final List<Question> _questions;
 
   late final ScrollableTextStage _textStage;
+  late final RatingsStage? _ratingsStage;
   late final QuestionsStage? _questionsStage;
 
   @override
@@ -27,19 +29,27 @@ class Reading extends MultistageTask {
       fontSize: fontSize,
     );
 
-    List<Map<String, dynamic>> questionData;
+    if (data['ratings'] != null) {
+      List<Map<String, dynamic>> ratingsData =
+          data['ratings'].cast<Map<String, dynamic>>();
+      List<TaskRating> ratings = ratingsData.map(TaskRating.fromJson).toList();
+      _ratingsStage = RatingsStage(ratings: ratings);
+    } else {
+      _ratingsStage = null;
+    }
+
     if (data['questions'] != null) {
-      questionData = data['questions'].cast<Map<String, dynamic>>();
-      _questions = questionData.map(Question.fromJson).toList();
+      List<Map<String, dynamic>> questionsData =
+          data['questions'].cast<Map<String, dynamic>>();
+      var questions = questionsData.map(Question.fromJson).toList();
       _questionsStage = QuestionsStage(
-        questions: _questions,
+        questions: questions,
         text: _text,
         textWidth: textWidth,
         textHeight: textHeight,
         fontSize: fontSize,
       );
     } else {
-      _questions = [];
       _questionsStage = null;
     }
 
@@ -50,7 +60,11 @@ class Reading extends MultistageTask {
   TaskStage? getNextStage(TaskStage? previousStage) {
     if (previousStage == null) {
       return _textStage;
-    } else if (previousStage == _textStage && _questionsStage != null) {
+    } else if (previousStage == _textStage && _ratingsStage != null) {
+      return _ratingsStage;
+    } else if ((previousStage == _textStage ||
+            previousStage == _ratingsStage) &&
+        _questionsStage != null) {
       return _questionsStage;
     }
     finish();
@@ -406,7 +420,7 @@ class QuestionsStage extends TaskStage {
                 children: [
                   Badge(
                     showBadge: nToAnswerLeft > 0,
-                    position: BadgePosition.topStart(top: 0, start: 0),
+                    position: BadgePosition.topStart(top: 4, start: 4),
                     // badgeContent: Text(
                     //   nToAnswerLeft.toString(),
                     //   style: const TextStyle(
@@ -455,7 +469,7 @@ class QuestionsStage extends TaskStage {
                   ),
                   Badge(
                     showBadge: nToAnswerRight > 0,
-                    position: BadgePosition.topEnd(top: 0, end: 0),
+                    position: BadgePosition.topEnd(top: 4, end: 4),
                     // badgeContent: Text(
                     //   nToAnswerRight.toString(),
                     //   style: const TextStyle(
@@ -542,14 +556,15 @@ class QuestionCard extends StatelessWidget {
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 4.0),
-                            child:
-                                Icon(Icons.check, color: Colors.green.shade700),
+                            child: Icon(Icons.check,
+                                color: Colors.green.shade700,
+                                size: fontSize + 4.0),
                           ),
                           Text(
                             'CORRECT',
                             style: TextStyle(
                               color: Colors.green.shade700,
-                              fontSize: 16.0,
+                              fontSize: fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -561,14 +576,15 @@ class QuestionCard extends StatelessWidget {
                           Padding(
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 4.0),
-                            child:
-                                Icon(Icons.clear, color: Colors.red.shade700),
+                            child: Icon(Icons.clear,
+                                color: Colors.red.shade700,
+                                size: fontSize + 4.0),
                           ),
                           Text(
                             'INCORRECT',
                             style: TextStyle(
                               color: Colors.red.shade700,
-                              fontSize: 16.0,
+                              fontSize: fontSize,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -602,4 +618,27 @@ class QuestionCard extends StatelessWidget {
       );
     }));
   }
+}
+
+// Ratings
+
+// TODO: Advance ratings here, report progress
+class RatingsStage extends TaskStage {
+  final List<TaskRating> ratings;
+
+  RatingsStage({required this.ratings});
+
+  @override
+  Widget build(BuildContext context) {
+    return RatingsWidget(
+      ratings,
+      onFinished: (answers) {
+        logger.log('finished ratings', {'answers': answers});
+        finish();
+      },
+    );
+  }
+
+  @override
+  double? getProgress() => null;
 }
