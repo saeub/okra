@@ -74,6 +74,10 @@ class TrailMaking extends Task {
             child: Text(stimulus.text),
             style: ButtonStyle(
               shape: MaterialStateProperty.all(const CircleBorder()),
+              backgroundColor: MaterialStateProperty.resolveWith(((states) =>
+                  !states.contains(MaterialState.disabled)
+                      ? Colors.green.shade800
+                      : null)),
               fixedSize:
                   MaterialStateProperty.all(const Size(buttonSize, buttonSize)),
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -101,15 +105,15 @@ class TrailMaking extends Task {
               children: [
                 if (_currentStimulusIndex == 0)
                   Positioned(
-                    left: _stimuli.first.position.dx - 6,
-                    top: _stimuli.first.position.dy - 6,
+                    left: _stimuli.first.position.dx - 8,
+                    top: _stimuli.first.position.dy - 8,
                     child: Container(
-                      width: buttonSize + 12,
-                      height: buttonSize + 12,
+                      width: buttonSize + 16,
+                      height: buttonSize + 16,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(buttonSize),
                         border: Border.all(
-                            color: Colors.green.shade700, width: 4.0),
+                            color: Colors.green.shade500, width: 4.0),
                       ),
                     ),
                   ),
