@@ -1124,76 +1124,6 @@ void main() {
     });
   });
 
-  group('Simon game', () {
-    testWidgets('can be completed', (tester) async {
-      var logger = TaskEventLogger();
-      var l = LoggerTester(logger);
-
-      await tester.pumpWidget(getTaskApp(
-        'simon-game',
-        {},
-        logger,
-        ({data, message}) {
-          expect(data, {'maxCorrectItems': 3});
-          expect(message, null);
-        },
-      ));
-      await tester.pumpAndSettle();
-
-      List<int> sequence;
-
-      // 3 correct sequences
-      for (var i = 0; i < 3; i++) {
-        var loggedData = l.expectLogged('started watching');
-        sequence = loggedData?['sequence'];
-        await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
-        l.expectLogged('finished watching');
-        l.expectLogged('started repeating', data: {'sequence': sequence});
-        for (var item in sequence) {
-          expect(find.byIcon(Icons.thumb_up), findsNothing);
-          expect(find.byIcon(Icons.thumb_down), findsNothing);
-          var color = SimonGame.colors[item];
-          await tester.tap(find.byKey(ValueKey(color)));
-          await tester.pumpAndSettle();
-        }
-        l.expectLogged('finished repeating');
-        l.expectLogged('started feedback', data: {'feedback': true});
-        expect(find.byIcon(Icons.thumb_up), findsOneWidget);
-        expect(find.byIcon(Icons.thumb_down), findsNothing);
-        await tester.pump(const Duration(milliseconds: 1000));
-        l.expectLogged('finished feedback');
-      }
-
-      // Incorrect 4th sequence
-      var loggedData = l.expectLogged('started watching');
-      sequence = loggedData?['sequence'].toList(); // copy
-      await tester.tap(find.byKey(ValueKey(SimonGame.colors[0]))); // disabled
-      await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
-      l.expectLogged('finished watching');
-      l.expectLogged('started repeating', data: {'sequence': sequence});
-      // Inject incorrect item
-      sequence[2]--;
-      if (sequence[2] < 0) {
-        sequence[2] = SimonGame.colors.length - 1;
-      }
-      for (var item in sequence.sublist(0, 3)) {
-        expect(find.byIcon(Icons.thumb_up), findsNothing);
-        expect(find.byIcon(Icons.thumb_down), findsNothing);
-        var color = SimonGame.colors[item];
-        await tester.tap(find.byKey(ValueKey(color)));
-        await tester.pumpAndSettle();
-      }
-      l.expectLogged('finished repeating');
-      l.expectLogged('started feedback', data: {'feedback': false});
-      expect(find.byIcon(Icons.thumb_up), findsNothing);
-      expect(find.byIcon(Icons.thumb_down), findsOneWidget);
-      await tester.pump(const Duration(milliseconds: 1000));
-      l.expectLogged('finished feedback');
-
-      l.expectDoneLogging();
-    });
-  });
-
   group('Reading', () {
     testWidgets('can be completed', (tester) async {
       tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
@@ -1540,6 +1470,76 @@ void main() {
         'answerIndices': [0, 0]
       });
       l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
+
+      l.expectDoneLogging();
+    });
+  });
+
+  group('Simon game', () {
+    testWidgets('can be completed', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'simon-game',
+        {},
+        logger,
+        ({data, message}) {
+          expect(data, {'maxCorrectItems': 3});
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      List<int> sequence;
+
+      // 3 correct sequences
+      for (var i = 0; i < 3; i++) {
+        var loggedData = l.expectLogged('started watching');
+        sequence = loggedData?['sequence'];
+        await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
+        l.expectLogged('finished watching');
+        l.expectLogged('started repeating', data: {'sequence': sequence});
+        for (var item in sequence) {
+          expect(find.byIcon(Icons.thumb_up), findsNothing);
+          expect(find.byIcon(Icons.thumb_down), findsNothing);
+          var color = SimonGame.colors[item];
+          await tester.tap(find.byKey(ValueKey(color)));
+          await tester.pumpAndSettle();
+        }
+        l.expectLogged('finished repeating');
+        l.expectLogged('started feedback', data: {'feedback': true});
+        expect(find.byIcon(Icons.thumb_up), findsOneWidget);
+        expect(find.byIcon(Icons.thumb_down), findsNothing);
+        await tester.pump(const Duration(milliseconds: 1000));
+        l.expectLogged('finished feedback');
+      }
+
+      // Incorrect 4th sequence
+      var loggedData = l.expectLogged('started watching');
+      sequence = loggedData?['sequence'].toList(); // copy
+      await tester.tap(find.byKey(ValueKey(SimonGame.colors[0]))); // disabled
+      await tester.pump(Duration(milliseconds: 500 + sequence.length * 800));
+      l.expectLogged('finished watching');
+      l.expectLogged('started repeating', data: {'sequence': sequence});
+      // Inject incorrect item
+      sequence[2]--;
+      if (sequence[2] < 0) {
+        sequence[2] = SimonGame.colors.length - 1;
+      }
+      for (var item in sequence.sublist(0, 3)) {
+        expect(find.byIcon(Icons.thumb_up), findsNothing);
+        expect(find.byIcon(Icons.thumb_down), findsNothing);
+        var color = SimonGame.colors[item];
+        await tester.tap(find.byKey(ValueKey(color)));
+        await tester.pumpAndSettle();
+      }
+      l.expectLogged('finished repeating');
+      l.expectLogged('started feedback', data: {'feedback': false});
+      expect(find.byIcon(Icons.thumb_up), findsNothing);
+      expect(find.byIcon(Icons.thumb_down), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 1000));
+      l.expectLogged('finished feedback');
 
       l.expectDoneLogging();
     });
