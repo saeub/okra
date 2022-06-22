@@ -184,6 +184,46 @@ A single picture of a red balloon is shown at a time, which disappears with a po
   ```
   **NOTE:** Reaction times are in seconds. The reaction time for the introductory stimulus is not included.
 
+### Reading
+
+A text is presented, followed by a series of ratings, followed by a number of single-answer multiple-choice questions to be answered. The questions are shown on the same screen as the text. The text is scrollable, and scrolling events are logged such that the visible range of text at each point in time can be reconstructed.
+
+**NOTE:** On smaller screen sizes, the entire text box (including the font size) is scaled down in order to preserve the number of characters per line across devices.
+
+- Identifier: `reading`
+- Implementation: [`lib/src/tasks/reading.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/reading.dart)
+- Data structure:
+  ```json
+  {
+    "text": "This is an example.",
+    "textWidth": 300,
+    "textHeight": 200,
+    "fontSize": 25.0,
+    "ratings": [
+      {
+        "question": "How easy was it?",
+        "type": "emoticon",
+        "lowExtreme": "very difficult",
+        "highExtreme": "very easy"
+      },
+      ...
+    ],
+    "questions": [
+      {
+        "question": "Question?",
+        "answers": [
+          "Answer 1",
+          "Answer 2",
+        ],
+        "correctAnswerIndex": 0
+      },
+      ...
+    ],
+  }
+  ```
+  **NOTE:** `fontSize` is optional and specifies the font size of the text (not the questions; default is 20.0). `questions` is optional. If it is not provided, the questions stage is skipped. `ratings` is optional. If it is not provided, the ratings stage is skipped. Ratings follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)). `correctAnswerIndex` is optional. If it is provided, the participant will receive feedback and are required to correct their answers. 
+- All results are included in the event logs. The results data is empty.
+
 ### Simon game
 
 Four buttons are shown. They light up in a specific sequence, which has to be repeated by pressing the buttons in the same order. After each successful repetition, a random item is added to the sequence, and the sequence is shown again. Inspired by the electronic game [Simon](https://en.wikipedia.org/wiki/Simon_(game)).

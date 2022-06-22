@@ -91,7 +91,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Choose the matching picture.",
             "nTasks": 4,
             "nTasksDone": 3,
-            "hasPracticeTask": False,
             "ratings": [example_rating("slider")],
         },
         {
@@ -123,7 +122,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Answer the questions.",
             "nTasks": 3,
             "nTasksDone": 1,
-            "hasPracticeTask": False,
             "ratings": [example_rating("emoticon-reversed"), example_rating("slider")],
         },
         {
@@ -151,7 +149,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Answer the questions.",
             "nTasks": 7,
             "nTasksDone": 2,
-            "hasPracticeTask": False,
         },
         {
             "readingType": "self-paced",
@@ -172,7 +169,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Pop the balloons as quickly as possible.",
             "nTasks": 1,
             "nTasksDone": 0,
-            "hasPracticeTask": False,
         },
         {
             "nStimuli": 5,
@@ -188,7 +184,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Tap the screen if you see the same letter you saw two letters ago.",
             "nTasks": 3,
             "nTasksDone": 2,
-            "hasPracticeTask": False,
         },
         {
             "n": 2,
@@ -208,6 +203,30 @@ EXPERIMENTS_TASKS = [
             "hasPracticeTask": True,
         },
         None,
+    ),
+    (
+        {
+            "id": "9",
+            "type": "reading",
+            "title": "Reading task",
+            "instructions": "",
+            "nTasks": 1,
+            "nTasksDone": 0,
+        },
+        {
+            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eget urna sed diam pulvinar efficitur vel tincidunt diam. Aliquam et ante quis lacus pretium tempus quis id dolor. Aenean semper turpis in ex tempus, at egestas dolor consectetur. Vestibulum eu facilisis metus. Nullam nisi turpis, faucibus et vulputate et, aliquet quis urna. Etiam mollis eros nibh, nec congue sem maximus ut. Ut non metus scelerisque, volutpat lectus consequat, sollicitudin augue. Aenean dapibus gravida ex vitae accumsan. Vivamus a commodo nisi. Phasellus tincidunt felis malesuada felis pretium, in aliquam risus commodo.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eget urna sed diam pulvinar efficitur vel tincidunt diam. Aliquam et ante quis lacus pretium tempus quis id dolor. Aenean semper turpis in ex tempus, at egestas dolor consectetur. Vestibulum eu facilisis metus. Nullam nisi turpis, faucibus et vulputate et, aliquet quis urna. Etiam mollis eros nibh, nec congue sem maximus ut. Ut non metus scelerisque, volutpat lectus consequat, sollicitudin augue. Aenean dapibus gravida ex vitae accumsan. Vivamus a commodo nisi. Phasellus tincidunt felis malesuada felis pretium, in aliquam risus commodo.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eget urna sed diam pulvinar efficitur vel tincidunt diam. Aliquam et ante quis lacus pretium tempus quis id dolor. Aenean semper turpis in ex tempus, at egestas dolor consectetur. Vestibulum eu facilisis metus. Nullam nisi turpis, faucibus et vulputate et, aliquet quis urna. Etiam mollis eros nibh, nec congue sem maximus ut. Ut non metus scelerisque, volutpat lectus consequat, sollicitudin augue. Aenean dapibus gravida ex vitae accumsan. Vivamus a commodo nisi. Phasellus tincidunt felis malesuada felis pretium, in aliquam risus commodo.",
+            "textWidth": 300,
+            "textHeight": 200,
+            "ratings": [example_rating("emoticon")],
+            "questions": [
+                {
+                    "question": f"Question {i + 1}",
+                    "answers": ["Answer 1", "Answer 2 is a very long answer, boy I sure hope this still fits on screen!", "Answer 3"],
+                    "correctAnswerIndex": i % 3,
+                }
+                for i in range(3)
+            ],
+        }
     ),
 ]
 

@@ -195,9 +195,11 @@ components:
         hasPracticeTask:
           type: "boolean"
           description: "Whether the experiment provides a practice task"
+          default: false
         ratings:
           type: "array"
           description: "Rating questions presented after each task"
+          default: []
           items:
             $ref: "#/components/schemas/TaskRating"
     Task:
@@ -209,6 +211,7 @@ components:
         data:
           type: "object"
           description: "Task data (schema specific to task type; see https://saeub.github.io/okra/tasks.html)"
+          default: {}
     TaskRating:
       type: "object"
       properties:

@@ -52,3 +52,67 @@ class TaskEventLogger {
     _events.add(TaskEvent(DateTime.now(), label, data));
   }
 }
+
+abstract class MultistageTask extends Task {
+  TaskStage? _currentStage;
+
+  @override
+  @mustCallSuper
+  void init(Map<String, dynamic> data) {
+    _startNextStage();
+  }
+
+  void _startNextStage() {
+    if (_currentStage != null) {
+      logger.log(
+          'finished stage', {'type': _currentStage.runtimeType.toString()});
+    }
+    var nextStage = getNextStage(_currentStage);
+    if (nextStage != null) {
+      nextStage.injectDependencies(this, _setState, _startNextStage);
+      setState(() {
+        _currentStage = nextStage;
+      });
+      logger
+          .log('started stage', {'type': _currentStage.runtimeType.toString()});
+    }
+  }
+
+  TaskStage? getNextStage(TaskStage? previousStage);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      key: ValueKey(_currentStage),
+      child: _currentStage!.build(context),
+    );
+  }
+
+  @override
+  double? getProgress() {
+    return _currentStage!.getProgress();
+  }
+}
+
+abstract class TaskStage {
+  late TaskEventLogger logger;
+  late MultistageTask _task;
+  late StateSetter _setState;
+  late void Function() _finish;
+
+  void injectDependencies(
+      MultistageTask task, StateSetter setState, void Function() finish) {
+    _task = task;
+    logger = _task.logger;
+    _setState = setState;
+    _finish = finish;
+  }
+
+  double? getProgress();
+
+  Widget build(BuildContext context);
+
+  void setState(VoidCallback fn) => _setState(fn);
+
+  void finish() => _finish();
+}

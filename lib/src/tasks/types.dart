@@ -7,6 +7,7 @@ import 'n_back.dart';
 import 'picture_naming.dart';
 import 'question_answering.dart';
 import 'simon_game.dart';
+import 'reading.dart';
 import 'task.dart';
 import 'trail_making.dart';
 
@@ -47,6 +48,10 @@ class TaskType {
     // TODO: Lock initial orientation instead of enforcing one
     // (balloons can go off-screen when rotating device)
   );
+  static final TaskType reading = TaskType(
+    Icons.abc,
+    () => Reading(),
+  );
   static final TaskType simonGame = TaskType(
     Icons.grid_view,
     () => SimonGame(),
@@ -70,6 +75,8 @@ class TaskType {
         return questionAnswering;
       case 'reaction-time':
         return reactionTime;
+      case 'reading':
+        return reading;
       case 'simon-game':
         return simonGame;
       case 'trail-making':

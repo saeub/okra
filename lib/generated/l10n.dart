@@ -130,6 +130,16 @@ class S {
     );
   }
 
+  /// `OK`
+  String get dialogOk {
+    return Intl.message(
+      'OK',
+      name: 'dialogOk',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `YES`
   String get dialogYes {
     return Intl.message(
@@ -587,6 +597,46 @@ class S {
     return Intl.message(
       'Pop the balloon!',
       name: 'taskReactionTimeIntro',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CORRECT`
+  String get taskReadingCorrect {
+    return Intl.message(
+      'CORRECT',
+      name: 'taskReadingCorrect',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please correct your answers.`
+  String get taskReadingCorrectionDialogText {
+    return Intl.message(
+      'Please correct your answers.',
+      name: 'taskReadingCorrectionDialogText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{howMany, plural, one{1 answer} other{{howMany} answers}} incorrect`
+  String taskReadingCorrectionDialogTitle(num howMany) {
+    return Intl.message(
+      '${Intl.plural(howMany, one: '1 answer', other: '$howMany answers')} incorrect',
+      name: 'taskReadingCorrectionDialogTitle',
+      desc: '',
+      args: [howMany],
+    );
+  }
+
+  /// `INCORRECT`
+  String get taskReadingIncorrect {
+    return Intl.message(
+      'INCORRECT',
+      name: 'taskReadingIncorrect',
       desc: '',
       args: [],
     );
