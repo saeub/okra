@@ -91,7 +91,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Choose the matching picture.",
             "nTasks": 4,
             "nTasksDone": 3,
-            "hasPracticeTask": False,
             "ratings": [example_rating("slider")],
         },
         {
@@ -123,7 +122,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Answer the questions.",
             "nTasks": 3,
             "nTasksDone": 1,
-            "hasPracticeTask": False,
             "ratings": [example_rating("emoticon-reversed"), example_rating("slider")],
         },
         {
@@ -151,7 +149,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Answer the questions.",
             "nTasks": 7,
             "nTasksDone": 2,
-            "hasPracticeTask": False,
         },
         {
             "readingType": "self-paced",
@@ -172,7 +169,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Pop the balloons as quickly as possible.",
             "nTasks": 1,
             "nTasksDone": 0,
-            "hasPracticeTask": False,
         },
         {
             "nStimuli": 5,
@@ -188,7 +184,6 @@ EXPERIMENTS_TASKS = [
             "instructions": "Tap the screen if you see the same letter you saw two letters ago.",
             "nTasks": 3,
             "nTasksDone": 2,
-            "hasPracticeTask": False,
         },
         {
             "n": 2,

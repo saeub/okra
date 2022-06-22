@@ -38,7 +38,7 @@ class Experiment {
       instructionsAudioUrl: json['instructionsAudioUrl'],
       nTasks: json['nTasks'],
       nTasksDone: json['nTasksDone'],
-      hasPracticeTask: json['hasPracticeTask'],
+      hasPracticeTask: json['hasPracticeTask'] ?? false,
       ratings: ratingsData?.map(TaskRating.fromJson).toList(),
     );
   }
