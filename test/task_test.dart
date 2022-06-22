@@ -1515,7 +1515,7 @@ void main() {
 
       l.expectLogged('showing correction dialog');
       l.expectLogged('turned to question', data: {'questionIndex': 0});
-      expect(find.text('1 incorrect'), findsOneWidget);
+      expect(find.text('1 answer incorrect'), findsOneWidget);
       expect(find.text('Please correct your answers.'), findsOneWidget);
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();

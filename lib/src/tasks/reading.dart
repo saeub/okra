@@ -351,14 +351,15 @@ class QuestionsStage extends TaskStage {
           return AlertDialog(
             actions: [
               TextButton(
-                child: const Text('OK'),
+                child: Text(S.of(context).dialogOk),
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               )
             ],
-            title: Text('$nIncorrect incorrect'),
-            content: const Text('Please correct your answers.'),
+            title: Text(
+                S.of(context).taskReadingCorrectionDialogTitle(nIncorrect)),
+            content: Text(S.of(context).taskReadingCorrectionDialogText),
           );
         },
       );
@@ -428,13 +429,6 @@ class QuestionsStage extends TaskStage {
                   Badge(
                     showBadge: nToAnswerLeft > 0,
                     position: BadgePosition.topStart(top: 4, start: 4),
-                    // badgeContent: Text(
-                    //   nToAnswerLeft.toString(),
-                    //   style: const TextStyle(
-                    //     color: Colors.white,
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
                     toAnimate: false,
                     child: IconButton(
                       alignment: Alignment.centerRight,
@@ -477,11 +471,6 @@ class QuestionsStage extends TaskStage {
                   Badge(
                     showBadge: nToAnswerRight > 0,
                     position: BadgePosition.topEnd(top: 4, end: 4),
-                    // badgeContent: Text(
-                    //   nToAnswerRight.toString(),
-                    //   style: const TextStyle(
-                    //       color: Colors.white, fontWeight: FontWeight.bold),
-                    // ),
                     toAnimate: false,
                     child: IconButton(
                       alignment: Alignment.centerLeft,
@@ -568,7 +557,7 @@ class QuestionCard extends StatelessWidget {
                                 size: fontSize + 4.0),
                           ),
                           Text(
-                            'CORRECT',
+                            S.of(context).taskReadingCorrect,
                             style: TextStyle(
                               color: Colors.green.shade700,
                               fontSize: fontSize,
@@ -588,7 +577,7 @@ class QuestionCard extends StatelessWidget {
                                 size: fontSize + 4.0),
                           ),
                           Text(
-                            'INCORRECT',
+                            S.of(context).taskReadingIncorrect,
                             style: TextStyle(
                               color: Colors.red.shade700,
                               fontSize: fontSize,

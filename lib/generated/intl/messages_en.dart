@@ -30,6 +30,9 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m3(date, time) => "Added on ${date} ${time}";
 
   static String m4(howMany) =>
+      "${Intl.plural(howMany, one: '1 answer', other: '${howMany} answers')} incorrect";
+
+  static String m5(howMany) =>
       "${Intl.plural(howMany, one: '1 second', other: '${howMany} seconds')}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -47,6 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Request timed out"),
         "appName": MessageLookupByLibrary.simpleMessage("Okra"),
         "dialogNo": MessageLookupByLibrary.simpleMessage("NO"),
+        "dialogOk": MessageLookupByLibrary.simpleMessage("OK"),
         "dialogYes": MessageLookupByLibrary.simpleMessage("YES"),
         "errorGeneric": m1,
         "errorRetry": MessageLookupByLibrary.simpleMessage("RETRY"),
@@ -122,6 +126,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Answer questions"),
         "taskReactionTimeIntro":
             MessageLookupByLibrary.simpleMessage("Pop the balloon!"),
+        "taskReadingCorrect": MessageLookupByLibrary.simpleMessage("CORRECT"),
+        "taskReadingCorrectionDialogText": MessageLookupByLibrary.simpleMessage(
+            "Please correct your answers."),
+        "taskReadingCorrectionDialogTitle": m4,
+        "taskReadingIncorrect":
+            MessageLookupByLibrary.simpleMessage("INCORRECT"),
         "taskResultsFinishExperiment":
             MessageLookupByLibrary.simpleMessage("FINISH EXPERIMENT"),
         "taskResultsMessage1": MessageLookupByLibrary.simpleMessage("Awesome!"),
@@ -136,7 +146,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "taskResultsNoNextTask": MessageLookupByLibrary.simpleMessage("LATER"),
         "taskResultsRepeatPracticeTask":
             MessageLookupByLibrary.simpleMessage("REPEAT PRACTICE TASK"),
-        "taskResultsSecondsTaken": m4,
+        "taskResultsSecondsTaken": m5,
         "taskRotateLandscape": MessageLookupByLibrary.simpleMessage(
             "Rotate your phone into landscape mode"),
         "taskRotatePortrait": MessageLookupByLibrary.simpleMessage(
