@@ -46,7 +46,6 @@ void mockApiClient() {
                 'instructions': 'Mock instructions',
                 'nTasks': 3,
                 'nTasksDone': 1,
-                'hasPracticeTask': false,
               }
             ]
           }),
@@ -68,7 +67,6 @@ void mockApiClient() {
             'instructions': 'Mock instructions',
             'nTasks': 3,
             'nTasksDone': 1,
-            'hasPracticeTask': false,
           }),
           200);
     }
