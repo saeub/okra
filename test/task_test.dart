@@ -1225,14 +1225,18 @@ void main() {
 
       l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
       expect(find.byType(ScrollableText), findsOneWidget);
-      l.expectLogged('visible range', data: {'characterRange': [0, 24]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [0, 24]
+      });
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
       l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
 
       l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
       expect(find.byType(ScrollableText), findsOneWidget);
-      l.expectLogged('visible range', data: {'characterRange': [0, 24]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [0, 24]
+      });
       expect(find.text('Is this a question?'), findsOneWidget);
       expect(find.text('Yes'), findsOneWidget);
       expect(find.text('No'), findsOneWidget);
@@ -1258,7 +1262,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('submitted answers', data: {'answerIndices': [2, 0]});
+      l.expectLogged('submitted answers', data: {
+        'answerIndices': [2, 0]
+      });
       l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
 
       l.expectDoneLogging();
@@ -1294,13 +1300,19 @@ void main() {
 
       l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
       expect(find.byType(ScrollableText), findsOneWidget);
-      l.expectLogged('visible range', data: {'characterRange': [0, 16]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [0, 16]
+      });
       await tester.tap(find.text('CONTINUE'), warnIfMissed: false); // invisible
       l.expectDoneLogging();
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range', data: {'characterRange': [5, 19]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [5, 19]
+      });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range', data: {'characterRange': [11, 24]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [11, 24]
+      });
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
@@ -1308,19 +1320,27 @@ void main() {
 
       l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
       expect(find.byType(ScrollableText), findsOneWidget);
-      l.expectLogged('visible range', data: {'characterRange': [0, 16]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [0, 16]
+      });
       expect(find.text('CONTINUE'), findsNothing);
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range', data: {'characterRange': [5, 19]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [5, 19]
+      });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range', data: {'characterRange': [11, 24]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [11, 24]
+      });
       await tester.tap(find.text('No'));
       await tester.pumpAndSettle();
       l.expectLogged('selected answer',
           data: {'questionIndex': 0, 'answerIndex': 1});
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('submitted answers', data: {'answerIndices': [1]});
+      l.expectLogged('submitted answers', data: {
+        'answerIndices': [1]
+      });
       l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
 
       l.expectDoneLogging();
@@ -1370,7 +1390,9 @@ void main() {
 
       l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
       expect(find.byType(ScrollableText), findsOneWidget);
-      l.expectLogged('visible range', data: {'characterRange': [0, 24]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [0, 24]
+      });
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
       l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
@@ -1390,19 +1412,25 @@ void main() {
       expect(find.byType(Slider), findsOneWidget);
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished ratings', data: {'answers': [3, 0.5]});
+      l.expectLogged('finished ratings', data: {
+        'answers': [3, 0.5]
+      });
       l.expectLogged('finished stage', data: {'type': 'RatingsStage'});
 
       l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
       expect(find.byType(ScrollableText), findsOneWidget);
-      l.expectLogged('visible range', data: {'characterRange': [0, 24]});
+      l.expectLogged('visible range', data: {
+        'characterRange': [0, 24]
+      });
       await tester.tap(find.text('No'));
       await tester.pumpAndSettle();
       l.expectLogged('selected answer',
           data: {'questionIndex': 0, 'answerIndex': 1});
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('submitted answers', data: {'answerIndices': [1]});
+      l.expectLogged('submitted answers', data: {
+        'answerIndices': [1]
+      });
       l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
 
       l.expectDoneLogging();

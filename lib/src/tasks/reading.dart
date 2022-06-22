@@ -363,8 +363,8 @@ class QuestionsStage extends TaskStage {
         },
       );
       logger.log('started answer correction', {
-          'questionIndicesToCorrect': questionIndicesToCorrect.toList(),
-        });
+        'questionIndicesToCorrect': questionIndicesToCorrect.toList(),
+      });
     } else {
       finish();
     }
