@@ -195,18 +195,6 @@ EXPERIMENTS_TASKS = [
     (
         {
             "id": "8",
-            "type": "simon-game",
-            "title": "Simon game",
-            "instructions": "Repeat the sequence by tapping the boxes.",
-            "nTasks": 6,
-            "nTasksDone": 1,
-            "hasPracticeTask": True,
-        },
-        None,
-    ),
-    (
-        {
-            "id": "9",
             "type": "reading",
             "title": "Reading task",
             "instructions": "",
@@ -226,6 +214,35 @@ EXPERIMENTS_TASKS = [
                 }
                 for i in range(3)
             ],
+        }
+    ),
+    (
+        {
+            "id": "9",
+            "type": "simon-game",
+            "title": "Simon game",
+            "instructions": "Repeat the sequence by tapping the boxes.",
+            "nTasks": 6,
+            "nTasksDone": 1,
+            "hasPracticeTask": True,
+        },
+        None,
+    ),
+    (
+        {
+            "id": "10",
+            "type": "trail-making",
+            "title": "Trail making task",
+            "instructions": "Make those trails",
+            "nTasks": 1,
+            "nTasksDone": 0,
+        },
+        {
+            "stimuli": [str(i) for i in range(1, 11)],
+            "gridWidth": 5,
+            "gridHeight": 7,
+            "randomSeed": 42,
+            "jiggle": True,
         }
     ),
 ]
