@@ -37,15 +37,19 @@ class LoggerTester {
 
   Map<String, dynamic>? expectLogged(String label,
       {Map<String, dynamic>? data, bool allowAdditionalKeys = false}) {
-    expect(logger.events[_eventIndex].label, label);
+    if (logger.events.length <= _eventIndex) {
+      fail('Nothing was logged');
+    }
+    var actualLabel = logger.events[_eventIndex].label;
+    expect(actualLabel, label);
     var actualData = logger.events[_eventIndex].data;
     if (data != null) {
       if (allowAdditionalKeys) {
         for (var key in data.keys) {
-          expect(logger.events[_eventIndex].data?[key], data[key]);
+          expect(actualData?[key], data[key]);
         }
       } else {
-        expect(logger.events[_eventIndex].data, data);
+        expect(actualData, data);
       }
     }
     _eventIndex++;
@@ -1536,6 +1540,50 @@ void main() {
         'answerIndices': [0, 0]
       });
       l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
+
+      l.expectDoneLogging();
+    });
+  });
+
+  group('Trail making', () {
+    testWidgets('can be completed', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'trail-making',
+        {
+          'stimuli': ['1', '2', '3'],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started task');
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('3'), findsOneWidget);
+
+      await tester.tap(find.text('1'));
+      l.expectLogged('tapped correct stimulus', data: {'stimulus': '1'});
+
+      await tester.tap(find.text('3'));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.thumb_down), findsOneWidget);
+      l.expectLogged('tapped incorrect stimulus', data: {'stimulus': '3'});
+      l.expectLogged('started feedback');
+      await tester.pump(const Duration(milliseconds: 700));
+      l.expectLogged('finished feedback');
+
+      await tester.tap(find.text('2'));
+      l.expectLogged('tapped correct stimulus', data: {'stimulus': '2'});
+
+      await tester.tap(find.text('3'));
+      l.expectLogged('tapped correct stimulus', data: {'stimulus': '3'});
 
       l.expectDoneLogging();
     });

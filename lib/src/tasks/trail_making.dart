@@ -28,8 +28,10 @@ class TrailMaking extends Task {
       throw ArgumentError(
           'Number of stimuli must not exceed ${freeGridPositions.length}');
     }
+
+    int? randomSeed = data['randomSeed'];
     bool jiggle = data['jiggle'] ?? false;
-    var random = Random();
+    var random = Random(randomSeed);
     for (var text in stimulusTexts) {
       // Pop random free position
       var position =
@@ -56,6 +58,8 @@ class TrailMaking extends Task {
     }
     _currentStimulusIndex = 0;
     _showError = false;
+
+    logger.log('started task');
   }
 
   @override
@@ -146,8 +150,9 @@ class TrailMaking extends Task {
   }
 
   void _onStimulusTapped(int stimulusIndex) async {
+    var stimulus = _stimuli[stimulusIndex];
     if (stimulusIndex == _currentStimulusIndex) {
-      var stimulus = _stimuli[stimulusIndex];
+      logger.log('tapped correct stimulus', {'stimulus': stimulus.text});
       setState(() {
         stimulus.tapped = true;
       });
@@ -156,10 +161,13 @@ class TrailMaking extends Task {
         finish();
       }
     } else {
+      logger.log('tapped incorrect stimulus', {'stimulus': stimulus.text});
       setState(() {
         _showError = true;
       });
+      logger.log('started feedback');
       await Future.delayed(const Duration(milliseconds: 700));
+      logger.log('finished feedback');
       setState(() {
         _showError = false;
       });
