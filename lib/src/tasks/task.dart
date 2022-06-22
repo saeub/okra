@@ -82,7 +82,10 @@ abstract class MultistageTask extends Task {
 
   @override
   Widget build(BuildContext context) {
-    return _currentStage!.build(context);
+    return Container(
+      key: ValueKey(_currentStage),
+      child: _currentStage!.build(context),
+    );
   }
 
   @override

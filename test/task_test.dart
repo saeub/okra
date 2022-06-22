@@ -6,6 +6,7 @@ import 'package:okra/generated/l10n.dart';
 import 'package:okra/src/pages/task.dart';
 import 'package:okra/src/tasks/n_back.dart';
 import 'package:okra/src/tasks/reaction_time.dart';
+import 'package:okra/src/tasks/reading.dart';
 import 'package:okra/src/tasks/simon_game.dart';
 import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
@@ -1184,6 +1185,225 @@ void main() {
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 1000));
       l.expectLogged('finished feedback');
+
+      l.expectDoneLogging();
+    });
+  });
+
+  group('Reading', () {
+    testWidgets('can be completed', (tester) async {
+      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'reading',
+        {
+          'text': 'This is an example text.',
+          'textWidth': 300,
+          'textHeight': 200,
+          'questions': [
+            {
+              'question': 'Is this a question?',
+              'answers': ['Yes', 'No', 'Maybe'],
+            },
+            {
+              'question': 'What about this?',
+              'answers': ['Definitely'],
+            },
+          ],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('visible range', data: {'characterRange': [0, 24]});
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+
+      l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
+      expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('visible range', data: {'characterRange': [0, 24]});
+      expect(find.text('Is this a question?'), findsOneWidget);
+      expect(find.text('Yes'), findsOneWidget);
+      expect(find.text('No'), findsOneWidget);
+      expect(find.text('Maybe'), findsOneWidget);
+      expect(find.text('CONTINUE'), findsNothing);
+      await tester.tap(find.text('Yes'));
+      l.expectLogged('selected answer',
+          data: {'questionIndex': 0, 'answerIndex': 0});
+      await tester.tap(find.text('Maybe'));
+      l.expectLogged('selected answer',
+          data: {'questionIndex': 0, 'answerIndex': 2});
+      expect(find.text('CONTINUE'), findsNothing);
+
+      await tester.tap(find.byIcon(Icons.arrow_forward));
+      await tester.pumpAndSettle();
+      l.expectLogged('turned to question', data: {'questionIndex': 1});
+
+      expect(find.text('What about this?'), findsOneWidget);
+      expect(find.text('Definitely'), findsOneWidget);
+      await tester.tap(find.text('Definitely'));
+      l.expectLogged('selected answer',
+          data: {'questionIndex': 1, 'answerIndex': 0});
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('submitted answers', data: {'answerIndices': [2, 0]});
+      l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
+
+      l.expectDoneLogging();
+    });
+
+    testWidgets('logs scroll events', (tester) async {
+      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'reading',
+        {
+          'text': 'This is an example text.',
+          'textWidth': 100,
+          'textHeight': 50,
+          'questions': [
+            {
+              'question': 'Is this a question?',
+              'answers': ['Yes', 'No', 'Maybe'],
+            },
+          ],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('visible range', data: {'characterRange': [0, 16]});
+      await tester.tap(find.text('CONTINUE'), warnIfMissed: false); // invisible
+      l.expectDoneLogging();
+      await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
+      l.expectLogged('visible range', data: {'characterRange': [5, 19]});
+      await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
+      l.expectLogged('visible range', data: {'characterRange': [11, 24]});
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+
+      l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
+      expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('visible range', data: {'characterRange': [0, 16]});
+      expect(find.text('CONTINUE'), findsNothing);
+      await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
+      l.expectLogged('visible range', data: {'characterRange': [5, 19]});
+      await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
+      l.expectLogged('visible range', data: {'characterRange': [11, 24]});
+      await tester.tap(find.text('No'));
+      await tester.pumpAndSettle();
+      l.expectLogged('selected answer',
+          data: {'questionIndex': 0, 'answerIndex': 1});
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('submitted answers', data: {'answerIndices': [1]});
+      l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
+
+      l.expectDoneLogging();
+    });
+
+    testWidgets('supports ratings', (tester) async {
+      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'reading',
+        {
+          'text': 'This is an example text.',
+          'textWidth': 300,
+          'textHeight': 200,
+          'ratings': [
+            {
+              'question': 'How is it?',
+              'type': 'emoticon',
+              'lowExtreme': 'bad',
+              'highExtreme': 'good',
+            },
+            {
+              'question': 'How was it?',
+              'type': 'slider',
+              'lowExtreme': 'bad',
+              'highExtreme': 'good',
+            },
+          ],
+          'questions': [
+            {
+              'question': 'Is this a question?',
+              'answers': ['Yes', 'No', 'Maybe'],
+            },
+          ],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('visible range', data: {'characterRange': [0, 24]});
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+
+      l.expectLogged('started stage', data: {'type': 'RatingsStage'});
+      expect(find.text('How is it?'), findsOneWidget);
+      expect(find.text('bad'), findsOneWidget);
+      expect(find.text('good'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE')); // disabled
+      await tester.tap(find.byIcon(Icons.sentiment_satisfied));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      expect(find.text('How was it?'), findsOneWidget);
+      expect(find.text('bad'), findsOneWidget);
+      expect(find.text('good'), findsOneWidget);
+      expect(find.byType(Slider), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished ratings', data: {'answers': [3, 0.5]});
+      l.expectLogged('finished stage', data: {'type': 'RatingsStage'});
+
+      l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
+      expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('visible range', data: {'characterRange': [0, 24]});
+      await tester.tap(find.text('No'));
+      await tester.pumpAndSettle();
+      l.expectLogged('selected answer',
+          data: {'questionIndex': 0, 'answerIndex': 1});
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('submitted answers', data: {'answerIndices': [1]});
+      l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
 
       l.expectDoneLogging();
     });

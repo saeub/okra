@@ -171,11 +171,13 @@ class _ScrollableTextState extends State<ScrollableText> {
   late TextRange _visibleRange;
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     _updatePainter();
     _visibleRange = _getVisibleRange(0, widget.height + widget.padding);
-    _emitVisibleRangeChanged();
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      _emitVisibleRangeChanged();
+    });
   }
 
   @override
@@ -185,6 +187,11 @@ class _ScrollableTextState extends State<ScrollableText> {
         widget.width != oldWidget.width ||
         widget.height != oldWidget.height) {
       _updatePainter();
+      var newVisibleRange = _getVisibleRange(0, widget.height + widget.padding);
+      if (newVisibleRange != _visibleRange) {
+        _visibleRange = newVisibleRange;
+        _emitVisibleRangeChanged();
+      }
     }
   }
 
@@ -318,7 +325,7 @@ class QuestionsStage extends TaskStage {
     );
   }
 
-  void _checkAnswers(BuildContext context) {
+  void _checkAnswers(BuildContext context) async {
     var questionIndicesToCorrect = <int>{};
     for (var i = 0; i < questions.length; i++) {
       var selectedAnswerIndex = _selectedAnswerIndices[i];
@@ -330,7 +337,6 @@ class QuestionsStage extends TaskStage {
     }
     logger.log('submitted answers', {
       'answerIndices': _selectedAnswerIndices,
-      'questionIndicesToCorrect': questionIndicesToCorrect.toList()
     });
     if (questionIndicesToCorrect.isNotEmpty) {
       setState(() {
@@ -338,7 +344,7 @@ class QuestionsStage extends TaskStage {
         _pageToQuestion(questionIndicesToCorrect.reduce(min));
       });
       logger.log('showing correction dialog');
-      showDialog(
+      await showDialog(
         context: context,
         builder: (context) {
           var nIncorrect = questionIndicesToCorrect.length;
@@ -355,9 +361,10 @@ class QuestionsStage extends TaskStage {
             content: const Text('Please correct your answers.'),
           );
         },
-      ).then(
-        (_) => logger.log('dismissed correction dialog'),
       );
+      logger.log('started answer correction', {
+          'questionIndicesToCorrect': questionIndicesToCorrect.toList(),
+        });
     } else {
       finish();
     }
