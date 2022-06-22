@@ -1435,5 +1435,109 @@ void main() {
 
       l.expectDoneLogging();
     });
+
+    testWidgets('supports answer correction', (tester) async {
+      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'reading',
+        {
+          'text': 'This is an example text.',
+          'textWidth': 300,
+          'textHeight': 200,
+          'questions': [
+            {
+              'question': 'Is this a question?',
+              'answers': ['Yes', 'No', 'Maybe'],
+              'correctAnswerIndex': 0,
+            },
+            {
+              'question': 'What about this?',
+              'answers': ['Definitely'],
+              'correctAnswerIndex': 0,
+            },
+          ],
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('visible range', data: {
+        'characterRange': [0, 24]
+      });
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+
+      l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
+      expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('visible range', data: {
+        'characterRange': [0, 24]
+      });
+      expect(find.text('Is this a question?'), findsOneWidget);
+      expect(find.text('Yes'), findsOneWidget);
+      expect(find.text('No'), findsOneWidget);
+      expect(find.text('Maybe'), findsOneWidget);
+      expect(find.text('CONTINUE'), findsNothing);
+      await tester.tap(find.text('Yes'));
+      l.expectLogged('selected answer',
+          data: {'questionIndex': 0, 'answerIndex': 0});
+      await tester.tap(find.text('Maybe'));
+      l.expectLogged('selected answer',
+          data: {'questionIndex': 0, 'answerIndex': 2});
+      expect(find.text('CONTINUE'), findsNothing);
+
+      await tester.tap(find.byIcon(Icons.arrow_forward));
+      await tester.pumpAndSettle();
+      l.expectLogged('turned to question', data: {'questionIndex': 1});
+
+      expect(find.text('What about this?'), findsOneWidget);
+      expect(find.text('Definitely'), findsOneWidget);
+      await tester.tap(find.text('Definitely'));
+      l.expectLogged('selected answer',
+          data: {'questionIndex': 1, 'answerIndex': 0});
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('submitted answers', data: {
+        'answerIndices': [2, 0]
+      });
+
+      l.expectLogged('showing correction dialog');
+      l.expectLogged('turned to question', data: {'questionIndex': 0});
+      expect(find.text('1 incorrect'), findsOneWidget);
+      expect(find.text('Please correct your answers.'), findsOneWidget);
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Is this a question?'), findsOneWidget);
+      expect(find.text('Yes'), findsOneWidget);
+      expect(find.text('No'), findsOneWidget);
+      expect(find.text('Maybe'), findsOneWidget);
+      await tester.tap(find.text('Yes'));
+      l.expectLogged('started answer correction', data: {
+        'questionIndicesToCorrect': [0]
+      });
+      l.expectLogged('selected answer',
+          data: {'questionIndex': 0, 'answerIndex': 0});
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('submitted answers', data: {
+        'answerIndices': [0, 0]
+      });
+      l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
+
+      l.expectDoneLogging();
+    });
   });
 }
