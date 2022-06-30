@@ -4,6 +4,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:okra/generated/l10n.dart';
 import 'package:okra/src/pages/task.dart';
+import 'package:okra/src/tasks/digit_span.dart';
 import 'package:okra/src/tasks/n_back.dart';
 import 'package:okra/src/tasks/reaction_time.dart';
 import 'package:okra/src/tasks/reading.dart';
@@ -188,6 +189,80 @@ void main() {
       await tester.pump(const Duration(seconds: 1));
       l.expectLogged('finished feedback', data: {'segment': 1});
 
+      l.expectDoneLogging();
+    });
+  });
+
+  group('Digit span', () {
+    testWidgets('can be completed', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'digit-span',
+        {},
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      // 1 correct response
+      var loggedData = l.expectLogged('started displaying span');
+      List<num> span = loggedData?['span'];
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text(span[0].toString()), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text(span[0].toString()), findsNothing);
+      expect(find.text(span[1].toString()), findsNothing);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text(span[1].toString()), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text(span[1].toString()), findsNothing);
+      expect(find.text(span[2].toString()), findsNothing);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text(span[2].toString()), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text(span[1].toString()), findsNothing);
+      expect(find.text(span[2].toString()), findsNothing);
+      await tester.pump(const Duration(milliseconds: 500));
+      l.expectLogged('finished displaying span', data: {'span': span});
+
+      expect(find.byType(DigitSpanInput), findsOneWidget);
+      await tester.tap(find.text('DONE')); // disabled
+      for (var digit in span) {
+        await tester.tap(find.widgetWithText(DigitButton, digit.toString()));
+      }
+      await tester.pumpAndSettle();
+      expect(find.text(span.join()), findsOneWidget);
+      await tester.tap(find.text('DONE'));
+      l.expectLogged('submitted response',
+          data: {'response': span, 'correct': span});
+
+      // 2 incorrect responses
+      for (var i = 0; i < 2; i++) {
+        loggedData = l.expectLogged('started displaying span');
+        span = loggedData?['span'];
+        for (var i = 0; i < 10; i++) {
+          await tester.pump(const Duration(milliseconds: 500));
+        }
+        l.expectLogged('finished displaying span', data: {'span': span});
+
+        var response = [for (var digit in span) (digit + 1) % 10];
+        expect(find.byType(DigitSpanInput), findsOneWidget);
+        await tester.tap(find.text('DONE')); // disabled
+        for (var digit in response) {
+          await tester.tap(find.widgetWithText(DigitButton, digit.toString()));
+        }
+        await tester.pumpAndSettle();
+        expect(find.text(response.join()), findsOneWidget);
+        await tester.tap(find.text('DONE'));
+        await tester.pumpAndSettle();
+        l.expectLogged('submitted response',
+            data: {'response': response, 'correct': span});
+      }
       l.expectDoneLogging();
     });
   });
