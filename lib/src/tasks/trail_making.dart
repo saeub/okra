@@ -4,15 +4,24 @@ import 'package:flutter/material.dart';
 
 import 'task.dart';
 
+class Stimulus {
+  final String text;
+  final Offset position;
+  bool tapped;
+
+  Stimulus(this.text, this.position) : tapped = false;
+}
+
 class TrailMaking extends Task {
   static const buttonSize = 45.0;
   static const buttonMargin = 20.0;
+  static const errorIconSize = 100.0;
 
   late int _gridWidth;
   late int _gridHeight;
   late List<Stimulus> _stimuli;
   late int _currentStimulusIndex;
-  late bool _showError;
+  Stimulus? _errorStimulus;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -57,7 +66,6 @@ class TrailMaking extends Task {
       );
     }
     _currentStimulusIndex = 0;
-    _showError = false;
 
     logger.log('started task');
   }
@@ -96,6 +104,7 @@ class TrailMaking extends Task {
         ),
       );
     }
+    var _errorStimulus = this._errorStimulus;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Center(
@@ -122,23 +131,14 @@ class TrailMaking extends Task {
                     ),
                   ),
                 ...buttons,
-                if (_showError)
-                  Center(
-                    child: Card(
-                      color: Colors.red[800],
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            Icon(
-                              Icons.thumb_down,
-                              color: Colors.white,
-                              size: 40.0,
-                            ),
-                          ],
-                        ),
-                      ),
+                if (_errorStimulus != null)
+                  Positioned(
+                    left: _errorStimulus.position.dx - 50.0 + buttonSize / 2,
+                    top: _errorStimulus.position.dy - 50.0 + buttonSize / 2,
+                    child: const Icon(
+                      Icons.close,
+                      color: Colors.red,
+                      size: errorIconSize,
                     ),
                   ),
               ],
@@ -163,22 +163,14 @@ class TrailMaking extends Task {
     } else {
       logger.log('tapped incorrect stimulus', {'stimulus': stimulus.text});
       setState(() {
-        _showError = true;
+        _errorStimulus = stimulus;
       });
       logger.log('started feedback');
-      await Future.delayed(const Duration(milliseconds: 700));
+      await Future.delayed(const Duration(milliseconds: 500));
       logger.log('finished feedback');
       setState(() {
-        _showError = false;
+        _errorStimulus = null;
       });
     }
   }
-}
-
-class Stimulus {
-  final String text;
-  final Offset position;
-  bool tapped;
-
-  Stimulus(this.text, this.position) : tapped = false;
 }

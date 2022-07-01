@@ -1572,11 +1572,12 @@ void main() {
       l.expectLogged('tapped correct stimulus', data: {'stimulus': '1'});
 
       await tester.tap(find.text('3'));
+      await tester.pump();
+      expect(find.byIcon(Icons.close), findsOneWidget);
       await tester.pumpAndSettle();
-      expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       l.expectLogged('tapped incorrect stimulus', data: {'stimulus': '3'});
       l.expectLogged('started feedback');
-      await tester.pump(const Duration(milliseconds: 700));
+      await tester.pump(const Duration(milliseconds: 500));
       l.expectLogged('finished feedback');
 
       await tester.tap(find.text('2'));
