@@ -1588,5 +1588,56 @@ void main() {
 
       l.expectDoneLogging();
     });
+
+    testWidgets('supports distractors', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'trail-making',
+        {
+          'stimuli': ['1', '2', '3'],
+          'colors': ['FFFFFF', '000000'],
+          'nDistractors': 6,
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started task');
+      expect(find.text('1'), findsNWidgets(3));
+      expect(find.text('2'), findsNWidgets(3));
+      expect(find.text('3'), findsNWidgets(3));
+    });
+
+    testWidgets('supports custom grid size', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'trail-making',
+        {
+          'stimuli': ['A', 'B', 'C', 'D'],
+          'gridWidth': 2,
+          'gridHeight': 2,
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started task');
+      expect(find.text('A'), findsOneWidget);
+      expect(find.text('B'), findsOneWidget);
+      expect(find.text('C'), findsOneWidget);
+      expect(find.text('D'), findsOneWidget);
+    });
   });
 }

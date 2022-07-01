@@ -151,6 +151,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Rotate your phone into landscape mode"),
         "taskRotatePortrait": MessageLookupByLibrary.simpleMessage(
             "Rotate your phone into portrait mode"),
+        "taskTrailMakingStart": MessageLookupByLibrary.simpleMessage("START"),
         "tutorialName": MessageLookupByLibrary.simpleMessage("Tutorial")
       };
 }

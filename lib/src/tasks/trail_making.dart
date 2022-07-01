@@ -2,14 +2,22 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../../generated/l10n.dart';
 import 'task.dart';
 
 class Stimulus {
   final String text;
+  final Color color;
+  final Color textColor;
+  final bool outline;
   final Offset position;
   bool tapped;
 
-  Stimulus(this.text, this.position) : tapped = false;
+  Stimulus(this.text, this.color, this.position)
+      : tapped = false,
+        textColor =
+            color.computeLuminance() < 0.5 ? Colors.white : Colors.black,
+        outline = color.computeLuminance() > 0.8;
 }
 
 class TrailMaking extends Task {
@@ -20,30 +28,50 @@ class TrailMaking extends Task {
   late int _gridWidth;
   late int _gridHeight;
   late List<Stimulus> _stimuli;
+  late List<Stimulus> _distractors;
   late int _currentStimulusIndex;
   Stimulus? _errorStimulus;
 
   @override
   void init(Map<String, dynamic> data) {
-    _stimuli = [];
     List<String> stimulusTexts = data['stimuli'].cast<String>();
-    _gridWidth = data['gridWidth'] ?? sqrt(stimulusTexts.length * 2).ceil();
-    _gridHeight = data['gridHeight'] ?? sqrt(stimulusTexts.length * 2).ceil();
+
+    int? randomSeed = data['randomSeed'];
+    bool jiggle = data['jiggle'] ?? false;
+    int nDistractors = data['nDistractors'] ?? 0;
+
+    _gridWidth = data['gridWidth'] ??
+        sqrt((stimulusTexts.length + nDistractors) * 2).ceil();
+    _gridHeight = data['gridHeight'] ??
+        sqrt((stimulusTexts.length + nDistractors) * 2).ceil();
     var freeGridPositions = [
       for (var i = 0; i < _gridWidth; i++)
         for (var j = 0; j < _gridHeight; j++) Point(i, j)
     ];
-    if (stimulusTexts.length > freeGridPositions.length) {
+    if (stimulusTexts.length + nDistractors > freeGridPositions.length) {
       throw ArgumentError(
-          'Number of stimuli must not exceed ${freeGridPositions.length}');
+          'Number of stimuli and distractors must not exceed grid size (${freeGridPositions.length})');
     }
 
-    int? randomSeed = data['randomSeed'];
-    bool jiggle = data['jiggle'] ?? false;
+    List<String>? colorCodes = data['colors']?.cast<String>();
+    var colors = <Color>[];
+    if (colorCodes != null) {
+      for (var colorCode in colorCodes) {
+        var colorInt = 0xFF000000 + int.parse(colorCode, radix: 16);
+        colors.add(Color(colorInt));
+      }
+    } else {
+      colors.add(Colors.green.shade800);
+    }
+    if (nDistractors > 0 && colors.length < 2) {
+      throw ArgumentError(
+          'Distractors can only be used if there are at least 2 stimulus colors');
+    }
+
     var random = Random(randomSeed);
-    for (var text in stimulusTexts) {
+    Offset generatePosition() {
       // Pop random free position
-      var position =
+      var gridPosition =
           freeGridPositions.removeAt(random.nextInt(freeGridPositions.length));
       var jiggleOffsetX = 0.0;
       var jiggleOffsetY = 0.0;
@@ -51,22 +79,52 @@ class TrailMaking extends Task {
         jiggleOffsetX = random.nextDouble() * buttonMargin - buttonMargin / 2;
         jiggleOffsetY = random.nextDouble() * buttonMargin - buttonMargin / 2;
       }
+      return Offset(
+        buttonMargin +
+            gridPosition.x * (buttonSize + buttonMargin) +
+            jiggleOffsetX,
+        buttonMargin +
+            gridPosition.y * (buttonSize + buttonMargin) +
+            jiggleOffsetY,
+      );
+    }
+
+    // Generate stimuli
+    _stimuli = [];
+    for (var i = 0; i < stimulusTexts.length; i++) {
+      var text = stimulusTexts[i];
+      var color = colors[i % colors.length];
+      var position = generatePosition();
       _stimuli.add(
         Stimulus(
           text,
-          Offset(
-            buttonMargin +
-                position.x * (buttonSize + buttonMargin) +
-                jiggleOffsetX,
-            buttonMargin +
-                position.y * (buttonSize + buttonMargin) +
-                jiggleOffsetY,
-          ),
+          color,
+          position,
         ),
       );
     }
-    _currentStimulusIndex = 0;
 
+    // Generate distractors
+    _distractors = [];
+    var shuffledStimulusIndices = [for (var i = 0; i < _stimuli.length; i++) i]
+      ..shuffle();
+    for (var i = 0; i < nDistractors; i++) {
+      var stimulusIndex = shuffledStimulusIndices[i % _stimuli.length];
+      var text = stimulusTexts[stimulusIndex];
+      var colorIndex = (stimulusIndex + random.nextInt(colors.length - 1) + 1) %
+          colors.length;
+      var color = colors[colorIndex];
+      var position = generatePosition();
+      _distractors.add(
+        Stimulus(
+          text,
+          color,
+          position,
+        ),
+      );
+    }
+
+    _currentStimulusIndex = 0;
     logger.log('started task');
   }
 
@@ -82,28 +140,24 @@ class TrailMaking extends Task {
         Positioned(
           left: stimulus.position.dx,
           top: stimulus.position.dy,
-          child: ElevatedButton(
-            child: Text(stimulus.text),
-            style: ButtonStyle(
-              shape: MaterialStateProperty.all(const CircleBorder()),
-              backgroundColor: MaterialStateProperty.resolveWith(((states) =>
-                  !states.contains(MaterialState.disabled)
-                      ? Colors.green.shade800
-                      : null)),
-              fixedSize:
-                  MaterialStateProperty.all(const Size(buttonSize, buttonSize)),
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              padding: MaterialStateProperty.all(EdgeInsets.zero),
-              minimumSize: MaterialStateProperty.all(Size.zero),
-              textStyle: MaterialStateProperty.all(
-                  const TextStyle(fontSize: buttonSize - 15)),
-            ),
-            onPressed: stimulus.tapped ? null : () => _onStimulusTapped(i),
-          ),
-          key: ValueKey(i),
+          child: StimulusButton(stimulus, onTapped: () => _onStimulusTapped(i)),
+          key: ValueKey(stimulus),
         ),
       );
     }
+    for (var i = 0; i < _distractors.length; i++) {
+      var distractor = _distractors[i];
+      buttons.add(
+        Positioned(
+          left: distractor.position.dx,
+          top: distractor.position.dy,
+          child: StimulusButton(distractor,
+              onTapped: () => _onDistractorTapped(i)),
+          key: ValueKey(distractor),
+        ),
+      );
+    }
+
     var _errorStimulus = this._errorStimulus;
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -120,13 +174,28 @@ class TrailMaking extends Task {
                   Positioned(
                     left: _stimuli.first.position.dx - 8,
                     top: _stimuli.first.position.dy - 8,
-                    child: Container(
+                    child: SizedBox(
                       width: buttonSize + 16,
-                      height: buttonSize + 16,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(buttonSize),
-                        border: Border.all(
-                            color: Colors.green.shade500, width: 4.0),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: buttonSize + 16,
+                            height: buttonSize + 16,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(buttonSize),
+                              border: Border.all(
+                                  color: Colors.green.shade500, width: 4.0),
+                            ),
+                          ),
+                          Text(
+                            S.of(context).taskTrailMakingStart,
+                            style: TextStyle(
+                              color: Colors.green.shade500,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -167,10 +236,68 @@ class TrailMaking extends Task {
       });
       logger.log('started feedback');
       await Future.delayed(const Duration(milliseconds: 500));
-      logger.log('finished feedback');
+      // Don't finish feedback if another incorrect stimulus has been tapped in the meantime
+      if (_errorStimulus == stimulus) {
+        logger.log('finished feedback');
+        setState(() {
+          _errorStimulus = null;
+        });
+      }
+    }
+  }
+
+  void _onDistractorTapped(int distractorIndex) async {
+    var distractor = _distractors[distractorIndex];
+    logger.log('tapped distractor', {'stimulus': distractor.text});
+    setState(() {
+      _errorStimulus = distractor;
+    });
+    logger.log('started feedback');
+    await Future.delayed(const Duration(milliseconds: 500));
+    // Don't finish feedback if another incorrect stimulus has been tapped in the meantime
+    if (_errorStimulus == distractor) {
       setState(() {
+        logger.log('finished feedback');
         _errorStimulus = null;
       });
     }
+  }
+}
+
+class StimulusButton extends StatelessWidget {
+  final Stimulus stimulus;
+  final Function() onTapped;
+
+  const StimulusButton(this.stimulus, {required this.onTapped, Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      child: Text(stimulus.text),
+      style: ButtonStyle(
+        shape: MaterialStateProperty.resolveWith(((states) =>
+            !states.contains(MaterialState.disabled)
+                ? CircleBorder(
+                    side: stimulus.outline
+                        ? const BorderSide(width: 2.0)
+                        : BorderSide.none)
+                : const CircleBorder())),
+        backgroundColor: MaterialStateProperty.resolveWith(((states) =>
+            !states.contains(MaterialState.disabled) ? stimulus.color : null)),
+        foregroundColor: MaterialStateProperty.resolveWith(((states) =>
+            !states.contains(MaterialState.disabled)
+                ? stimulus.textColor
+                : null)),
+        fixedSize: MaterialStateProperty.all(
+            const Size(TrailMaking.buttonSize, TrailMaking.buttonSize)),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        padding: MaterialStateProperty.all(EdgeInsets.zero),
+        minimumSize: MaterialStateProperty.all(Size.zero),
+        textStyle: MaterialStateProperty.all(
+            const TextStyle(fontSize: TrailMaking.buttonSize - 15)),
+      ),
+      onPressed: stimulus.tapped ? null : () => onTapped(),
+    );
   }
 }
