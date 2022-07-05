@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
@@ -133,21 +134,25 @@ class TrailMaking extends Task {
 
   @override
   Widget build(BuildContext context) {
-    var buttons = <Widget>[];
+    var buttonsForeground = <Widget>[];
+    var buttonsBackground = <Widget>[];
     for (var i = 0; i < _stimuli.length; i++) {
       var stimulus = _stimuli[i];
-      buttons.add(
-        Positioned(
-          left: stimulus.position.dx,
-          top: stimulus.position.dy,
-          child: StimulusButton(stimulus, onTapped: () => _onStimulusTapped(i)),
-          key: ValueKey(stimulus),
-        ),
+      var widget = Positioned(
+        left: stimulus.position.dx,
+        top: stimulus.position.dy,
+        child: StimulusButton(stimulus, onTapped: () => _onStimulusTapped(i)),
+        key: ValueKey(stimulus),
       );
+      if (stimulus.tapped) {
+        buttonsBackground.add(widget);
+      } else {
+        buttonsForeground.add(widget);
+      }
     }
     for (var i = 0; i < _distractors.length; i++) {
       var distractor = _distractors[i];
-      buttons.add(
+      buttonsForeground.add(
         Positioned(
           left: distractor.position.dx,
           top: distractor.position.dy,
@@ -170,6 +175,7 @@ class TrailMaking extends Task {
             child: Stack(
               clipBehavior: Clip.none,
               children: [
+                // Start indicator
                 if (_currentStimulusIndex == 0)
                   Positioned(
                     left: _stimuli.first.position.dx - 8,
@@ -199,7 +205,19 @@ class TrailMaking extends Task {
                       ),
                     ),
                   ),
-                ...buttons,
+                // Buttons already tapped
+                ...buttonsBackground,
+                // Trail
+                CustomPaint(
+                  painter: TrailPainter([
+                    for (var i = 0; i < _currentStimulusIndex; i++)
+                      _stimuli[i].position +
+                          const Offset(buttonSize / 2, buttonSize / 2)
+                  ]),
+                ),
+                // Buttons not yet tapped
+                ...buttonsForeground,
+                // Error indicator
                 if (_errorStimulus != null)
                   Positioned(
                     left: _errorStimulus.position.dx - 50.0 + buttonSize / 2,
@@ -297,7 +315,32 @@ class StimulusButton extends StatelessWidget {
         textStyle: MaterialStateProperty.all(
             const TextStyle(fontSize: TrailMaking.buttonSize - 15)),
       ),
-      onPressed: stimulus.tapped ? null : () => onTapped(),
+      onPressed: onTapped,
     );
+  }
+}
+
+class TrailPainter extends CustomPainter {
+  final List<Offset> points;
+  final Paint _paint;
+
+  TrailPainter(this.points)
+      : _paint = Paint()
+          ..color = Colors.green
+          ..strokeWidth = 3.0;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (var i = 0; i < points.length; i++) {
+      canvas.drawCircle(points[i], 5.0, _paint);
+      if (i > 0) {
+        canvas.drawLine(points[i - 1], points[i], _paint);
+      }
+    }
+  }
+
+  @override
+  bool shouldRepaint(TrailPainter oldDelegate) {
+    return !listEquals(points, oldDelegate.points);
   }
 }
