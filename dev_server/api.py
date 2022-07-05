@@ -214,7 +214,7 @@ EXPERIMENTS_TASKS = [
                 }
                 for i in range(3)
             ],
-        }
+        },
     ),
     (
         {
@@ -238,12 +238,14 @@ EXPERIMENTS_TASKS = [
             "nTasksDone": 0,
         },
         {
-            "stimuli": [str(i) for i in range(1, 11)],
+            "stimuli": [str(i) for i in range(1, 7)],
+            "colors": ["FFFFFF", "000000"],
+            "nDistractors": 6,
             "gridWidth": 5,
             "gridHeight": 7,
             "randomSeed": 42,
             "jiggle": True,
-        }
+        },
     ),
 ]
 
