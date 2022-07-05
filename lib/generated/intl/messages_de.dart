@@ -155,6 +155,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Drehe dein Gerät ins Querformat"),
         "taskRotatePortrait": MessageLookupByLibrary.simpleMessage(
             "Drehe dein Gerät ins Hochformat"),
+        "taskTrailMakingStart": MessageLookupByLibrary.simpleMessage("START"),
         "tutorialName": MessageLookupByLibrary.simpleMessage("Tutorial")
       };
 }

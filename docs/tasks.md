@@ -37,7 +37,7 @@ One segment of text is shown at a time, with a blank which has to be filled in b
 
 ### Lexical decision
 
-One word is shown at a time. The task is to determine whether it is a real word or a non-word. Similar to the original experiment described by [Meyer and Schvaneveldt (1971)](https://psycnet.apa.org/record/1972-04123-001), but showing single words instead of word pairs (though the task implementation allows newlines in words to display pairs).
+One word is shown at a time. The task is to determine whether it is a real word or a non-word. Similar to the original experiment described by [Meyer and Schvaneveldt (1971)](https://psycnet.apa.org/doi/10.1037/h0031564), but showing single words instead of word pairs (though the task implementation allows newlines in words to display pairs).
 
 - Identifier: `lexical-decision`
 - Implementation: [`lib/src/tasks/lexical_decision.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/lexical_decision.dart)
@@ -237,3 +237,24 @@ Four buttons are shown. They light up in a specific sequence, which has to be re
     "maxCorrectItems": 7
   }
   ```
+
+### Trail making
+
+Circular buttons with numbers or letters are presented, which have to be connected in the correct order by tapping on them. In a variation of the task, the buttons have different colors and have to be connected in a trail of alternating colors (e.g. `black 1` → `white 2` → `black 3` → ...), avoiding distractors (cf. [Kim et al., 2014](https://doi.org/10.1371/journal.pone.0089078)).
+
+- Identifier: `trail-making`
+- Implementation: [`lib/src/tasks/trail_making.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/trail_making.dart)
+- Data structure:
+  ```json
+  {
+    "stimuli": ["1", "2", "3", "4", "5", "6"],
+    "colors": ["FFFFFF", "000000"],
+    "nDistractors": 4,
+    "gridWidth": 5,
+    "gridHeight": 7,
+    "jiggle": true,
+    "randomSeed": 42
+  }
+  ```
+  **NOTE:** `colors` is optional and specifies the alternating colors of the buttons. `nDistractors` is only allowed when there are at least 2 `colors` and specifies the number of distractor buttons (same stimuli, but wrong color). `gridWidth`, `gridHeight`, `jiggle`, and `randomSeed` are all optional and influence random generation of stimulus positions and distractors.
+- All results are included in the event logs. The results data is empty.
