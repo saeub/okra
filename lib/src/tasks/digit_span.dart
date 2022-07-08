@@ -7,6 +7,7 @@ import 'task.dart';
 
 class DigitSpan extends Task {
   late final int _maxErrors;
+  late final List<int> _digits;
   late List<int> _currentSpan;
   late int _nextSpanLength;
   late int _nErrors;
@@ -16,7 +17,15 @@ class DigitSpan extends Task {
   @override
   void init(Map<String, dynamic> data) {
     _maxErrors = data['maxErrors'] ?? 2;
-    _nextSpanLength = 3;
+    List<int> excludeDigits = data['excludeDigits'] ?? [];
+    _digits = [
+      for (var i = 0; i < 10; i++)
+        if (!excludeDigits.contains(i)) i
+    ];
+    if (_digits.length < 2) {
+      throw ArgumentError('At least two digits must be allowed');
+    }
+    _nextSpanLength = data['initialLength'] ?? 3;
     _nErrors = 0;
     _responding = false;
     _random = Random();
@@ -24,9 +33,14 @@ class DigitSpan extends Task {
   }
 
   void _nextTrial() {
-    // TODO: Don't generate same number twice in a row
-    _currentSpan =
-        List<int>.generate(_nextSpanLength, (index) => _random.nextInt(9) + 1);
+    _currentSpan = [];
+    while (_currentSpan.length < _nextSpanLength) {
+      var nextDigitIndex = _random.nextInt(_digits.length);
+      var nextDigit = _digits[nextDigitIndex];
+      if (_currentSpan.isEmpty || nextDigit != _currentSpan.last) {
+        _currentSpan.add(nextDigit);
+      }
+    }
     _responding = false;
     logger.log('started displaying span', {'span': _currentSpan});
   }

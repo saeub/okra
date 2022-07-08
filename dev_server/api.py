@@ -228,6 +228,21 @@ EXPERIMENTS_TASKS = [
             ],
         }
     ),
+    (
+        {
+            "id": "10",
+            "type": "digit-span",
+            "title": "Digit span",
+            "instructions": "",
+            "nTasks": 4,
+            "nTasksDone": 2,
+        },
+        {
+            "excludeDigits": ["0", "7"],
+            "initialLength": 3,
+            "maxErrors": 2,
+        },
+    )
 ]
 
 app = Flask(__name__)

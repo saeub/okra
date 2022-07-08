@@ -265,6 +265,56 @@ void main() {
       }
       l.expectDoneLogging();
     });
+
+    testWidgets('supports span criteria', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'digit-span',
+        {
+          'maxErrors': 1,
+          'initialLength': 20,
+          'excludeDigits': [0, 1, 2, 3, 4, 5, 6, 7]
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      var loggedData = l.expectLogged('started displaying span');
+      List<num> span = loggedData?['span'];
+      // initialLength
+      expect(span.length, 20);
+      // excludeDigits
+      for (var i in [0, 1, 2, 3, 4, 5, 6, 7]) {
+        expect(span.contains(i), false);
+      }
+      // No equal consecutive digits
+      for (var i = 1; i < span.length; i++) {
+        expect(span[i - 1] == span[i], false);
+      }
+      for (var i = 0; i < 41; i++) {
+        await tester.pump(const Duration(milliseconds: 500));
+      }
+      l.expectLogged('finished displaying span', data: {'span': span});
+
+      expect(find.byType(DigitSpanInput), findsOneWidget);
+      await tester.tap(find.widgetWithText(DigitButton, '0'));
+      await tester.tap(find.widgetWithText(DigitButton, '1'));
+      await tester.pumpAndSettle();
+      expect(find.text('01'), findsOneWidget);
+      await tester.tap(find.text('DONE'));
+      l.expectLogged('submitted response', data: {
+        'response': [0, 1],
+        'correct': span
+      });
+
+      l.expectDoneLogging();
+    });
   });
 
   group('Lexical decision', () {
