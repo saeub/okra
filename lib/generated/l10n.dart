@@ -754,6 +754,16 @@ class S {
     );
   }
 
+  /// `START`
+  String get taskTrailMakingStart {
+    return Intl.message(
+      'START',
+      name: 'taskTrailMakingStart',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Tutorial`
   String get tutorialName {
     return Intl.message(

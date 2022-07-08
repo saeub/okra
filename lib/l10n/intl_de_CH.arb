@@ -70,5 +70,6 @@
   "taskResultsSecondsTaken": "{howMany, plural, one{1 Sekunde} other{{howMany} Sekunden}}",
   "taskRotateLandscape": "Drehe dein Gerät ins Querformat",
   "taskRotatePortrait": "Drehe dein Gerät ins Hochformat",
+  "taskTrailMakingStart": "START",
   "tutorialName": "Tutorial"
 }

@@ -10,6 +10,7 @@ import 'simon_game.dart';
 import 'reading.dart';
 import 'digit_span.dart';
 import 'task.dart';
+import 'trail_making.dart';
 
 typedef TaskFactory<T extends Task> = T Function();
 
@@ -52,13 +53,17 @@ class TaskType {
     // TODO: Lock initial orientation instead of enforcing one
     // (balloons can go off-screen when rotating device)
   );
+  static final TaskType reading = TaskType(
+    Icons.abc,
+    () => Reading(),
+  );
   static final TaskType simonGame = TaskType(
     Icons.grid_view,
     () => SimonGame(),
   );
-  static final TaskType reading = TaskType(
-    Icons.abc,
-    () => Reading(),
+  static final TaskType trailMaking = TaskType(
+    Icons.scatter_plot,
+    () => TrailMaking(),
   );
 
   static TaskType fromString(String identifier) {
@@ -77,10 +82,12 @@ class TaskType {
         return questionAnswering;
       case 'reaction-time':
         return reactionTime;
-      case 'simon-game':
-        return simonGame;
       case 'reading':
         return reading;
+      case 'simon-game':
+        return simonGame;
+      case 'trail-making':
+        return trailMaking;
       default:
         throw ArgumentError('Task type "$identifier" is not implemented');
     }

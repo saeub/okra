@@ -69,5 +69,6 @@
   "taskResultsSecondsTaken": "{howMany, plural, one{1 second} other{{howMany} seconds}}",
   "taskRotateLandscape": "Rotate your phone into landscape mode",
   "taskRotatePortrait": "Rotate your phone into portrait mode",
+  "taskTrailMakingStart": "START",
   "tutorialName": "Tutorial"
 }
