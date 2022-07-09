@@ -1473,6 +1473,47 @@ void main() {
 
       l.expectDoneLogging();
     });
+
+    testWidgets('supports intro for context', (tester) async {
+      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
+      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'reading',
+        {
+          'intro': 'Some context.',
+          'text': 'This is an example text.',
+          'textWidth': 300,
+          'textHeight': 200,
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      l.expectLogged('started stage', data: {'type': 'IntroStage'});
+      expect(find.byType(MarkdownBody), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished stage', data: {'type': 'IntroStage'});
+
+      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('visible range', data: {
+        'characterRange': [0, 24]
+      });
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+
+      l.expectDoneLogging();
+    });
   });
 
   group('Simon game', () {

@@ -186,7 +186,7 @@ A single picture of a red balloon is shown at a time, which disappears with a po
 
 ### Reading
 
-A text is presented, followed by a series of ratings, followed by a number of single-answer multiple-choice questions to be answered. The questions are shown on the same screen as the text. The text is scrollable, and scrolling events are logged such that the visible range of text at each point in time can be reconstructed.
+A text is presented (optionally with a preceding introductory text for context), followed by a series of ratings, followed by a number of single-answer multiple-choice questions to be answered. The questions are shown on the same screen as the text. The text is scrollable, and scrolling events are logged such that the visible range of text at each point in time can be reconstructed.
 
 **NOTE:** On smaller screen sizes, the entire text box (including the font size) is scaled down in order to preserve the number of characters per line across devices.
 
@@ -195,7 +195,8 @@ A text is presented, followed by a series of ratings, followed by a number of si
 - Data structure:
   ```json
   {
-    "text": "This is an example.",
+    "intro": "This is to provide some *context*.",
+    "text": "This is an example text.",
     "textWidth": 300,
     "textHeight": 200,
     "fontSize": 25.0,
@@ -221,7 +222,7 @@ A text is presented, followed by a series of ratings, followed by a number of si
     ],
   }
   ```
-  **NOTE:** `fontSize` is optional and specifies the font size of the text (not the questions; default is 20.0). `questions` is optional. If it is not provided, the questions stage is skipped. `ratings` is optional. If it is not provided, the ratings stage is skipped. Ratings follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)). `correctAnswerIndex` is optional. If it is provided, the participant will receive feedback and are required to correct their answers. 
+  **NOTE:** `intro` is an optional text in Markdown to be shown before the actual text. `fontSize` is optional and specifies the font size of the text (not the questions; default is 20.0). `questions` is optional. If it is not provided, the questions stage is skipped. `ratings` is optional. If it is not provided, the ratings stage is skipped. Ratings follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)). `correctAnswerIndex` is optional. If it is provided, the participant will receive feedback and are required to correct their answers. 
 - All results are included in the event logs. The results data is empty.
 
 ### Simon game
