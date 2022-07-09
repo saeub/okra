@@ -35,6 +35,23 @@ One segment of text is shown at a time, with a blank which has to be filled in b
   ```
   **NOTE:** An index of `null` means that there was no blank in this segment.
 
+### Digit span
+
+A random sequence of digits is presented one digit at a time, and the participant is asked to type the sequence from memory. If the sequence was typed correctly, the next sequence will be one digit longer. The task ends after some number of errors has been made.
+
+- Identifier: `digit-span`
+- Implementation: [`lib/src/tasks/digit_span.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/digit_span.dart)
+- Data structure:
+  ```json
+  {
+      "excludeDigits": ["0", "7"],
+      "initialLength": 3,
+      "maxErrors": 2,
+  }
+  ```
+  **NOTE:** `excludeDigits`, `initialLength`, and `maxErrors` are optional. By default, all digits from 0 to 9 are included, the initial sequence length is 3, and the task ends after 2 failed trials.
+- All results are included in the event logs. The results data is empty.
+
 ### Lexical decision
 
 One word is shown at a time. The task is to determine whether it is a real word or a non-word. Similar to the original experiment described by [Meyer and Schvaneveldt (1971)](https://psycnet.apa.org/doi/10.1037/h0031564), but showing single words instead of word pairs (though the task implementation allows newlines in words to display pairs).
