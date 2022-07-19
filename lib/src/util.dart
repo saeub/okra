@@ -113,7 +113,7 @@ class FixationCross extends StatelessWidget {
 
   const FixationCross(
       {this.size = 30.0,
-      this.color = Colors.grey,
+      this.color = const Color(0xFF616161),
       this.strokeWidth = 3.0,
       Key? key})
       : super(key: key);
