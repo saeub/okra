@@ -11,6 +11,7 @@ import 'package:okra/src/tasks/reading.dart';
 import 'package:okra/src/tasks/simon_game.dart';
 import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
+import 'package:okra/src/util.dart';
 
 MaterialApp getTaskApp(String taskType, Map<String, dynamic> data,
     TaskEventLogger logger, FinishCallback onFinished) {
@@ -216,32 +217,38 @@ void main() {
       // 1 correct response
       var loggedData = l.expectLogged('started displaying span');
       List<num> span = loggedData?['span'];
-      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byType(FixationCross), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 1000));
+      expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[0].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byType(FixationCross), findsOneWidget);
       expect(find.text(span[0].toString()), findsNothing);
       expect(find.text(span[1].toString()), findsNothing);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[1].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byType(FixationCross), findsOneWidget);
       expect(find.text(span[1].toString()), findsNothing);
       expect(find.text(span[2].toString()), findsNothing);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 1500));
+      expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[2].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 500));
-      expect(find.text(span[1].toString()), findsNothing);
+      expect(find.byType(FixationCross), findsOneWidget);
       expect(find.text(span[2].toString()), findsNothing);
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 1500));
       l.expectLogged('finished displaying span', data: {'span': span});
 
       expect(find.byType(DigitSpanInput), findsOneWidget);
-      await tester.tap(find.text('DONE')); // disabled
+      await tester.tap(find.text('CONTINUE')); // disabled
       for (var digit in span) {
         await tester.tap(find.widgetWithText(DigitButton, digit.toString()));
       }
       await tester.pumpAndSettle();
       expect(find.text(span.join()), findsOneWidget);
-      await tester.tap(find.text('DONE'));
+      await tester.tap(find.text('CONTINUE'));
       l.expectLogged('submitted response',
           data: {'response': span, 'correct': span});
 
@@ -249,20 +256,22 @@ void main() {
       for (var i = 0; i < 2; i++) {
         loggedData = l.expectLogged('started displaying span');
         span = loggedData?['span'];
-        for (var i = 0; i < 10; i++) {
+        await tester.pump(const Duration(milliseconds: 1000));
+        for (var i = 0; i < 5; i++) {
           await tester.pump(const Duration(milliseconds: 500));
+          await tester.pump(const Duration(milliseconds: 1500));
         }
         l.expectLogged('finished displaying span', data: {'span': span});
 
         var response = [for (var digit in span) (digit + 1) % 10];
         expect(find.byType(DigitSpanInput), findsOneWidget);
-        await tester.tap(find.text('DONE')); // disabled
+        await tester.tap(find.text('CONTINUE')); // disabled
         for (var digit in response) {
           await tester.tap(find.widgetWithText(DigitButton, digit.toString()));
         }
         await tester.pumpAndSettle();
         expect(find.text(response.join()), findsOneWidget);
-        await tester.tap(find.text('DONE'));
+        await tester.tap(find.text('CONTINUE'));
         await tester.pumpAndSettle();
         l.expectLogged('submitted response',
             data: {'response': response, 'correct': span});
@@ -302,7 +311,7 @@ void main() {
         expect(span[i - 1] == span[i], false);
       }
       for (var i = 0; i < 41; i++) {
-        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pump(const Duration(milliseconds: 1500));
       }
       l.expectLogged('finished displaying span', data: {'span': span});
 
@@ -311,9 +320,55 @@ void main() {
       await tester.tap(find.widgetWithText(DigitButton, '1'));
       await tester.pumpAndSettle();
       expect(find.text('01'), findsOneWidget);
-      await tester.tap(find.text('DONE'));
+      await tester.tap(find.text('CONTINUE'));
       l.expectLogged('submitted response', data: {
         'response': [0, 1],
+        'correct': span
+      });
+
+      l.expectDoneLogging();
+    });
+
+    testWidgets('supports timing configuration', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'digit-span',
+        {
+          'maxErrors': 1,
+          'secondsShowingDigit': 5.0,
+          'secondsBetweenDigits': 0,
+        },
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      var loggedData = l.expectLogged('started displaying span');
+      List<num> span = loggedData?['span'];
+      expect(find.byType(FixationCross), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 1000));
+      expect(find.byType(FixationCross), findsNothing);
+      expect(find.text(span[0].toString()), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 5000));
+      expect(find.byType(FixationCross), findsNothing);
+      expect(find.text(span[1].toString()), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 5000));
+      expect(find.byType(FixationCross), findsNothing);
+      expect(find.text(span[2].toString()), findsOneWidget);
+      await tester.pump(const Duration(milliseconds: 5000));
+      l.expectLogged('finished displaying span', data: {'span': span});
+
+      expect(find.byType(DigitSpanInput), findsOneWidget);
+      await tester.tap(find.widgetWithText(DigitButton, '0'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      l.expectLogged('submitted response', data: {
+        'response': [0],
         'correct': span
       });
 
@@ -484,7 +539,7 @@ void main() {
       l.expectLogged('finished feedback', data: {'stimulus': 0});
       await tester.tapAt(const Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
-      await tester.pump(const Duration(milliseconds: 2500));
+      await tester.pump(const Duration(milliseconds: 1500));
 
       l.expectLogged('started showing stimulus', data: {'stimulus': 1});
       await tester.pump(const Duration(milliseconds: 500));
@@ -493,7 +548,7 @@ void main() {
       l.expectLogged('tapped screen', data: {'stimulus': 1});
       l.expectLogged('started feedback',
           data: {'stimulus': 1}, allowAdditionalKeys: true);
-      await tester.pump(const Duration(milliseconds: 2500));
+      await tester.pump(const Duration(milliseconds: 1500));
       l.expectLogged('finished feedback', data: {'stimulus': 1});
       l.expectDoneLogging();
     });
@@ -525,7 +580,7 @@ void main() {
           throwsArgumentError);
     });
 
-    testWidgets('supports configurable stimulus durations', (tester) async {
+    testWidgets('supports timing configuration', (tester) async {
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
 
@@ -536,7 +591,7 @@ void main() {
           'stimulusChoices': ['A', 'B'],
           'nStimuli': 2,
           'nPositives': 1,
-          'secondsShowingStimulus': 1.5,
+          'secondsShowingStimulus': 2.5,
           'secondsBetweenStimuli': 5,
         },
         logger,
@@ -556,7 +611,7 @@ void main() {
           data: {'stimulus': 0}, allowAdditionalKeys: true);
       await tester.tapAt(const Offset(100, 100)); // already feedbacked
       l.expectLogged('tapped screen', data: {'stimulus': 0});
-      await tester.pump(const Duration(milliseconds: 1500));
+      await tester.pump(const Duration(milliseconds: 2500));
       l.expectLogged('finished feedback', data: {'stimulus': 0});
       l.expectLogged('finished showing stimulus', data: {'stimulus': 0});
       await tester.tapAt(const Offset(100, 100)); // already feedbacked
@@ -564,7 +619,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 5000));
 
       l.expectLogged('started showing stimulus', data: {'stimulus': 1});
-      await tester.pump(const Duration(milliseconds: 1500));
+      await tester.pump(const Duration(milliseconds: 2500));
       l.expectLogged('finished showing stimulus', data: {'stimulus': 1});
       await tester.tapAt(const Offset(100, 100));
       l.expectLogged('tapped screen', data: {'stimulus': 1});

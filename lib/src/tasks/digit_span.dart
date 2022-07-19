@@ -13,6 +13,7 @@ class DigitSpan extends Task {
   late List<int> _currentSpan;
   late int _nextSpanLength;
   late int _nErrors;
+  late Duration _digitDuration, _betweenDigitsDuration;
   late bool _responding;
   late final Random _random;
 
@@ -29,6 +30,12 @@ class DigitSpan extends Task {
     }
     _nextSpanLength = data['initialLength'] ?? 3;
     _nErrors = 0;
+    num secondsShowingDigit = data['secondsShowingDigit'] ?? 0.5;
+    _digitDuration =
+        Duration(milliseconds: (secondsShowingDigit * 1000).round());
+    num secondsBetweenDigits = data['secondsBetweenDigits'] ?? 1.5;
+    _betweenDigitsDuration =
+        Duration(milliseconds: (secondsBetweenDigits * 1000).round());
     _responding = false;
     _random = Random();
     _nextTrial();
@@ -58,6 +65,8 @@ class DigitSpan extends Task {
         child: !_responding
             ? DigitSpanDisplay(
                 _currentSpan,
+                digitDuration: _digitDuration,
+                betweenDigitsDuration: _betweenDigitsDuration,
                 onFinished: () {
                   logger
                       .log('finished displaying span', {'span': _currentSpan});
@@ -92,9 +101,14 @@ class DigitSpan extends Task {
 
 class DigitSpanDisplay extends StatefulWidget {
   final List<int> span;
+  final Duration digitDuration, betweenDigitsDuration;
   final Function() onFinished;
 
-  const DigitSpanDisplay(this.span, {required this.onFinished, Key? key})
+  const DigitSpanDisplay(this.span,
+      {required this.digitDuration,
+      required this.betweenDigitsDuration,
+      required this.onFinished,
+      Key? key})
       : super(key: key);
 
   @override
@@ -111,16 +125,16 @@ class _DigitSpanDisplayState extends State<DigitSpanDisplay> {
   }
 
   void _start() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 1000));
     for (var i = 0; i < widget.span.length; i++) {
       setState(() {
         _currentDigit = widget.span[i];
       });
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(widget.digitDuration);
       setState(() {
         _currentDigit = null;
       });
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(widget.betweenDigitsDuration);
     }
     widget.onFinished();
   }

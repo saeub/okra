@@ -44,12 +44,14 @@ A random sequence of digits is presented one digit at a time, and the participan
 - Data structure:
   ```json
   {
-      "excludeDigits": ["0", "7"],
-      "initialLength": 3,
-      "maxErrors": 2,
+    "excludeDigits": ["0", "7"],
+    "initialLength": 3,
+    "maxErrors": 2,
+    "secondsShowingDigit": 1.0,
+    "secondsBetweenDigits": 2.0
   }
   ```
-  **NOTE:** `excludeDigits`, `initialLength`, and `maxErrors` are optional. By default, all digits from 0 to 9 are included, the initial sequence length is 3, and the task ends after 2 failed trials.
+  **NOTE:** `excludeDigits`, `initialLength`, and `maxErrors` are optional. By default, all digits from 0 to 9 are included, the initial sequence length is 3, and the task ends after 2 failed trials. `secondsShowingDigit` and `secondsBetweenDigits` are optional and default to `0.5` and `1.5`, respectively.
 - All results are included in the event logs. The results data is empty.
 
 ### Lexical decision
@@ -92,7 +94,7 @@ A single textual stimulus (usually a letter) is shown for 500 milliseconds with 
     "secondsBetweenStimuli": 2.0
   }
   ```
-  **NOTE:** `secondsShowingStimulus` and `secondsBetweenStimuli` are optional.
+  **NOTE:** `secondsShowingStimulus` and `secondsBetweenStimuli` are optional and default to `0.5` and `1.5`, respectively.
 - Results data structure:
   ```json
   {
