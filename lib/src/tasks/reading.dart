@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../generated/l10n.dart';
 import '../data/models.dart';
@@ -12,16 +13,23 @@ import 'task.dart';
 class Reading extends MultistageTask {
   late final String _text;
 
+  late final IntroStage? _introStage;
   late final ScrollableTextStage _textStage;
   late final RatingsStage? _ratingsStage;
   late final QuestionsStage? _questionsStage;
 
   @override
   void init(Map<String, dynamic> data) {
+    if (data['intro'] != null) {
+      _introStage = IntroStage(markdown: data['intro']);
+    } else {
+      _introStage = null;
+    }
+
     _text = data['text'];
     double textWidth = data['textWidth'].toDouble();
     double textHeight = data['textHeight'].toDouble();
-    double fontSize = data['fontSize'] ?? 20.0;
+    double fontSize = (data['fontSize'] ?? 20.0).toDouble();
     _textStage = ScrollableTextStage(
       text: _text,
       textWidth: textWidth,
@@ -59,6 +67,12 @@ class Reading extends MultistageTask {
   @override
   TaskStage? getNextStage(TaskStage? previousStage) {
     if (previousStage == null) {
+      if (_introStage != null) {
+        return _introStage;
+      } else {
+        return _textStage;
+      }
+    } else if (previousStage == _introStage) {
       return _textStage;
     } else if (previousStage == _textStage && _ratingsStage != null) {
       return _ratingsStage;
@@ -70,6 +84,47 @@ class Reading extends MultistageTask {
     finish();
     return null;
   }
+}
+
+// Intro
+
+class IntroStage extends TaskStage {
+  final String markdown;
+
+  IntroStage({required this.markdown});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Center(
+          child: ReadingWidth(
+            child: Column(
+              children: [
+                MarkdownBody(
+                  data: markdown,
+                  fitContent: false,
+                  styleSheet: MarkdownStyleSheet(
+                    textScaleFactor: 1.3,
+                    p: const TextStyle(height: 1.5),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  label: Text(S.of(context).taskAdvance),
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: finish,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  double? getProgress() => null;
 }
 
 // Scrollable text
