@@ -77,7 +77,7 @@ EXPERIMENTS_TASKS = [
             "nTasksDone": 2,
         },
         {
-            "excludeDigits": ["0", "7"],
+            "excludeDigits": [0, 7],
             "initialLength": 3,
             "maxErrors": 2,
         },

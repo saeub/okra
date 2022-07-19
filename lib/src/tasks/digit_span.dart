@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../../generated/l10n.dart';
 import 'task.dart';
 
 class DigitSpan extends Task {
@@ -17,7 +18,7 @@ class DigitSpan extends Task {
   @override
   void init(Map<String, dynamic> data) {
     _maxErrors = data['maxErrors'] ?? 2;
-    List<int> excludeDigits = data['excludeDigits'] ?? [];
+    List<int> excludeDigits = data['excludeDigits']?.cast<int>() ?? [];
     _digits = [
       for (var i = 0; i < 10; i++)
         if (!excludeDigits.contains(i)) i
@@ -161,6 +162,7 @@ class _DigitSpanInputState extends State<DigitSpanInput> {
             children: [
               Expanded(
                 child: Text(_content.join(),
+                    softWrap: true,
                     style: const TextStyle(
                         fontSize: 20.0, fontWeight: FontWeight.bold)),
               ),
@@ -183,26 +185,32 @@ class _DigitSpanInputState extends State<DigitSpanInput> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     for (var j = i; j < i + 3; j++)
-                      DigitButton(
-                        j,
-                        onPressed: () {
-                          setState(() {
-                            _content.add(j);
-                          });
-                        },
+                      Padding(
+                        padding: const EdgeInsets.all(4.0),
+                        child: DigitButton(
+                          j,
+                          onPressed: () {
+                            setState(() {
+                              _content.add(j);
+                            });
+                          },
+                        ),
                       ),
                   ],
                 ),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  DigitButton(
-                    0,
-                    onPressed: () {
-                      setState(() {
-                        _content.add(0);
-                      });
-                    },
+                  Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: DigitButton(
+                      0,
+                      onPressed: () {
+                        setState(() {
+                          _content.add(0);
+                        });
+                      },
+                    ),
                   ),
                 ],
               )
@@ -212,7 +220,7 @@ class _DigitSpanInputState extends State<DigitSpanInput> {
             onPressed:
                 _content.isNotEmpty ? () => widget.onSubmit(_content) : null,
             icon: const Icon(Icons.check),
-            label: const Text('DONE'),
+            label: Text(S.of(context).taskAdvance),
           )
         ],
       ),
@@ -233,7 +241,7 @@ class DigitButton extends StatelessWidget {
       style: ButtonStyle(
         shape: MaterialStateProperty.all(const CircleBorder()),
         backgroundColor: MaterialStateProperty.all(Colors.grey.shade700),
-        minimumSize: MaterialStateProperty.all(const Size(40.0, 40.0)),
+        minimumSize: MaterialStateProperty.all(const Size(50.0, 50.0)),
         textStyle: MaterialStateProperty.all(const TextStyle(
           fontSize: 20.0,
           fontWeight: FontWeight.bold,
