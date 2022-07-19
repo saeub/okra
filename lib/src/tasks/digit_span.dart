@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:okra/src/util.dart';
 
 import '../../generated/l10n.dart';
 import 'task.dart';
@@ -126,10 +127,14 @@ class _DigitSpanDisplayState extends State<DigitSpanDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      _currentDigit != null ? _currentDigit.toString() : '',
-      style: const TextStyle(fontSize: 50.0),
-    );
+    if (_currentDigit == null) {
+      return const FixationCross();
+    } else {
+      return Text(
+        _currentDigit.toString(),
+        style: const TextStyle(fontSize: 50.0),
+      );
+    }
   }
 }
 
