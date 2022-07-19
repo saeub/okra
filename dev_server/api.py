@@ -70,6 +70,21 @@ EXPERIMENTS_TASKS = [
     (
         {
             "id": "2",
+            "type": "digit-span",
+            "title": "Digit span",
+            "instructions": "",
+            "nTasks": 4,
+            "nTasksDone": 2,
+        },
+        {
+            "excludeDigits": [0, 7],
+            "initialLength": 3,
+            "maxErrors": 2,
+        },
+    ),
+    (
+        {
+            "id": "3",
             "type": "lexical-decision",
             "title": "Lexical decision task",
             "instructions": "Is it a word?",
@@ -85,7 +100,23 @@ EXPERIMENTS_TASKS = [
     ),
     (
         {
-            "id": "3",
+            "id": "4",
+            "type": "n-back",
+            "title": "2-back task",
+            "instructions": "Tap the screen if you see the same letter you saw two letters ago.",
+            "nTasks": 3,
+            "nTasksDone": 2,
+        },
+        {
+            "n": 2,
+            "stimulusChoices": ["A", "B", "C"],
+            "nStimuli": 15,
+            "nPositives": 5,
+        },
+    ),
+    (
+        {
+            "id": "5",
             "type": "picture-naming",
             "title": "Picture-naming task",
             "instructions": "Choose the matching picture.",
@@ -116,7 +147,7 @@ EXPERIMENTS_TASKS = [
     ),
     (
         {
-            "id": "4",
+            "id": "6",
             "type": "question-answering",
             "title": "Question answering task (normal)",
             "instructions": "Answer the questions.",
@@ -143,27 +174,7 @@ EXPERIMENTS_TASKS = [
     ),
     (
         {
-            "id": "5",
-            "type": "question-answering",
-            "title": "Question answering task (self-paced)",
-            "instructions": "Answer the questions.",
-            "nTasks": 7,
-            "nTasksDone": 2,
-        },
-        {
-            "readingType": "self-paced",
-            "text": "This is an example.\nThis is an example.\nThis is an example.",
-            "questions": [
-                {
-                    "question": "Question",
-                    "answers": ["Answer 1", "Answer 2", "Answer 3"],
-                },
-            ],
-        },
-    ),
-    (
-        {
-            "id": "6",
+            "id": "7",
             "type": "reaction-time",
             "title": "Reaction time task",
             "instructions": "Pop the balloons as quickly as possible.",
@@ -174,22 +185,6 @@ EXPERIMENTS_TASKS = [
             "nStimuli": 5,
             "minSecondsBetweenStimuli": 0,
             "maxSecondsBetweenStimuli": 1.5,
-        },
-    ),
-    (
-        {
-            "id": "7",
-            "type": "n-back",
-            "title": "2-back task",
-            "instructions": "Tap the screen if you see the same letter you saw two letters ago.",
-            "nTasks": 3,
-            "nTasksDone": 2,
-        },
-        {
-            "n": 2,
-            "stimulusChoices": ["A", "B", "C"],
-            "nStimuli": 15,
-            "nPositives": 5,
         },
     ),
     (

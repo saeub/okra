@@ -23,7 +23,7 @@ class NBack extends Task {
     num secondsShowingStimulus = data['secondsShowingStimulus'] ?? 0.5;
     _stimulusDuration =
         Duration(milliseconds: (secondsShowingStimulus * 1000).round());
-    num secondsBetweenStimuli = data['secondsBetweenStimuli'] ?? 2.5;
+    num secondsBetweenStimuli = data['secondsBetweenStimuli'] ?? 1.5;
     _betweenStimuliDuration =
         Duration(milliseconds: (secondsBetweenStimuli * 1000).round());
 
@@ -34,7 +34,7 @@ class NBack extends Task {
     logger.log('generated stimuli', {
       'stimuli': _stimuli.toList(growable: false),
       'positive': [
-        for (int i = 0; i < _stimuli.length; i++) _isPositiveStimulus(i)
+        for (var i = 0; i < _stimuli.length; i++) _isPositiveStimulus(i)
       ],
     });
     _currentStimulusIndex = -1;

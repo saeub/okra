@@ -8,6 +8,7 @@ import 'picture_naming.dart';
 import 'question_answering.dart';
 import 'simon_game.dart';
 import 'reading.dart';
+import 'digit_span.dart';
 import 'task.dart';
 import 'trail_making.dart';
 
@@ -24,6 +25,10 @@ class TaskType {
   static final TaskType cloze = TaskType(
     Icons.description,
     () => Cloze(),
+  );
+  static final TaskType digitSpan = TaskType(
+    Icons.pin,
+    () => DigitSpan(),
   );
   static final TaskType lexicalDecision = TaskType(
     Icons.spellcheck,
@@ -65,6 +70,8 @@ class TaskType {
     switch (identifier) {
       case 'cloze':
         return cloze;
+      case 'digit-span':
+        return digitSpan;
       case 'lexical-decision':
         return lexicalDecision;
       case 'n-back':

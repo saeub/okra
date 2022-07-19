@@ -105,3 +105,47 @@ class ReadingWidth extends StatelessWidget {
     );
   }
 }
+
+class FixationCross extends StatelessWidget {
+  final double size;
+  final Color color;
+  final double strokeWidth;
+
+  const FixationCross(
+      {this.size = 30.0,
+      this.color = const Color(0xFF616161),
+      this.strokeWidth = 3.0,
+      Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomPaint(
+      painter: _FixationCrossPainter(color, strokeWidth),
+      size: Size(size, size),
+    );
+  }
+}
+
+class _FixationCrossPainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+
+  _FixationCrossPainter(this.color, this.strokeWidth);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()
+      ..color = color
+      ..strokeWidth = strokeWidth;
+    canvas.drawLine(
+        Offset(0, size.height / 2), Offset(size.width, size.height / 2), paint);
+    canvas.drawLine(
+        Offset(size.width / 2, 0), Offset(size.width / 2, size.height), paint);
+  }
+
+  @override
+  bool shouldRepaint(_FixationCrossPainter oldDelegate) {
+    return true;
+  }
+}
