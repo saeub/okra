@@ -388,39 +388,29 @@ void main() {
         },
         logger,
         ({data, message}) {
-          expect(data?['answers'], [true, false]);
-          expect(data?['durations'].length, 2);
+          expect(data, null);
           expect(message, null);
         },
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started countdown');
-      expect(find.text('3'), findsOneWidget);
-      await tester.tap(find.text('WORD')); // disabled
-      await tester.tap(find.text('NOT A WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      expect(find.text('2'), findsOneWidget);
-      await tester.tap(find.text('WORD')); // disabled
-      await tester.tap(find.text('NOT A WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      expect(find.text('1'), findsOneWidget);
-      await tester.tap(find.text('WORD')); // disabled
-      await tester.tap(find.text('NOT A WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      l.expectLogged('finished countdown');
-
-      l.expectLogged('started word', data: {'word': 0});
+      l.expectLogged('started fixation cross');
+      await tester.pump(const Duration(milliseconds: 1000));
+      l.expectLogged('finished fixation cross');
+      l.expectLogged('started word', data: {'wordIndex': 0});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', data: {'word': 0, 'answer': true});
+      l.expectLogged('finished word', data: {'wordIndex': 0, 'answer': true});
 
-      l.expectLogged('started word', data: {'word': 1});
+      l.expectLogged('started fixation cross');
+      await tester.pump(const Duration(milliseconds: 1000));
+      l.expectLogged('finished fixation cross');
+      l.expectLogged('started word', data: {'wordIndex': 1});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', data: {'word': 1, 'answer': false});
+      l.expectLogged('finished word', data: {'wordIndex': 1, 'answer': false});
 
       l.expectDoneLogging();
     });
@@ -437,68 +427,71 @@ void main() {
         },
         logger,
         ({data, message}) {
-          expect(data?['answers'], [true, false, true, false]);
-          expect(data?['durations'].length, 4);
+          expect(data, null);
           expect(message, null);
         },
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started countdown');
-      expect(find.text('3'), findsOneWidget);
-      await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      expect(find.text('2'), findsOneWidget);
-      await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      expect(find.text('1'), findsOneWidget);
-      await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      l.expectLogged('finished countdown');
-
-      l.expectLogged('started word', data: {'word': 0});
+      l.expectLogged('started fixation cross');
+      await tester.pump(const Duration(milliseconds: 1000));
+      l.expectLogged('finished fixation cross');
+      l.expectLogged('started word', data: {'wordIndex': 0});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', data: {'word': 0, 'answer': true});
-      l.expectLogged('started feedback', data: {'word': 0});
+      l.expectLogged('finished word', data: {'wordIndex': 0, 'answer': true});
+      l.expectLogged('started feedback',
+          data: {'wordIndex': 0, 'positive': true});
       expect(find.byIcon(Icons.thumb_up), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      l.expectLogged('finished feedback', data: {'word': 0});
+      await tester.pump(const Duration(milliseconds: 600));
+      l.expectLogged('finished feedback', data: {'wordIndex': 0});
 
-      l.expectLogged('started word', data: {'word': 1});
+      l.expectLogged('started fixation cross');
+      await tester.pump(const Duration(milliseconds: 1000));
+      l.expectLogged('finished fixation cross');
+      l.expectLogged('started word', data: {'wordIndex': 1});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', data: {'word': 1, 'answer': false});
-      l.expectLogged('started feedback', data: {'word': 1});
+      l.expectLogged('finished word', data: {'wordIndex': 1, 'answer': false});
+      l.expectLogged('started feedback',
+          data: {'wordIndex': 1, 'positive': false});
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      l.expectLogged('finished feedback', data: {'word': 1});
+      await tester.pump(const Duration(milliseconds: 600));
+      l.expectLogged('finished feedback', data: {'wordIndex': 1});
 
-      l.expectLogged('started word', data: {'word': 2});
+      l.expectLogged('started fixation cross');
+      await tester.pump(const Duration(milliseconds: 1000));
+      l.expectLogged('finished fixation cross');
+      l.expectLogged('started word', data: {'wordIndex': 2});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', data: {'word': 2, 'answer': true});
-      l.expectLogged('started feedback', data: {'word': 2});
+      l.expectLogged('finished word', data: {'wordIndex': 2, 'answer': true});
+      l.expectLogged('started feedback',
+          data: {'wordIndex': 2, 'positive': false});
       expect(find.byIcon(Icons.thumb_down), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      l.expectLogged('finished feedback', data: {'word': 2});
+      await tester.pump(const Duration(milliseconds: 600));
+      l.expectLogged('finished feedback', data: {'wordIndex': 2});
 
-      l.expectLogged('started word', data: {'word': 3});
+      l.expectLogged('started fixation cross');
+      await tester.pump(const Duration(milliseconds: 1000));
+      l.expectLogged('finished fixation cross');
+      l.expectLogged('started word', data: {'wordIndex': 3});
       expect(find.textContaining('word'), findsOneWidget);
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished word', data: {'word': 3, 'answer': false});
-      l.expectLogged('started feedback', data: {'word': 3});
+      l.expectLogged('finished word', data: {'wordIndex': 3, 'answer': false});
+      l.expectLogged('started feedback',
+          data: {'wordIndex': 3, 'positive': true});
       expect(find.byIcon(Icons.thumb_up), findsOneWidget);
       await tester.tap(find.text('WORD')); // disabled
-      await tester.pump(const Duration(seconds: 1));
-      l.expectLogged('finished feedback', data: {'word': 3});
+      await tester.pump(const Duration(milliseconds: 600));
+      l.expectLogged('finished feedback', data: {'wordIndex': 3});
 
       l.expectDoneLogging();
     });
