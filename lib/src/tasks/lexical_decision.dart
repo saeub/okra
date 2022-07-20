@@ -96,8 +96,10 @@ class LexicalDecision extends Task {
                               ],
                             ),
                             style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.green),
+                              backgroundColor:
+                                  MaterialStateProperty.all(Colors.green),
+                              foregroundColor:
+                                  MaterialStateProperty.all(Colors.white),
                             ),
                             onPressed:
                                 buttonsEnabled ? () => _onTap(true) : null,
@@ -121,7 +123,9 @@ class LexicalDecision extends Task {
                             ),
                             style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStateProperty.all<Color>(Colors.red),
+                                  MaterialStateProperty.all(Colors.red),
+                              foregroundColor:
+                                  MaterialStateProperty.all(Colors.white),
                             ),
                             onPressed:
                                 buttonsEnabled ? () => _onTap(false) : null,
