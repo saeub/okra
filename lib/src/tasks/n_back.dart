@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../util.dart';
 import 'task.dart';
 
 class NBack extends Task {
@@ -101,18 +102,19 @@ class NBack extends Task {
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, bottom: 66.0),
-                child: Visibility(
-                  visible: _currentStimulusIndex >= 0 && _stimulusVisible,
-                  maintainAnimation: true,
-                  maintainSize: true,
-                  maintainState: true,
-                  child: Text(
-                    _currentStimulusIndex >= 0
-                        ? _stimuli[_currentStimulusIndex]
-                        : '',
-                    style: const TextStyle(
-                      fontSize: 50.0,
-                    ),
+                child: SizedBox(
+                  height: 200.0,
+                  child: Center(
+                    child: _currentStimulusIndex >= 0 && _stimulusVisible
+                        ? Text(
+                            _currentStimulusIndex >= 0
+                                ? _stimuli[_currentStimulusIndex]
+                                : '',
+                            style: const TextStyle(
+                              fontSize: 50.0,
+                            ),
+                          )
+                        : const FixationCross(),
                   ),
                 ),
               ),
