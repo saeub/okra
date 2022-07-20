@@ -151,14 +151,18 @@ class RegistrationCodeScanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MobileScanner(
-      onDetect: (barcode, args) {
-        var data = barcode.rawValue?.split('\n');
-        if (data == null || data.length != 3) {
-          throw QrScanError(S.of(context).registrationInvalidQrCode);
-        }
-        Navigator.of(context).pop(RegistrationData(data[0], data[1], data[2]));
-      },
+    return Scaffold(
+      appBar: AppBar(title: Text(S.of(context).registrationQrScannerTitle)),
+      body: MobileScanner(
+        onDetect: (barcode, args) {
+          var data = barcode.rawValue?.split('\n');
+          if (data == null || data.length != 3) {
+            throw QrScanError(S.of(context).registrationInvalidQrCode);
+          }
+          Navigator.of(context)
+              .pop(RegistrationData(data[0], data[1], data[2]));
+        },
+      ),
     );
   }
 }
