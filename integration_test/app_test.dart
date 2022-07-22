@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:localstorage/localstorage.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:okra/main.dart' as app;
 import 'package:okra/src/data/storage.dart';
 
@@ -79,6 +80,21 @@ void main() {
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
       expect(find.text('Invalid participant ID or key'), findsOneWidget);
+    });
+
+    testWidgets('opens QR scanner', (WidgetTester tester) async {
+      app.main();
+      await tester.pumpAndSettle();
+      await tester.tap(find.byTooltip('Settings'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Add API'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('QR CODE'));
+      await tester.pumpAndSettle();
+      expect(find.byType(MobileScanner), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.arrow_back));
+      await tester.pumpAndSettle();
+      expect(find.byType(MobileScanner), findsNothing);
     });
   });
 
