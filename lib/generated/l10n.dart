@@ -352,31 +352,11 @@ class S {
     );
   }
 
-  /// `CANCEL`
-  String get registrationQrCancel {
+  /// `Scan QR code`
+  String get registrationQrScannerTitle {
     return Intl.message(
-      'CANCEL',
-      name: 'registrationQrCancel',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `FLASH OFF`
-  String get registrationQrFlashOff {
-    return Intl.message(
-      'FLASH OFF',
-      name: 'registrationQrFlashOff',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `FLASH ON`
-  String get registrationQrFlashOn {
-    return Intl.message(
-      'FLASH ON',
-      name: 'registrationQrFlashOn',
+      'Scan QR code',
+      name: 'registrationQrScannerTitle',
       desc: '',
       args: [],
     );

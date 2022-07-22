@@ -87,11 +87,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Register API"),
         "registrationParticipantId":
             MessageLookupByLibrary.simpleMessage("Participant ID"),
-        "registrationQrCancel": MessageLookupByLibrary.simpleMessage("CANCEL"),
-        "registrationQrFlashOff":
-            MessageLookupByLibrary.simpleMessage("FLASH OFF"),
-        "registrationQrFlashOn":
-            MessageLookupByLibrary.simpleMessage("FLASH ON"),
+        "registrationQrScannerTitle":
+            MessageLookupByLibrary.simpleMessage("Scan QR code"),
         "registrationScanQrCode":
             MessageLookupByLibrary.simpleMessage("QR CODE"),
         "registrationUrl": MessageLookupByLibrary.simpleMessage("API URL"),
