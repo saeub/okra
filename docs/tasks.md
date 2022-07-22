@@ -44,7 +44,7 @@ A random sequence of digits is presented one digit at a time, and the participan
 - Data structure:
   ```json
   {
-    "excludeDigits": ["0", "7"],
+    "excludeDigits": [0, 7],
     "initialLength": 3,
     "maxErrors": 2,
     "secondsShowingDigit": 1.0,
@@ -68,14 +68,7 @@ One word is shown at a time. The task is to determine whether it is a real word 
   }
   ```
   **NOTE:** `correctAnswers` is optional and must be the same length as `words`. If it is provided, the participant will get immediate feedback about the correctness of their answer.
-- Results data structure:
-  ```json
-  {
-    "answers": [true, false, ...],
-    "durations": [0.123, 1.234, ...]
-  }
-  ```
-  **NOTE:** Durations are in seconds.
+- All results are included in the event logs. The results data is empty.
 
 ### _n_-back
 
