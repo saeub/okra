@@ -44,7 +44,7 @@ A random sequence of digits is presented one digit at a time, and the participan
 - Data structure:
   ```json
   {
-    "excludeDigits": ["0", "7"],
+    "excludeDigits": [0, 7],
     "initialLength": 3,
     "maxErrors": 2,
     "secondsShowingDigit": 1.0,
