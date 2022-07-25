@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -558,9 +560,11 @@ void main() {
       }
 
       var nStimuli = 10;
+      var random = Random();
       for (var n = 1; n <= nStimuli; n++) {
         for (var p = 0; p <= nStimuli - n; p++) {
-          var stimuli = NBack.generateStimuli(['A', 'B'], nStimuli, p, n);
+          var stimuli =
+              NBack.generateStimuli(random, ['A', 'B'], nStimuli, p, n);
           var nPositives = numberOfPositiveStimuli(stimuli, n);
           expect(nPositives, p,
               reason:
@@ -568,8 +572,9 @@ void main() {
         }
       }
 
-      expect(() => NBack.generateStimuli(['A'], 10, 3, 2), throwsArgumentError);
-      expect(() => NBack.generateStimuli(['A', 'B'], 3, 2, 2),
+      expect(() => NBack.generateStimuli(random, ['A'], 10, 3, 2),
+          throwsArgumentError);
+      expect(() => NBack.generateStimuli(random, ['A', 'B'], 3, 2, 2),
           throwsArgumentError);
     });
 

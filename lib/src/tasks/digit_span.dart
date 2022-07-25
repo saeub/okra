@@ -37,7 +37,7 @@ class DigitSpan extends Task {
     _betweenDigitsDuration =
         Duration(milliseconds: (secondsBetweenDigits * 1000).round());
     _responding = false;
-    _random = Random();
+    _random = Random(data['randomSeed']);
     _nextTrial();
   }
 
