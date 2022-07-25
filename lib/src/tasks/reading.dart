@@ -19,6 +19,13 @@ class Reading extends MultistageTask {
   late final QuestionsStage? _questionsStage;
 
   @override
+  get backgroundColor {
+    return currentStage == _textStage || currentStage == _questionsStage
+        ? Colors.grey.shade300
+        : null;
+  }
+
+  @override
   void init(Map<String, dynamic> data) {
     if (data['intro'] != null) {
       _introStage = IntroStage(markdown: data['intro']);
@@ -144,55 +151,48 @@ class ScrollableTextStage extends TaskStage {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      color: Colors.grey.shade300,
-      child: Column(
-        children: [
-          Expanded(
-            child: ReadingWidth(
-              child: Center(
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: Card(
-                    child: ScrollableText(
-                      text: text,
-                      width: textWidth,
-                      height: textHeight,
-                      style: TextStyle(fontSize: fontSize, color: Colors.black),
-                      onVisibleRangeChanged: (visibleRange) {
-                        logger.log('visible range', {
-                          'characterRange': [
-                            visibleRange.start,
-                            visibleRange.end
-                          ]
+    return Column(
+      children: [
+        Expanded(
+          child: ReadingWidth(
+            child: Center(
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: Card(
+                  child: ScrollableText(
+                    text: text,
+                    width: textWidth,
+                    height: textHeight,
+                    style: TextStyle(fontSize: fontSize, color: Colors.black),
+                    onVisibleRangeChanged: (visibleRange) {
+                      logger.log('visible range', {
+                        'characterRange': [visibleRange.start, visibleRange.end]
+                      });
+                      if (!_scrolledToBottom &&
+                          visibleRange.end >= text.length) {
+                        setState(() {
+                          _scrolledToBottom = true;
                         });
-                        if (!_scrolledToBottom &&
-                            visibleRange.end >= text.length) {
-                          setState(() {
-                            _scrolledToBottom = true;
-                          });
-                        }
-                      },
-                    ),
+                      }
+                    },
                   ),
                 ),
               ),
             ),
           ),
-          Visibility(
-            visible: _scrolledToBottom,
-            maintainAnimation: true,
-            maintainSize: true,
-            maintainState: true,
-            child: ElevatedButton.icon(
-              onPressed: finish,
-              icon: const Icon(Icons.arrow_forward),
-              label: Text(S.of(context).taskAdvance),
-            ),
-          )
-        ],
-      ),
+        ),
+        Visibility(
+          visible: _scrolledToBottom,
+          maintainAnimation: true,
+          maintainSize: true,
+          maintainState: true,
+          child: ElevatedButton.icon(
+            onPressed: finish,
+            icon: const Icon(Icons.arrow_forward),
+            label: Text(S.of(context).taskAdvance),
+          ),
+        )
+      ],
     );
   }
 

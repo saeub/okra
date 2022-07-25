@@ -453,8 +453,13 @@ class _TaskWidgetState extends State<TaskWidget> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done &&
             !snapshot.hasError) {
+          var backgroundColor = _task.backgroundColor;
+          var practiceIndicatorColor =
+              (backgroundColor?.computeLuminance() ?? 1.0) < 0.5
+                  ? Colors.white
+                  : Theme.of(context).primaryColor;
           var progress = _task.getProgress();
-          return Column(
+          var content = Column(
             children: [
               if (progress != null) AnimatedLinearProgressIndicator(progress),
               if (widget.practice)
@@ -470,7 +475,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                             child: Icon(
                               Icons.sports_tennis,
                               size: 30.0,
-                              color: Theme.of(context).primaryColor,
+                              color: practiceIndicatorColor,
                             ),
                           ),
                           Text(
@@ -478,7 +483,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                             style: TextStyle(
                               fontSize: 25.0,
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).primaryColor,
+                              color: practiceIndicatorColor,
                             ),
                           ),
                         ],
@@ -487,7 +492,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                         S.of(context).taskPracticeIndicatorSubtitle,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
+                          color: practiceIndicatorColor,
                         ),
                       ),
                     ],
@@ -496,6 +501,10 @@ class _TaskWidgetState extends State<TaskWidget> {
               Flexible(child: _task.build(context)),
             ],
           );
+          if (backgroundColor != null) {
+            return ColoredBox(color: backgroundColor, child: content);
+          }
+          return content;
         } else if (snapshot.hasError) {
           return Center(
             child: ErrorMessage(
