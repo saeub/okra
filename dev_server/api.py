@@ -39,6 +39,17 @@ def example_rating(type: str = "emoticon"):
 EXPERIMENTS_TASKS = [
     (
         {
+            "id": "0",
+            "type": "n-back",
+            "title": "n-back task",
+            "instructions": "This experiment has already been completed.",
+            "nTasks": 5,
+            "nTasksDone": 5,
+        },
+        None,
+    ),
+    (
+        {
             "id": "1",
             "type": "cloze",
             "title": "Cloze task",
@@ -195,6 +206,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "",
             "nTasks": 1,
             "nTasksDone": 0,
+            "hasPracticeTask": True,
         },
         {
             "intro": "# Context\nHere's some *context*.",
