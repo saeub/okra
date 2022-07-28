@@ -20,11 +20,6 @@ class LexicalDecision extends Task {
     _nextWord();
   }
 
-  @override
-  double? getProgress() => _feedback == null
-      ? _currentWordIndex / _words.length
-      : (_currentWordIndex + 1) / _words.length;
-
   void _nextWord() async {
     _currentWordIndex++;
     setState(() {

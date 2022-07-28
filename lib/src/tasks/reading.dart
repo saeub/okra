@@ -130,9 +130,6 @@ class IntroStage extends TaskStage {
       ),
     );
   }
-
-  @override
-  double? getProgress() => null;
 }
 
 // Scrollable text
@@ -196,9 +193,6 @@ class ScrollableTextStage extends TaskStage {
       ],
     );
   }
-
-  @override
-  double? getProgress() => null;
 }
 
 class ScrollableText extends StatefulWidget {
@@ -556,9 +550,6 @@ class QuestionsStage extends TaskStage {
       ),
     );
   }
-
-  @override
-  double? getProgress() => null;
 }
 
 class QuestionCard extends StatelessWidget {
@@ -690,7 +681,4 @@ class RatingsStage extends TaskStage {
       },
     );
   }
-
-  @override
-  double? getProgress() => null;
 }

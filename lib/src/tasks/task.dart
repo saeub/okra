@@ -18,7 +18,7 @@ abstract class Task {
 
   Future<void> loadAssets() async {}
 
-  double? getProgress();
+  double? getProgress() => null;
 
   Widget build(BuildContext context);
 
@@ -111,7 +111,7 @@ abstract class TaskStage {
     _finish = finish;
   }
 
-  double? getProgress();
+  double? getProgress() => null;
 
   Widget build(BuildContext context);
 

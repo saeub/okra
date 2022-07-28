@@ -49,11 +49,6 @@ class NBack extends Task {
   }
 
   @override
-  double? getProgress() {
-    return _currentStimulusIndex / _stimuli.length;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (details) async {

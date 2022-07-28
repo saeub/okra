@@ -52,9 +52,6 @@ class SimonGame extends Task {
   }
 
   @override
-  double? getProgress() => null;
-
-  @override
   Widget build(BuildContext context) {
     var _feedback = this._feedback;
     return Padding(

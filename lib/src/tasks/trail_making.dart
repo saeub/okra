@@ -131,9 +131,6 @@ class TrailMaking extends Task {
   }
 
   @override
-  double? getProgress() => null;
-
-  @override
   Widget build(BuildContext context) {
     var buttonsForeground = <Widget>[];
     var buttonsBackground = <Widget>[];
