@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../colors.dart';
 import 'task.dart';
 
 class SimonGame extends Task {
@@ -103,7 +104,9 @@ class SimonGame extends Task {
           if (_feedback != null)
             Center(
               child: Card(
-                color: _feedback ? Colors.green[800] : Colors.red[800],
+                color: _feedback
+                    ? AppColors.positive[800]
+                    : AppColors.negative[800],
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Row(

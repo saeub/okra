@@ -168,10 +168,10 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                     content = null;
                   } else {
                     content = Column(children: [
-                      const Icon(
+                      Icon(
                         Icons.assignment,
                         size: 50.0,
-                        color: Colors.grey,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
@@ -268,7 +268,10 @@ class ExperimentCard extends StatelessWidget {
                         child: Icon(
                           experiment.type.icon,
                           size: 200.0,
-                          color: Colors.green[200],
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.4),
                         ),
                       ),
                     ),
@@ -320,7 +323,7 @@ class ExperimentCard extends StatelessWidget {
               child: InkWell(
                 highlightColor: Colors.transparent,
                 splashColor:
-                    Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                    Theme.of(context).colorScheme.primary.withOpacity(0.4),
                 onTap: enabled ? onTap : null,
               ),
             ),

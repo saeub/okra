@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
+import '../colors.dart';
 import '../util.dart';
 import 'task.dart';
 
@@ -215,7 +216,7 @@ class PictureCard<T> extends StatelessWidget {
       return card;
     }
     return ColoredBox(
-      color: feedback ? Colors.green : Colors.red,
+      color: feedback ? AppColors.positive : AppColors.negative,
       child: card,
     );
   }

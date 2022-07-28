@@ -4,6 +4,7 @@ import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 
 import 'generated/l10n.dart';
+import 'src/colors.dart';
 import 'src/data/storage.dart';
 import 'src/pages/experiments.dart';
 
@@ -19,10 +20,13 @@ class App extends StatelessWidget {
     return MaterialApp(
       title: 'Okra',
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        primaryColor: Colors.green[600],
-      ),
-      home: const StorageWrapper(),
+          colorScheme: ColorScheme.light(
+            primary: AppColors.primary,
+            secondary: AppColors.secondary.shade600,
+          ),
+          progressIndicatorTheme: ProgressIndicatorThemeData(
+              linearTrackColor: AppColors.primary.shade100)),
+      home: const StorageWrapper(child: ExperimentsMenuPage()),
       localizationsDelegates: const <LocalizationsDelegate>[
         S.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -35,7 +39,9 @@ class App extends StatelessWidget {
 }
 
 class StorageWrapper extends StatefulWidget {
-  const StorageWrapper({Key? key}) : super(key: key);
+  final Widget child;
+
+  const StorageWrapper({required this.child, Key? key}) : super(key: key);
 
   @override
   _StorageWrapperState createState() => _StorageWrapperState();
@@ -80,11 +86,9 @@ class _StorageWrapperState extends State<StorageWrapper> {
                       icon: const Icon(Icons.delete),
                       label: const Text('YES, DELETE'),
                       style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.red),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Theme.of(context).colorScheme.error),
                       ),
-                      // color: Colors.red,
-                      // textColor: Colors.white,
                       onPressed: () async {
                         await snapshot.data!.clear();
                         setState(() {
@@ -99,7 +103,7 @@ class _StorageWrapperState extends State<StorageWrapper> {
           }
           return ChangeNotifierProvider.value(
             value: storage,
-            child: const ExperimentsMenuPage(),
+            child: widget.child,
           );
         } else if (snapshot.hasError) {
           return Center(

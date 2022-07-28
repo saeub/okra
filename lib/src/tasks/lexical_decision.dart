@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
+import '../colors.dart';
 import '../util.dart';
 import 'task.dart';
 
@@ -63,12 +64,12 @@ class LexicalDecision extends Task {
                             ? _feedback == true
                                 ? const Icon(
                                     Icons.thumb_up,
-                                    color: Colors.green,
+                                    color: AppColors.positive,
                                     size: 50.0,
                                   )
                                 : const Icon(
                                     Icons.thumb_down,
-                                    color: Colors.red,
+                                    color: AppColors.negative,
                                     size: 50.0,
                                   )
                             : const FixationCross(),
@@ -97,7 +98,7 @@ class LexicalDecision extends Task {
                             ),
                             style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStateProperty.all(Colors.green),
+                                  MaterialStateProperty.all(AppColors.positive),
                               foregroundColor:
                                   MaterialStateProperty.all(Colors.white),
                             ),
@@ -123,7 +124,7 @@ class LexicalDecision extends Task {
                             ),
                             style: ButtonStyle(
                               backgroundColor:
-                                  MaterialStateProperty.all(Colors.red),
+                                  MaterialStateProperty.all(AppColors.negative),
                               foregroundColor:
                                   MaterialStateProperty.all(Colors.white),
                             ),

@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
+import '../colors.dart';
 import 'task.dart';
 
 class Stimulus {
@@ -62,7 +63,7 @@ class TrailMaking extends Task {
         colors.add(Color(colorInt));
       }
     } else {
-      colors.add(Colors.green.shade800);
+      colors.add(AppColors.primary.shade800);
     }
     if (nDistractors > 0 && colors.length < 2) {
       throw ArgumentError(
@@ -190,13 +191,14 @@ class TrailMaking extends Task {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(buttonSize),
                               border: Border.all(
-                                  color: Colors.green.shade500, width: 4.0),
+                                  color: AppColors.primary.shade500,
+                                  width: 4.0),
                             ),
                           ),
                           Text(
                             S.of(context).taskTrailMakingStart,
                             style: TextStyle(
-                              color: Colors.green.shade500,
+                              color: AppColors.primary.shade500,
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
                             ),
@@ -224,7 +226,7 @@ class TrailMaking extends Task {
                     top: _errorStimulus.position.dy - 50.0 + buttonSize / 2,
                     child: const Icon(
                       Icons.close,
-                      color: Colors.red,
+                      color: AppColors.negative,
                       size: errorIconSize,
                     ),
                   ),
@@ -326,7 +328,7 @@ class TrailPainter extends CustomPainter {
 
   TrailPainter(this.points)
       : _paint = Paint()
-          ..color = Colors.green
+          ..color = AppColors.primary
           ..strokeWidth = 3.0;
 
   @override

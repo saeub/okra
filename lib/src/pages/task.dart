@@ -5,6 +5,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../generated/l10n.dart';
+import '../colors.dart';
 import '../data/models.dart';
 import '../tasks/task.dart';
 import '../tasks/types.dart';
@@ -389,8 +390,8 @@ class InstructionsWidget extends StatelessWidget {
                         label:
                             Text(S.of(context).instructionsRestartPracticeTask),
                         style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.grey),
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Theme.of(context).colorScheme.secondary),
                         ),
                         onPressed: onStartPracticePressed,
                       ),
@@ -457,7 +458,7 @@ class _TaskWidgetState extends State<TaskWidget> {
           var practiceIndicatorColor =
               (backgroundColor?.computeLuminance() ?? 1.0) < 0.5
                   ? Colors.white
-                  : Theme.of(context).primaryColor;
+                  : Theme.of(context).colorScheme.primary;
           var progress = _task.getProgress();
           var content = Column(
             children: [
@@ -647,10 +648,10 @@ class _RatingsWidgetState extends State<RatingsWidget> {
     );
   }
 
-  static Color _getEmoticonColor(int index, int variant) {
+  Color _getEmoticonColor(int index, int variant) {
     return HSVColor.lerp(
-      HSVColor.fromColor(Colors.red[variant]!),
-      HSVColor.fromColor(Colors.green[variant]!),
+      HSVColor.fromColor(AppColors.negative[variant]!),
+      HSVColor.fromColor(AppColors.positive[variant]!),
       index / TaskRating.emoticons.length,
     )!
         .toColor();
@@ -750,7 +751,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
               style: TextStyle(
                 fontSize: 30.0,
                 fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.secondary,
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             const Spacer(flex: 1),
@@ -775,9 +776,9 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                                 label:
                                     Text(S.of(context).taskResultsNoNextTask),
                                 style: ButtonStyle(
-                                  backgroundColor:
-                                      MaterialStateProperty.all<Color>(
-                                          Colors.grey),
+                                  backgroundColor: MaterialStateProperty.all<
+                                          Color>(
+                                      Theme.of(context).colorScheme.secondary),
                                 ),
                                 onPressed: Navigator.of(context).pop,
                               ),
@@ -800,9 +801,9 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                               label: Text(
                                   S.of(context).taskResultsRepeatPracticeTask),
                               style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        Colors.grey),
+                                backgroundColor: MaterialStateProperty.all<
+                                        Color>(
+                                    Theme.of(context).colorScheme.secondary),
                               ),
                               onPressed: widget.onRepeatPracticePressed,
                             ),

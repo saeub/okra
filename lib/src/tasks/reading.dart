@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../generated/l10n.dart';
+import '../colors.dart';
 import '../data/models.dart';
 import '../pages/task.dart';
 import '../util.dart';
@@ -608,13 +609,13 @@ class QuestionCard extends StatelessWidget {
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 4.0),
                             child: Icon(Icons.check,
-                                color: Colors.green.shade700,
+                                color: AppColors.positive.shade700,
                                 size: fontSize + 4.0),
                           ),
                           Text(
                             S.of(context).taskReadingCorrect,
                             style: TextStyle(
-                              color: Colors.green.shade700,
+                              color: AppColors.positive.shade700,
                               fontSize: fontSize,
                               fontWeight: FontWeight.bold,
                             ),
@@ -628,13 +629,13 @@ class QuestionCard extends StatelessWidget {
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 4.0),
                             child: Icon(Icons.clear,
-                                color: Colors.red.shade700,
+                                color: AppColors.negative.shade700,
                                 size: fontSize + 4.0),
                           ),
                           Text(
                             S.of(context).taskReadingIncorrect,
                             style: TextStyle(
-                              color: Colors.red.shade700,
+                              color: AppColors.negative.shade700,
                               fontSize: fontSize,
                               fontWeight: FontWeight.bold,
                             ),

@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
+import '../colors.dart';
 import '../util.dart';
 import 'task.dart';
 
@@ -84,7 +85,7 @@ class NBack extends Task {
         }
       },
       child: ColoredBox(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: Colors.transparent,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -96,7 +97,9 @@ class NBack extends Task {
                 maintainState: true,
                 child: Icon(
                   _feedback == true ? Icons.thumb_up : Icons.thumb_down,
-                  color: _feedback == true ? Colors.green : Colors.red,
+                  color: _feedback == true
+                      ? AppColors.positive
+                      : AppColors.negative,
                   size: 50.0,
                 ),
               ),

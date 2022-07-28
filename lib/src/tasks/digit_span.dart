@@ -2,9 +2,9 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:okra/src/util.dart';
 
 import '../../generated/l10n.dart';
+import '../util.dart';
 import 'task.dart';
 
 class DigitSpan extends Task {
@@ -259,7 +259,8 @@ class DigitButton extends StatelessWidget {
     return ElevatedButton(
       style: ButtonStyle(
         shape: MaterialStateProperty.all(const CircleBorder()),
-        backgroundColor: MaterialStateProperty.all(Colors.grey.shade700),
+        backgroundColor:
+            MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
         minimumSize: MaterialStateProperty.all(const Size(50.0, 50.0)),
         textStyle: MaterialStateProperty.all(const TextStyle(
           fontSize: 20.0,
