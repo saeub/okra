@@ -222,7 +222,7 @@ EXPERIMENTS_TASKS = [
             "nTasksDone": 1,
             "hasPracticeTask": True,
         },
-        None,
+        {},
     ),
     (
         {
@@ -239,7 +239,6 @@ EXPERIMENTS_TASKS = [
             "nDistractors": 6,
             "gridWidth": 5,
             "gridHeight": 7,
-            "randomSeed": 42,
             "jiggle": True,
         },
     ),

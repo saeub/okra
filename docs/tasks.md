@@ -48,10 +48,11 @@ A random sequence of digits is presented one digit at a time, and the participan
     "initialLength": 3,
     "maxErrors": 2,
     "secondsShowingDigit": 1.0,
-    "secondsBetweenDigits": 2.0
+    "secondsBetweenDigits": 2.0,
+    "randomSeed": 42
   }
   ```
-  **NOTE:** `excludeDigits`, `initialLength`, and `maxErrors` are optional. By default, all digits from 0 to 9 are included, the initial sequence length is 3, and the task ends after 2 failed trials. `secondsShowingDigit` and `secondsBetweenDigits` are optional and default to `0.5` and `1.5`, respectively.
+  **NOTE:** `excludeDigits`, `initialLength`, and `maxErrors` are optional. By default, all digits from 0 to 9 are included, the initial sequence length is 3, and the task ends after 2 failed trials. `secondsShowingDigit` and `secondsBetweenDigits` are optional and default to `0.5` and `1.5`, respectively. `randomSeed` is an optional numerical seed for the random generation of digit sequences.
 - All results are included in the event logs. The results data is empty.
 
 ### Lexical decision
@@ -84,10 +85,11 @@ A single textual stimulus (usually a letter) is shown for 500 milliseconds with 
     "nStimuli": 20,
     "nPositives": 5,
     "secondsShowingStimulus": 1.0,
-    "secondsBetweenStimuli": 2.0
+    "secondsBetweenStimuli": 2.0,
+    "randomSeed": 42
   }
   ```
-  **NOTE:** `secondsShowingStimulus` and `secondsBetweenStimuli` are optional and default to `0.5` and `1.5`, respectively.
+  **NOTE:** `secondsShowingStimulus` and `secondsBetweenStimuli` are optional and default to `0.5` and `1.5`, respectively. `randomSeed` is an optional numerical seed for the random generation of stimulus sequences.
 - Results data structure:
   ```json
   {
@@ -184,10 +186,11 @@ A single picture of a red balloon is shown at a time, which disappears with a po
   {
     "nStimuli": 20,
     "minSecondsBetweenStimuli": 0,
-    "maxSecondsBetweenStimuli": 1.5
+    "maxSecondsBetweenStimuli": 1.5,
+    "randomSeed": 42
   }
   ```
-  **NOTE:** `nStimuli` does not include an introductory stimuli, which is already shown when starting the task. If `minSecondsBetweenStimuli` is smaller than `maxSecondsBetweenStimuli`, a (uniformly distributed) random number between them is generated after each stimulus.
+  **NOTE:** `nStimuli` does not include an introductory stimuli, which is already shown when starting the task. If `minSecondsBetweenStimuli` is smaller than `maxSecondsBetweenStimuli`, a (uniformly distributed) random number between them is generated after each stimulus. `randomSeed` is an optional numerical seed for the random generation of stimulus positions.
 - Results data structure:
   ```json
   {
@@ -247,9 +250,11 @@ Four buttons are shown. They light up in a specific sequence, which has to be re
 - Results data structure:
   ```json
   {
-    "maxCorrectItems": 7
+    "maxCorrectItems": 7,
+    "randomSeed": 42
   }
   ```
+  **NOTE:** `randomSeed` is an optional numerical seed for the random generation of stimulus sequences.
 
 ### Trail making
 
@@ -269,5 +274,5 @@ Circular buttons with numbers or letters are presented, which have to be connect
     "randomSeed": 42
   }
   ```
-  **NOTE:** `colors` is optional and specifies the alternating colors of the buttons. `nDistractors` is only allowed when there are at least 2 `colors` and specifies the number of distractor buttons (same stimuli, but wrong color). `gridWidth`, `gridHeight`, `jiggle`, and `randomSeed` are all optional and influence random generation of stimulus positions and distractors.
+  **NOTE:** `colors` is optional and specifies the alternating colors of the buttons. `nDistractors` is only allowed when there are at least 2 `colors` and specifies the number of distractor buttons (same stimuli, but wrong color). `gridWidth`, `gridHeight`, `jiggle` are optional and determine the spatial distribution of the buttons. `randomSeed` is an optional numerical seed for the random generation of stimulus positions and distractors.
 - All results are included in the event logs. The results data is empty.
