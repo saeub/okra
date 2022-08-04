@@ -749,14 +749,15 @@ class _ResultsWidgetState extends State<ResultsWidget> {
               ),
             ),
             const Spacer(flex: 1),
-            if (instructionsAfter != null) Text(
-              instructionsAfter,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 20.0,
-                color: Theme.of(context).colorScheme.primary,
+            if (instructionsAfter != null && instructionsAfter.isNotEmpty)
+              Text(
+                instructionsAfter,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
               ),
-            ),
             const Spacer(flex: 1),
             FutureBuilder<Experiment>(
               future: _experimentFuture,
