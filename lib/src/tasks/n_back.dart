@@ -31,7 +31,9 @@ class NBack extends Task {
     var stimulusChoices = Set<String>.from(data['stimulusChoices']).toList();
     int nStimuli = data['nStimuli'];
     int nPositives = data['nPositives'];
-    _stimuli = generateStimuli(stimulusChoices, nStimuli, nPositives, _n);
+    var random = Random(data['randomSeed']);
+    _stimuli =
+        generateStimuli(random, stimulusChoices, nStimuli, nPositives, _n);
     logger.log('generated stimuli', {
       'stimuli': _stimuli.toList(growable: false),
       'positive': [
@@ -156,7 +158,7 @@ class NBack extends Task {
     return index >= _n && _stimuli[index] == _stimuli[index - _n];
   }
 
-  static List<String> generateStimuli(
+  static List<String> generateStimuli(Random random,
       List<String> stimulusChoices, int nStimuli, int nPositives, int n) {
     if (stimulusChoices.length <= 1) {
       throw ArgumentError('stimulusChoices must contain at least 2 stimuli');
@@ -165,7 +167,6 @@ class NBack extends Task {
       throw ArgumentError('nPositives must not be larger than (nStimuli - n)');
     }
     var positiveIndices = <int>{};
-    var random = Random();
     while (positiveIndices.length < nPositives) {
       int randomIndex;
       do {

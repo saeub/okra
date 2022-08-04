@@ -37,7 +37,6 @@ class TrailMaking extends Task {
   void init(Map<String, dynamic> data) {
     List<String> stimulusTexts = data['stimuli'].cast<String>();
 
-    int? randomSeed = data['randomSeed'];
     bool jiggle = data['jiggle'] ?? false;
     int nDistractors = data['nDistractors'] ?? 0;
 
@@ -69,7 +68,7 @@ class TrailMaking extends Task {
           'Distractors can only be used if there are at least 2 stimulus colors');
     }
 
-    var random = Random(randomSeed);
+    var random = Random(data['randomSeed']);
     Offset generatePosition() {
       // Pop random free position
       var gridPosition =
@@ -108,7 +107,7 @@ class TrailMaking extends Task {
     // Generate distractors
     _distractors = [];
     var shuffledStimulusIndices = [for (var i = 0; i < _stimuli.length; i++) i]
-      ..shuffle();
+      ..shuffle(random);
     for (var i = 0; i < nDistractors; i++) {
       var stimulusIndex = shuffledStimulusIndices[i % _stimuli.length];
       var text = stimulusTexts[stimulusIndex];

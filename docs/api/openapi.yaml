@@ -212,6 +212,9 @@ components:
           type: "object"
           description: "Task data (schema specific to task type; see https://saeub.github.io/okra/tasks.html)"
           default: {}
+        instructionsAfter:
+          type: "string"
+          description: "Instructions shown immediately after the task has been completed"
     TaskRating:
       type: "object"
       properties:

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
@@ -215,7 +217,8 @@ void main() {
       await tester.pumpAndSettle();
 
       // 1 correct response
-      var loggedData = l.expectLogged('started displaying span');
+      var loggedData = l.expectLogged('started displaying span',
+          data: {'trial': 1}, allowAdditionalKeys: true);
       List<num> span = loggedData?['span'];
       expect(find.byType(FixationCross), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 1000));
@@ -239,7 +242,8 @@ void main() {
       expect(find.byType(FixationCross), findsOneWidget);
       expect(find.text(span[2].toString()), findsNothing);
       await tester.pump(const Duration(milliseconds: 1500));
-      l.expectLogged('finished displaying span', data: {'span': span});
+      l.expectLogged('finished displaying span',
+          data: {'trial': 1, 'span': span});
 
       expect(find.byType(DigitSpanInput), findsOneWidget);
       await tester.tap(find.text('CONTINUE')); // disabled
@@ -250,18 +254,20 @@ void main() {
       expect(find.text(span.join()), findsOneWidget);
       await tester.tap(find.text('CONTINUE'));
       l.expectLogged('submitted response',
-          data: {'response': span, 'correct': span});
+          data: {'trial': 1, 'response': span, 'correct': span});
 
       // 2 incorrect responses
       for (var i = 0; i < 2; i++) {
-        loggedData = l.expectLogged('started displaying span');
+        loggedData = l.expectLogged('started displaying span',
+            data: {'trial': i + 2}, allowAdditionalKeys: true);
         span = loggedData?['span'];
         await tester.pump(const Duration(milliseconds: 1000));
         for (var i = 0; i < 5; i++) {
           await tester.pump(const Duration(milliseconds: 500));
           await tester.pump(const Duration(milliseconds: 1500));
         }
-        l.expectLogged('finished displaying span', data: {'span': span});
+        l.expectLogged('finished displaying span',
+            data: {'trial': i + 2, 'span': span});
 
         var response = [for (var digit in span) (digit + 1) % 10];
         expect(find.byType(DigitSpanInput), findsOneWidget);
@@ -274,8 +280,10 @@ void main() {
         await tester.tap(find.text('CONTINUE'));
         await tester.pumpAndSettle();
         l.expectLogged('submitted response',
-            data: {'response': response, 'correct': span});
+            data: {'trial': i + 2, 'response': response, 'correct': span});
       }
+
+      l.expectLogged('reached maximum number of errors');
       l.expectDoneLogging();
     });
 
@@ -298,7 +306,8 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      var loggedData = l.expectLogged('started displaying span');
+      var loggedData = l.expectLogged('started displaying span',
+          data: {'trial': 1}, allowAdditionalKeys: true);
       List<num> span = loggedData?['span'];
       // initialLength
       expect(span.length, 20);
@@ -313,7 +322,8 @@ void main() {
       for (var i = 0; i < 41; i++) {
         await tester.pump(const Duration(milliseconds: 1500));
       }
-      l.expectLogged('finished displaying span', data: {'span': span});
+      l.expectLogged('finished displaying span',
+          data: {'trial': 1, 'span': span});
 
       expect(find.byType(DigitSpanInput), findsOneWidget);
       await tester.tap(find.widgetWithText(DigitButton, '0'));
@@ -322,10 +332,12 @@ void main() {
       expect(find.text('01'), findsOneWidget);
       await tester.tap(find.text('CONTINUE'));
       l.expectLogged('submitted response', data: {
+        'trial': 1,
         'response': [0, 1],
         'correct': span
       });
 
+      l.expectLogged('reached maximum number of errors');
       l.expectDoneLogging();
     });
 
@@ -348,7 +360,8 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      var loggedData = l.expectLogged('started displaying span');
+      var loggedData = l.expectLogged('started displaying span',
+          data: {'trial': 1}, allowAdditionalKeys: true);
       List<num> span = loggedData?['span'];
       expect(find.byType(FixationCross), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 1000));
@@ -361,17 +374,67 @@ void main() {
       expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[2].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 5000));
-      l.expectLogged('finished displaying span', data: {'span': span});
+      l.expectLogged('finished displaying span',
+          data: {'trial': 1, 'span': span});
 
       expect(find.byType(DigitSpanInput), findsOneWidget);
       await tester.tap(find.widgetWithText(DigitButton, '0'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       l.expectLogged('submitted response', data: {
+        'trial': 1,
         'response': [0],
         'correct': span
       });
 
+      l.expectLogged('reached maximum number of errors');
+      l.expectDoneLogging();
+    });
+
+    testWidgets('supports maximum number of trials', (tester) async {
+      var logger = TaskEventLogger();
+      var l = LoggerTester(logger);
+
+      await tester.pumpWidget(getTaskApp(
+        'digit-span',
+        {},
+        logger,
+        ({data, message}) {
+          expect(data, null);
+          expect(message, null);
+        },
+      ));
+      await tester.pumpAndSettle();
+
+      // 2 arbitrary responses
+      for (var i = 0; i < 2; i++) {
+        await tester.pump(const Duration(milliseconds: 1000));
+        l.expectLogged('started displaying span',
+            data: {'trial': i + 1}, allowAdditionalKeys: true);
+        for (var i = 0; i < 5; i++) {
+          await tester.pump(const Duration(milliseconds: 500));
+          await tester.pump(const Duration(milliseconds: 1500));
+        }
+        l.expectLogged('finished displaying span',
+            data: {'trial': i + 1}, allowAdditionalKeys: true);
+
+        expect(find.byType(DigitSpanInput), findsOneWidget);
+        await tester.tap(find.text('CONTINUE')); // disabled
+        await tester.tap(find.widgetWithText(DigitButton, '0'));
+        await tester.tap(find.widgetWithText(DigitButton, '1'));
+        await tester.pumpAndSettle();
+        expect(find.text('01'), findsOneWidget);
+        await tester.tap(find.text('CONTINUE'));
+        await tester.pumpAndSettle();
+        l.expectLogged('submitted response',
+            data: {
+              'trial': i + 1,
+              'response': [0, 1]
+            },
+            allowAdditionalKeys: true);
+      }
+
+      l.expectLogged('reached maximum number of errors');
       l.expectDoneLogging();
     });
   });
@@ -558,9 +621,11 @@ void main() {
       }
 
       var nStimuli = 10;
+      var random = Random();
       for (var n = 1; n <= nStimuli; n++) {
         for (var p = 0; p <= nStimuli - n; p++) {
-          var stimuli = NBack.generateStimuli(['A', 'B'], nStimuli, p, n);
+          var stimuli =
+              NBack.generateStimuli(random, ['A', 'B'], nStimuli, p, n);
           var nPositives = numberOfPositiveStimuli(stimuli, n);
           expect(nPositives, p,
               reason:
@@ -568,8 +633,9 @@ void main() {
         }
       }
 
-      expect(() => NBack.generateStimuli(['A'], 10, 3, 2), throwsArgumentError);
-      expect(() => NBack.generateStimuli(['A', 'B'], 3, 2, 2),
+      expect(() => NBack.generateStimuli(random, ['A'], 10, 3, 2),
+          throwsArgumentError);
+      expect(() => NBack.generateStimuli(random, ['A', 'B'], 3, 2, 2),
           throwsArgumentError);
     });
 
