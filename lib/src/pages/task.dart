@@ -649,12 +649,11 @@ class _RatingsWidgetState extends State<RatingsWidget> {
   }
 
   Color _getEmoticonColor(int index, int variant) {
-    return HSVColor.lerp(
-      HSVColor.fromColor(AppColors.negative[variant]!),
-      HSVColor.fromColor(AppColors.positive[variant]!),
-      index / TaskRating.emoticons.length,
-    )!
-        .toColor();
+    return Color.lerp(
+      AppColors.negative[variant]!,
+      AppColors.positive[variant]!,
+      index / (TaskRating.emoticons.length - 1),
+    )!;
   }
 
   Widget _getEmoticons({bool reversed = false}) {

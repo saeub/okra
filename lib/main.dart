@@ -13,19 +13,24 @@ void main() {
 }
 
 class App extends StatelessWidget {
+  static final theme = ThemeData(
+    colorScheme: ColorScheme.light(
+      primary: AppColors.primary,
+      secondary: AppColors.secondary.shade600,
+      error: AppColors.negative.shade700,
+    ),
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      linearTrackColor: AppColors.primary.shade100,
+    ),
+  );
+
   const App({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Okra',
-      theme: ThemeData(
-          colorScheme: ColorScheme.light(
-            primary: AppColors.primary,
-            secondary: AppColors.secondary.shade600,
-          ),
-          progressIndicatorTheme: ProgressIndicatorThemeData(
-              linearTrackColor: AppColors.primary.shade100)),
+      theme: theme,
       home: const StorageWrapper(child: ExperimentsMenuPage()),
       localizationsDelegates: const <LocalizationsDelegate>[
         S.delegate,
