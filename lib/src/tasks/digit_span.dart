@@ -8,10 +8,11 @@ import '../util.dart';
 import 'task.dart';
 
 class DigitSpan extends Task {
-  late final int _maxErrors;
+  late final int? _maxTrials, _maxErrors;
   late final List<int> _digits;
   late List<int> _currentSpan;
   late int _nextSpanLength;
+  late int _nTrials;
   late int _nErrors;
   late Duration _digitDuration, _betweenDigitsDuration;
   late bool _responding;
@@ -19,7 +20,16 @@ class DigitSpan extends Task {
 
   @override
   void init(Map<String, dynamic> data) {
-    _maxErrors = data['maxErrors'] ?? 2;
+    _maxTrials = data['maxTrials'];
+    if (data.containsKey('maxErrors')) {
+      _maxErrors = data['maxErrors'];
+    } else {
+      _maxErrors = 2;
+    }
+    if (_maxTrials == null && _maxErrors == null) {
+      throw ArgumentError(
+          'Either maxTrials or maxErrors (or both) must be set');
+    }
     List<int> excludeDigits = data['excludeDigits']?.cast<int>() ?? [];
     _digits = [
       for (var i = 0; i < 10; i++)
@@ -29,6 +39,7 @@ class DigitSpan extends Task {
       throw ArgumentError('At least two digits must be allowed');
     }
     _nextSpanLength = data['initialLength'] ?? 3;
+    _nTrials = 0;
     _nErrors = 0;
     num secondsShowingDigit = data['secondsShowingDigit'] ?? 0.5;
     _digitDuration =
@@ -37,11 +48,18 @@ class DigitSpan extends Task {
     _betweenDigitsDuration =
         Duration(milliseconds: (secondsBetweenDigits * 1000).round());
     _responding = false;
-    _random = Random();
+    _random = Random(data['randomSeed']);
     _nextTrial();
   }
 
   void _nextTrial() {
+    var _maxTrials = this._maxTrials;
+    if (_maxTrials != null && _nTrials >= _maxTrials) {
+      logger.log('reached maximum number of trials');
+      finish();
+    }
+    _nTrials++;
+
     _currentSpan = [];
     while (_currentSpan.length < _nextSpanLength) {
       var nextDigitIndex = _random.nextInt(_digits.length);
@@ -51,7 +69,8 @@ class DigitSpan extends Task {
       }
     }
     _responding = false;
-    logger.log('started displaying span', {'span': _currentSpan});
+    logger.log(
+        'started displaying span', {'trial': _nTrials, 'span': _currentSpan});
   }
 
   @override
@@ -65,8 +84,8 @@ class DigitSpan extends Task {
                 digitDuration: _digitDuration,
                 betweenDigitsDuration: _betweenDigitsDuration,
                 onFinished: () {
-                  logger
-                      .log('finished displaying span', {'span': _currentSpan});
+                  logger.log('finished displaying span',
+                      {'trial': _nTrials, 'span': _currentSpan});
                   setState(() {
                     _responding = true;
                   });
@@ -74,14 +93,19 @@ class DigitSpan extends Task {
               )
             : DigitSpanInput(
                 onSubmit: (digits) {
-                  logger.log('submitted response',
-                      {'response': digits, 'correct': _currentSpan});
+                  logger.log('submitted response', {
+                    'trial': _nTrials,
+                    'response': digits,
+                    'correct': _currentSpan
+                  });
                   if (listEquals(digits, _currentSpan)) {
                     _nextSpanLength++;
                     _nErrors = 0;
                   } else {
                     _nErrors++;
-                    if (_nErrors >= _maxErrors) {
+                    var _maxErrors = this._maxErrors;
+                    if (_maxErrors != null && _nErrors >= _maxErrors) {
+                      logger.log('reached maximum number of errors');
                       finish();
                       return;
                     }

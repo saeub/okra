@@ -35,7 +35,7 @@ class ReactionTime extends Task {
     _maxMillisecondsBetweenStimuli = (maxSecondsBetweenStimuli * 1000).round();
 
     _starting = true;
-    _random = Random();
+    _random = Random(data['randomSeed']);
     _reactionTimes = [];
 
     logger.log('started stimulus', {'stimulus': null});

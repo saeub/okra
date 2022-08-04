@@ -98,15 +98,19 @@ class TestApi extends Api {
       {bool practice = false}) async {
     _maybeFail();
     if (practice) {
-      return const TaskData('test', {
-        'segments': [
+      return const TaskData(
+          'test',
           {
-            'text': 'This is .',
-            'blankPosition': 8,
-            'options': ['madness', 'practice'],
+            'segments': [
+              {
+                'text': 'This is .',
+                'blankPosition': 8,
+                'options': ['madness', 'practice'],
+              },
+            ],
           },
-        ],
-      });
+          instructionsAfter:
+              "You've completed the practice task. Now continue with the main task.");
     } else {
       return const TaskData('test', {
         'segments': [
@@ -202,7 +206,28 @@ void main() {
       expect(testApi.taskResults?.events.length, 3);
     });
 
-    // TODO: This doesn't work because of async exceptions
+    testWidgets('displays instructions after task',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+          getApp(TaskPage(await testApi.getExperiment('test-practice'))));
+      await tester.pumpAndSettle();
+      // Instructions
+      await tester.tap(find.text('START PRACTICE TASK'));
+      await tester.pumpAndSettle();
+      // Task
+      await tester.tap(find.text('practice'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+      // No ratings for practice tasks
+      // Results
+      expect(
+          find.text(
+              "You've completed the practice task. Now continue with the main task."),
+          findsOneWidget);
+    });
+
+    // FIXME: This doesn't work because of async exceptions
     testWidgets('tolerates unstable connection', (WidgetTester tester) async {
       await tester.pumpWidget(
           getApp(TaskPage(await unstableTestApi.getExperiment('test'))));

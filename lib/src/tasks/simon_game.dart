@@ -46,7 +46,7 @@ class SimonGame extends Task {
 
   @override
   void init(Map<String, dynamic> data) {
-    _random = Random();
+    _random = Random(data['randomSeed']);
     _sequence = [];
     _nextSequence();
   }

@@ -29,7 +29,7 @@ class TaskPage extends StatefulWidget {
 
 class _TaskPageState extends State<TaskPage> {
   late TaskPageMode _mode;
-  String? _taskId;
+  TaskData? _taskData;
   late TaskEventLogger _logger;
   TaskResults? _results;
   late bool _practicing;
@@ -45,7 +45,7 @@ class _TaskPageState extends State<TaskPage> {
   void startTask(bool practicing) {
     setState(() {
       _mode = TaskPageMode.task;
-      _taskId = null;
+      _taskData = null;
       _logger = TaskEventLogger();
       _results = null;
       _practicing = practicing;
@@ -64,7 +64,7 @@ class _TaskPageState extends State<TaskPage> {
   void finishTask() {
     setState(() {
       _taskFinishedFuture = widget.experiment.api.finishTask(
-        _taskId!,
+        _taskData!.id,
         _results!,
       );
       _mode = TaskPageMode.results;
@@ -105,7 +105,7 @@ class _TaskPageState extends State<TaskPage> {
                   _logger,
                   ({data, message}) {
                     _logger.stopwatch.stop();
-                    _taskId = snapshot.data!.id;
+                    _taskData = snapshot.data;
                     _results = TaskResults(
                       data: data,
                       events: _logger.events,
@@ -156,6 +156,7 @@ class _TaskPageState extends State<TaskPage> {
               return ResultsWidget(
                 experiment: widget.experiment,
                 message: _results!.message,
+                instructionsAfter: _taskData!.instructionsAfter,
                 practice: _practicing,
                 onContinuePressed: () => startTask(false),
                 onRepeatPracticePressed: () => startTask(true),
@@ -698,6 +699,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
 class ResultsWidget extends StatefulWidget {
   final Experiment experiment;
   final String? message;
+  final String? instructionsAfter;
   final bool practice;
   final VoidCallback onContinuePressed;
   final VoidCallback? onRepeatPracticePressed;
@@ -705,6 +707,7 @@ class ResultsWidget extends StatefulWidget {
   const ResultsWidget({
     required this.experiment,
     this.message,
+    this.instructionsAfter,
     this.practice = false,
     required this.onContinuePressed,
     this.onRepeatPracticePressed,
@@ -739,6 +742,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
 
   @override
   Widget build(BuildContext context) {
+    var instructionsAfter = widget.instructionsAfter;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Center(
@@ -753,6 +757,16 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                 color: Theme.of(context).colorScheme.primary,
               ),
             ),
+            const Spacer(flex: 1),
+            if (instructionsAfter != null && instructionsAfter.isNotEmpty)
+              Text(
+                instructionsAfter,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20.0,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+              ),
             const Spacer(flex: 1),
             FutureBuilder<Experiment>(
               future: _experimentFuture,
@@ -831,7 +845,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                 }
               },
             ),
-            const Spacer(flex: 1),
+            const Spacer(flex: 2),
           ],
         ),
       ),
