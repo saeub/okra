@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +12,12 @@ import 'src/data/storage.dart';
 import 'src/pages/experiments.dart';
 
 void main() {
+  GoogleFonts.config.allowRuntimeFetching = false;
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('fonts/LICENSE.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
+
   runApp(const App());
 }
 
@@ -19,6 +28,7 @@ class App extends StatelessWidget {
       secondary: AppColors.secondary.shade600,
       error: AppColors.negative.shade700,
     ),
+    textTheme: GoogleFonts.robotoTextTheme(),
     progressIndicatorTheme: ProgressIndicatorThemeData(
       linearTrackColor: AppColors.primary.shade100,
     ),

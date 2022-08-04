@@ -16,6 +16,7 @@ dependencies:
   auto_size_text: ^3.0.0
   badges: ^2.0.3
   flutter_markdown: ^0.6.10
+  google_fonts: ^3.0.1
   http: ^0.13.4
   intl: ^0.17.0
   just_audio: ^0.9.21
@@ -40,6 +41,7 @@ flutter:
   assets:
     - assets/images/balloon.png
     - assets/images/balloon_popped.png
+    - assets/fonts/
 
 flutter_intl:
   enabled: true
