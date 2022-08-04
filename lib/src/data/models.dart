@@ -48,13 +48,15 @@ class Experiment {
 class TaskData {
   final String id;
   final Map<String, dynamic> data;
+  final String? instructionsAfter;
 
-  const TaskData(this.id, this.data);
+  const TaskData(this.id, this.data, {this.instructionsAfter});
 
   static TaskData fromJson(Map<String, dynamic> json) {
     return TaskData(
       json['id'],
       json['data'] ?? {},
+      instructionsAfter: json['instructionsAfter'],
     );
   }
 }

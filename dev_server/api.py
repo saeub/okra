@@ -229,7 +229,7 @@ EXPERIMENTS_TASKS = [
             "id": "10",
             "type": "trail-making",
             "title": "Trail making task",
-            "instructions": "Make those trails",
+            "instructions": "Make those trails.",
             "nTasks": 1,
             "nTasksDone": 0,
         },
@@ -318,6 +318,7 @@ def start_experiment(experiment_id):
             return {
                 "id": experiment["id"],
                 "data": task,
+                "instructionsAfter": "You've completed this task.\nTake a break or continue with the next task.",
             }
 
     return {"error": f"No experiment with ID {experiment_id}"}, 404
