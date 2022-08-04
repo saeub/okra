@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "31.0.0"
+  accessibility_test:
+    dependency: "direct dev"
+    description:
+      name: accessibility_test
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   analyzer:
     dependency: transitive
     description:
