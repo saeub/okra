@@ -62,7 +62,7 @@ class TrailMaking extends Task {
         colors.add(Color(colorInt));
       }
     } else {
-      colors.add(AppColors.primary.shade800);
+      colors.add(AppColors.secondary.shade700);
     }
     if (nDistractors > 0 && colors.length < 2) {
       throw ArgumentError(
