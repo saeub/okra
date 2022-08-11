@@ -184,10 +184,13 @@ class ScrollableTextStage extends TaskStage {
           maintainAnimation: true,
           maintainSize: true,
           maintainState: true,
-          child: ElevatedButton.icon(
-            onPressed: finish,
-            icon: const Icon(Icons.arrow_forward),
-            label: Text(S.of(context).taskAdvance),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: finish,
+              icon: const Icon(Icons.arrow_forward),
+              label: Text(S.of(context).taskAdvance),
+            ),
           ),
         )
       ],
@@ -562,10 +565,13 @@ class QuestionsStage extends TaskStage {
           ),
           Visibility(
             visible: !_selectedAnswerIndices.contains(null),
-            child: ElevatedButton.icon(
-              onPressed: () => _checkAnswers(context),
-              icon: const Icon(Icons.arrow_forward),
-              label: Text(S.of(context).taskAdvance),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                onPressed: () => _checkAnswers(context),
+                icon: const Icon(Icons.arrow_forward),
+                label: Text(S.of(context).taskAdvance),
+              ),
             ),
           )
         ],

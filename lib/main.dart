@@ -32,6 +32,8 @@ class App extends StatelessWidget {
     progressIndicatorTheme: ProgressIndicatorThemeData(
       linearTrackColor: AppColors.primary.shade100,
     ),
+    materialTapTargetSize: MaterialTapTargetSize.padded,
+    visualDensity: VisualDensity.standard,
   );
 
   const App({Key? key}) : super(key: key);
