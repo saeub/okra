@@ -13,7 +13,6 @@ import 'package:okra/src/tasks/reading.dart';
 import 'package:okra/src/tasks/simon_game.dart';
 import 'package:okra/src/tasks/task.dart';
 import 'package:okra/src/tasks/types.dart';
-import 'package:okra/src/util.dart';
 
 MaterialApp getTaskApp(String taskType, Map<String, dynamic> data,
     TaskEventLogger logger, FinishCallback onFinished) {
@@ -220,26 +219,20 @@ void main() {
       var loggedData = l.expectLogged('started displaying span',
           data: {'trial': 1}, allowAdditionalKeys: true);
       List<num> span = loggedData?['span'];
-      expect(find.byType(FixationCross), findsOneWidget);
+      expect(find.text(span[0].toString()), findsNothing);
       await tester.pump(const Duration(milliseconds: 1000));
-      expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[0].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 500));
-      expect(find.byType(FixationCross), findsOneWidget);
       expect(find.text(span[0].toString()), findsNothing);
       expect(find.text(span[1].toString()), findsNothing);
       await tester.pump(const Duration(milliseconds: 1500));
-      expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[1].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 500));
-      expect(find.byType(FixationCross), findsOneWidget);
       expect(find.text(span[1].toString()), findsNothing);
       expect(find.text(span[2].toString()), findsNothing);
       await tester.pump(const Duration(milliseconds: 1500));
-      expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[2].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 500));
-      expect(find.byType(FixationCross), findsOneWidget);
       expect(find.text(span[2].toString()), findsNothing);
       await tester.pump(const Duration(milliseconds: 1500));
       l.expectLogged('finished displaying span',
@@ -363,15 +356,11 @@ void main() {
       var loggedData = l.expectLogged('started displaying span',
           data: {'trial': 1}, allowAdditionalKeys: true);
       List<num> span = loggedData?['span'];
-      expect(find.byType(FixationCross), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 1000));
-      expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[0].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 5000));
-      expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[1].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 5000));
-      expect(find.byType(FixationCross), findsNothing);
       expect(find.text(span[2].toString()), findsOneWidget);
       await tester.pump(const Duration(milliseconds: 5000));
       l.expectLogged('finished displaying span',
@@ -457,20 +446,19 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started fixation cross');
+      expect(find.text('word'), findsNothing);
       await tester.pump(const Duration(milliseconds: 1000));
-      l.expectLogged('finished fixation cross');
       l.expectLogged('started word', data: {'wordIndex': 0});
-      expect(find.textContaining('word'), findsOneWidget);
+      expect(find.text('word'), findsOneWidget);
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', data: {'wordIndex': 0, 'answer': true});
 
-      l.expectLogged('started fixation cross');
+      expect(find.text('word'), findsNothing);
+      expect(find.text('non-word'), findsNothing);
       await tester.pump(const Duration(milliseconds: 1000));
-      l.expectLogged('finished fixation cross');
       l.expectLogged('started word', data: {'wordIndex': 1});
-      expect(find.textContaining('word'), findsOneWidget);
+      expect(find.text('non-word'), findsOneWidget);
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', data: {'wordIndex': 1, 'answer': false});
@@ -496,11 +484,9 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started fixation cross');
       await tester.pump(const Duration(milliseconds: 1000));
-      l.expectLogged('finished fixation cross');
       l.expectLogged('started word', data: {'wordIndex': 0});
-      expect(find.textContaining('word'), findsOneWidget);
+      expect(find.text('word'), findsOneWidget);
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', data: {'wordIndex': 0, 'answer': true});
@@ -511,11 +497,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 600));
       l.expectLogged('finished feedback', data: {'wordIndex': 0});
 
-      l.expectLogged('started fixation cross');
       await tester.pump(const Duration(milliseconds: 1000));
-      l.expectLogged('finished fixation cross');
       l.expectLogged('started word', data: {'wordIndex': 1});
-      expect(find.textContaining('word'), findsOneWidget);
+      expect(find.text('word'), findsOneWidget);
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', data: {'wordIndex': 1, 'answer': false});
@@ -526,11 +510,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 600));
       l.expectLogged('finished feedback', data: {'wordIndex': 1});
 
-      l.expectLogged('started fixation cross');
       await tester.pump(const Duration(milliseconds: 1000));
-      l.expectLogged('finished fixation cross');
       l.expectLogged('started word', data: {'wordIndex': 2});
-      expect(find.textContaining('word'), findsOneWidget);
+      expect(find.text('non-word'), findsOneWidget);
       await tester.tap(find.text('WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', data: {'wordIndex': 2, 'answer': true});
@@ -541,11 +523,9 @@ void main() {
       await tester.pump(const Duration(milliseconds: 600));
       l.expectLogged('finished feedback', data: {'wordIndex': 2});
 
-      l.expectLogged('started fixation cross');
       await tester.pump(const Duration(milliseconds: 1000));
-      l.expectLogged('finished fixation cross');
       l.expectLogged('started word', data: {'wordIndex': 3});
-      expect(find.textContaining('word'), findsOneWidget);
+      expect(find.text('non-word'), findsOneWidget);
       await tester.tap(find.text('NOT A WORD'));
       await tester.pumpAndSettle();
       l.expectLogged('finished word', data: {'wordIndex': 3, 'answer': false});

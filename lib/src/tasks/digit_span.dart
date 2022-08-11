@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
-import '../util.dart';
 import 'task.dart';
 
 class DigitSpan extends Task {
@@ -162,14 +161,19 @@ class _DigitSpanDisplayState extends State<DigitSpanDisplay> {
 
   @override
   Widget build(BuildContext context) {
-    if (_currentDigit == null) {
-      return const FixationCross();
-    } else {
-      return Text(
-        _currentDigit.toString(),
-        style: const TextStyle(fontSize: 50.0),
-      );
-    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.arrow_drop_down,
+            color: Theme.of(context).colorScheme.secondary, size: 30.0),
+        Text(
+          _currentDigit?.toString() ?? '',
+          style: const TextStyle(fontSize: 50.0),
+        ),
+        Icon(Icons.arrow_drop_up,
+            color: Theme.of(context).colorScheme.secondary, size: 30.0),
+      ],
+    );
   }
 }
 
@@ -204,7 +208,7 @@ class _DigitSpanInputState extends State<DigitSpanInput> {
                 child: Text(_content.join(),
                     softWrap: true,
                     style: const TextStyle(
-                        fontSize: 20.0, fontWeight: FontWeight.bold)),
+                        fontSize: 30.0, fontWeight: FontWeight.bold)),
               ),
               IconButton(
                 onPressed: _content.isNotEmpty
@@ -282,10 +286,9 @@ class DigitButton extends StatelessWidget {
         shape: MaterialStateProperty.all(const CircleBorder()),
         backgroundColor:
             MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
-        minimumSize: MaterialStateProperty.all(const Size(50.0, 50.0)),
+        minimumSize: MaterialStateProperty.all(const Size(70.0, 70.0)),
         textStyle: MaterialStateProperty.all(const TextStyle(
-          fontSize: 20.0,
-          fontWeight: FontWeight.bold,
+          fontSize: 40.0,
         )),
       ),
       onPressed: onPressed,

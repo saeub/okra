@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../generated/l10n.dart';
 import '../colors.dart';
-import '../util.dart';
 import 'task.dart';
 
 class LexicalDecision extends Task {
@@ -25,12 +24,10 @@ class LexicalDecision extends Task {
     setState(() {
       _visibleWord = null;
     });
-    logger.log('started fixation cross');
     await Future.delayed(const Duration(milliseconds: 1000));
     setState(() {
       _visibleWord = _words[_currentWordIndex];
     });
-    logger.log('finished fixation cross');
     logger.log('started word', {'wordIndex': _currentWordIndex});
   }
 
@@ -47,27 +44,42 @@ class LexicalDecision extends Task {
               children: [
                 Expanded(
                   child: Center(
-                    child: _visibleWord != null
-                        ? Text(
-                            _visibleWord,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 30.0,
-                            ),
-                          )
-                        : _feedback != null
-                            ? _feedback == true
-                                ? const Icon(
-                                    Icons.thumb_up,
-                                    color: AppColors.positive,
-                                    size: 50.0,
-                                  )
-                                : const Icon(
-                                    Icons.thumb_down,
-                                    color: AppColors.negative,
-                                    size: 50.0,
-                                  )
-                            : const FixationCross(),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.arrow_drop_down,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 30.0),
+                        Container(
+                          constraints: const BoxConstraints(minHeight: 50.0),
+                          alignment: Alignment.center,
+                          child: _visibleWord != null
+                              ? Text(
+                                  _visibleWord,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 40.0,
+                                  ),
+                                )
+                              : _feedback != null
+                                  ? _feedback == true
+                                      ? const Icon(
+                                          Icons.thumb_up,
+                                          color: AppColors.positive,
+                                          size: 50.0,
+                                        )
+                                      : const Icon(
+                                          Icons.thumb_down,
+                                          color: AppColors.negative,
+                                          size: 50.0,
+                                        )
+                                  : null,
+                        ),
+                        Icon(Icons.arrow_drop_up,
+                            color: Theme.of(context).colorScheme.secondary,
+                            size: 30.0),
+                      ],
+                    ),
                   ),
                 ),
                 ConstrainedBox(
