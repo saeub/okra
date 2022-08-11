@@ -14,7 +14,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   auto_size_text: ^3.0.0
-  badges: ^2.0.3
   flutter_markdown: ^0.6.10
   google_fonts: ^3.0.1
   http: ^0.13.4
