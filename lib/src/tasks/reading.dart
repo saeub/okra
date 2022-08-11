@@ -1,7 +1,10 @@
+import 'dart:convert';
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown/markdown.dart' as md;
 
 import '../../generated/l10n.dart';
 import '../colors.dart';
@@ -138,6 +141,7 @@ class ScrollableTextStage extends TaskStage {
   final double textWidth, textHeight;
   final double fontSize;
   bool _scrolledToBottom;
+  String? _loggedText;
 
   ScrollableTextStage(
       {required this.text,
@@ -161,9 +165,18 @@ class ScrollableTextStage extends TaskStage {
                     width: textWidth,
                     height: textHeight,
                     style: TextStyle(fontSize: fontSize, color: Colors.black),
-                    onVisibleRangeChanged: (visibleRange) {
-                      logger.log('visible range', {
-                        'characterRange': [visibleRange.start, visibleRange.end]
+                    onVisibleRangeChanged: (text, visibleRange) {
+                      if (text != _loggedText) {
+                        logger.log('text changed', {
+                          'text': text,
+                        });
+                        _loggedText = text;
+                      }
+                      logger.log('visible range changed', {
+                        'characterRange': [
+                          visibleRange.start,
+                          visibleRange.end
+                        ],
                       });
                       if (!_scrolledToBottom &&
                           visibleRange.end >= text.length) {
@@ -201,15 +214,17 @@ class ScrollableText extends StatefulWidget {
   final String text;
   final double width, height;
   final double padding;
-  final TextStyle? style;
-  final Function(TextRange visibleRange)? onVisibleRangeChanged;
+  final TextStyle style;
+  final double paragraphSpacing;
+  final Function(String text, TextRange visibleRange)? onVisibleRangeChanged;
 
   const ScrollableText(
       {required this.text,
       required this.width,
       required this.height,
+      required this.style,
+      this.paragraphSpacing = 16.0,
       this.padding = 8.0,
-      this.style,
       this.onVisibleRangeChanged,
       Key? key})
       : super(key: key);
@@ -218,15 +233,31 @@ class ScrollableText extends StatefulWidget {
   State<ScrollableText> createState() => _ScrollableTextState();
 }
 
-class _ScrollableTextState extends State<ScrollableText> {
-  late TextPainter _painter;
+class _Paragraph {
+  final TextPainter painter;
+  final String text;
+  final double lineHeight;
+  final double verticalOffset;
+
+  _Paragraph(this.painter, this.verticalOffset)
+      : text = painter.text!.toPlainText(),
+        lineHeight = painter.computeLineMetrics().first.height;
+}
+
+class _ScrollableTextState extends State<ScrollableText>
+    implements MarkdownBuilderDelegate {
+  late List<_Paragraph> _paragraphs;
+  String? _text;
+  late double _topEdge, _bottomEdge;
   late TextRange _visibleRange;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _updatePainter();
-    _visibleRange = _getVisibleRange(0, widget.height + widget.padding);
+    _paragraphs = [];
+    _topEdge = 0;
+    _bottomEdge = widget.height + widget.padding;
+    _updateParagraphs(emitEvent: false);
     WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
       _emitVisibleRangeChanged();
     });
@@ -237,37 +268,139 @@ class _ScrollableTextState extends State<ScrollableText> {
     super.didUpdateWidget(oldWidget);
     if (widget.text != oldWidget.text ||
         widget.width != oldWidget.width ||
-        widget.height != oldWidget.height) {
-      _updatePainter();
-      var newVisibleRange = _getVisibleRange(0, widget.height + widget.padding);
-      if (newVisibleRange != _visibleRange) {
-        _visibleRange = newVisibleRange;
+        widget.height != oldWidget.height ||
+        widget.style != oldWidget.style ||
+        widget.paragraphSpacing != oldWidget.paragraphSpacing) {
+      _updateParagraphs();
+    }
+  }
+
+  TextSpan _nodeToSpan(md.Node node) {
+    if (node is md.Element) {
+      TextStyle style;
+      // TODO: Support all generated tags
+      switch (node.tag) {
+        case 'h1':
+          style = TextStyle(
+              fontSize: widget.style.fontSize! * 2,
+              fontWeight: FontWeight.bold);
+          break;
+        case 'h2':
+          style = TextStyle(
+              fontSize: widget.style.fontSize! * 1.6,
+              fontWeight: FontWeight.bold);
+          break;
+        case 'h3':
+          style = TextStyle(
+              fontSize: widget.style.fontSize! * 1.3,
+              fontWeight: FontWeight.bold);
+          break;
+        case 'h4':
+          style = TextStyle(
+              fontSize: widget.style.fontSize! * 1.2,
+              fontWeight: FontWeight.bold);
+          break;
+        case 'h5':
+          style = const TextStyle(fontWeight: FontWeight.bold);
+          break;
+        case 'h6':
+          style = const TextStyle(fontStyle: FontStyle.italic);
+          break;
+        case 'em':
+          style = const TextStyle(fontStyle: FontStyle.italic);
+          break;
+        case 'strong':
+          style = const TextStyle(fontWeight: FontWeight.bold);
+          break;
+        default:
+          style = const TextStyle();
+      }
+      return TextSpan(children: [
+        for (var child in node.children ?? <md.Node>[]) _nodeToSpan(child)
+      ], style: style);
+    } else if (node is md.Text) {
+      var text = node.text.replaceAll(RegExp(r'\n'), ' ');
+      return TextSpan(text: text);
+    } else {
+      throw ArgumentError('$node is neither an Element nor a Text');
+    }
+  }
+
+  void _updateParagraphs({bool emitEvent = true}) {
+    var document = md.Document();
+    var lines = const LineSplitter().convert(widget.text);
+    var astNodes = document.parseLines(lines);
+    _paragraphs = [];
+    var offset = 0.0;
+    for (var node in astNodes) {
+      var painter = TextPainter(
+          text: TextSpan(children: [_nodeToSpan(node)], style: widget.style),
+          textDirection: TextDirection.ltr);
+      painter.layout(minWidth: widget.width, maxWidth: widget.width);
+      _paragraphs.add(_Paragraph(painter, offset));
+      offset += painter.height + widget.paragraphSpacing;
+    }
+    var newText = _paragraphs.map((paragraph) => paragraph.text).join('\n');
+    if (newText != _text) {
+      _text = newText;
+      _updateVisibleRange(textChanged: true, emitEvent: emitEvent);
+    }
+  }
+
+  void _updateVisibleRange({bool textChanged = false, bool emitEvent = true}) {
+    int? rangeStart, rangeEnd;
+    var textOffset = -1;
+    for (var paragraph in _paragraphs) {
+      textOffset += 1; // newline between paragraphs
+      // Consider a line visible if at least 3/4 of its height is on screen
+      var minVisibleLineRatio = 3 / 4;
+      // Screen edges relative to paragraph
+      var relativeTopEdge = _topEdge -
+          paragraph.verticalOffset +
+          paragraph.lineHeight * minVisibleLineRatio;
+      var relativeBottomEdge = _bottomEdge -
+          paragraph.verticalOffset -
+          paragraph.lineHeight * minVisibleLineRatio;
+      if (relativeTopEdge < paragraph.painter.height &&
+          relativeBottomEdge > 0) {
+        // Calculate visible range within paragraph
+        var paragraphRangeStart = paragraph.painter
+            .getPositionForOffset(Offset(0, relativeTopEdge))
+            .offset;
+        var paragraphRangeEnd = paragraph.painter
+            .getPositionForOffset(Offset(widget.width, relativeBottomEdge))
+            .offset;
+        // Update visible range within entire text
+        rangeStart ??= textOffset + paragraphRangeStart;
+        rangeEnd = textOffset + paragraphRangeEnd;
+      }
+      textOffset += paragraph.text.length;
+    }
+
+    var newVisibleRange = TextRange(start: rangeStart ?? 0, end: rangeEnd ?? 0);
+    if ((textChanged || newVisibleRange != _visibleRange)) {
+      _visibleRange = newVisibleRange;
+      if (emitEvent) {
         _emitVisibleRangeChanged();
       }
     }
   }
 
-  void _updatePainter() {
-    _painter = TextPainter(
-        text: TextSpan(text: widget.text, style: widget.style),
-        textDirection: TextDirection.ltr);
-    _painter.layout(minWidth: widget.width, maxWidth: widget.width);
-  }
-
-  TextRange _getVisibleRange(double topEdge, double bottomEdge) {
-    // Consider a line visible if at least 3/4 of its height is on screen
-    var start = _painter.getPositionForOffset(
-        Offset(0, topEdge + _painter.preferredLineHeight * 0.75));
-    var end = _painter.getPositionForOffset(
-        Offset(widget.width, bottomEdge - _painter.preferredLineHeight * 0.75));
-    return TextRange(start: start.offset, end: end.offset);
-  }
-
   void _emitVisibleRangeChanged() {
     var onVisibleRangeChanged = widget.onVisibleRangeChanged;
     if (onVisibleRangeChanged != null) {
-      onVisibleRangeChanged(_visibleRange);
+      onVisibleRangeChanged(_text ?? '', _visibleRange);
     }
+  }
+
+  @override
+  GestureRecognizer createLink(String text, String? href, String title) {
+    return TapGestureRecognizer();
+  }
+
+  @override
+  TextSpan formatText(MarkdownStyleSheet styleSheet, String code) {
+    return TextSpan(text: code);
   }
 
   @override
@@ -277,21 +410,26 @@ class _ScrollableTextState extends State<ScrollableText> {
       height: widget.height + 2 * widget.padding,
       child: NotificationListener<ScrollUpdateNotification>(
         onNotification: (notification) {
-          var topEdge = notification.metrics.extentBefore - widget.padding;
-          var bottomEdge = topEdge + notification.metrics.extentInside;
-          var newVisibleRange = _getVisibleRange(topEdge, bottomEdge);
-          if (newVisibleRange != _visibleRange) {
-            _visibleRange = newVisibleRange;
-            _emitVisibleRangeChanged();
-          }
+          _topEdge = notification.metrics.extentBefore - widget.padding;
+          _bottomEdge = _topEdge + notification.metrics.extentInside;
+          _updateVisibleRange();
           return false;
         },
         child: Scrollbar(
           child: SingleChildScrollView(
             padding: EdgeInsets.all(widget.padding),
-            child: CustomPaint(
-              size: Size(widget.width, _painter.height),
-              painter: CustomTextPainter(_painter),
+            child: Column(
+              children: [
+                for (var i = 0; i < _paragraphs.length; i++)
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: i > 0 ? widget.paragraphSpacing : 0),
+                    child: CustomPaint(
+                      size: Size(widget.width, _paragraphs[i].painter.height),
+                      painter: CustomTextPainter(_paragraphs[i].painter),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
@@ -344,6 +482,7 @@ class QuestionsStage extends TaskStage {
   int _currentQuestionIndex;
   final List<int?> _selectedAnswerIndices;
   Set<int>? _questionIndicesToCorrect;
+  String? _loggedText;
 
   QuestionsStage(
       {required this.questions,
@@ -459,12 +598,18 @@ class QuestionsStage extends TaskStage {
                         height: textHeight,
                         style:
                             TextStyle(fontSize: fontSize, color: Colors.black),
-                        onVisibleRangeChanged: (visibleRange) {
-                          logger.log('visible range', {
+                        onVisibleRangeChanged: (text, visibleRange) {
+                          if (text != _loggedText) {
+                            logger.log('text changed', {
+                              'text': text,
+                            });
+                            _loggedText = text;
+                          }
+                          logger.log('visible range changed', {
                             'characterRange': [
                               visibleRange.start,
                               visibleRange.end
-                            ]
+                            ],
                           });
                         },
                       ),
