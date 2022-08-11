@@ -476,20 +476,31 @@ class QuestionsStage extends TaskStage {
             child: ReadingWidth(
               child: Row(
                 children: [
-                  Badge(
-                    showBadge: nToAnswerLeft > 0,
-                    position: BadgePosition.topStart(top: 4, start: 4),
-                    toAnimate: false,
-                    child: IconButton(
-                      alignment: Alignment.centerRight,
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: _currentQuestionIndex > 0
-                          ? () {
-                              _pageToQuestion(
-                                _currentQuestionIndex - 1,
-                              );
-                            }
-                          : null,
+                  Visibility(
+                    visible: _currentQuestionIndex > 0,
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    maintainState: true,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: ElevatedButton(
+                        child: const Icon(Icons.arrow_back),
+                        style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all(
+                                const Size.fromWidth(40.0)),
+                            padding: MaterialStateProperty.all(EdgeInsets.zero),
+                            backgroundColor: MaterialStateProperty.all(
+                                nToAnswerLeft > 0
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.secondary),
+                            elevation: MaterialStateProperty.all(
+                                nToAnswerLeft > 0 ? null : 0.0)),
+                        onPressed: () {
+                          _pageToQuestion(
+                            _currentQuestionIndex - 1,
+                          );
+                        },
+                      ),
                     ),
                   ),
                   Expanded(
@@ -518,20 +529,31 @@ class QuestionsStage extends TaskStage {
                       ],
                     ),
                   ),
-                  Badge(
-                    showBadge: nToAnswerRight > 0,
-                    position: BadgePosition.topEnd(top: 4, end: 4),
-                    toAnimate: false,
-                    child: IconButton(
-                      alignment: Alignment.centerLeft,
-                      icon: const Icon(Icons.arrow_forward),
-                      onPressed: _currentQuestionIndex < questions.length - 1
-                          ? () {
-                              _pageToQuestion(
-                                _currentQuestionIndex + 1,
-                              );
-                            }
-                          : null,
+                  Visibility(
+                    visible: _currentQuestionIndex < questions.length - 1,
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    maintainState: true,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: ElevatedButton(
+                        child: const Icon(Icons.arrow_forward),
+                        style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all(
+                                const Size.fromWidth(40.0)),
+                            padding: MaterialStateProperty.all(EdgeInsets.zero),
+                            backgroundColor: MaterialStateProperty.all(
+                                nToAnswerRight > 0
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.secondary),
+                            elevation: MaterialStateProperty.all(
+                                nToAnswerRight > 0 ? null : 0.0)),
+                        onPressed: () {
+                          _pageToQuestion(
+                            _currentQuestionIndex + 1,
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],
