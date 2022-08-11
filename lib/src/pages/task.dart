@@ -462,6 +462,7 @@ class _TaskWidgetState extends State<TaskWidget> {
                   : Theme.of(context).colorScheme.primary;
           var progress = _task.getProgress();
           var content = Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               if (progress != null) AnimatedLinearProgressIndicator(progress),
               if (widget.practice)
