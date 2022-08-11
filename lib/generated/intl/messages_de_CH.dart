@@ -113,7 +113,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingsTutorialHeading":
             MessageLookupByLibrary.simpleMessage("Tutorial"),
         "taskAbortDialogTitle": MessageLookupByLibrary.simpleMessage(
-            "Willst du wirklich abbrechen?"),
+            "Möchten Sie wirklich abbrechen?"),
         "taskAdvance": MessageLookupByLibrary.simpleMessage("WEITER"),
         "taskFinish": MessageLookupByLibrary.simpleMessage("ABSCHLIESSEN"),
         "taskLexicalDecisionNonword":
@@ -125,11 +125,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("ÜBUNG"),
         "taskQuestionAnsweringExpandQuestions":
             MessageLookupByLibrary.simpleMessage("Fragen beantworten"),
-        "taskReactionTimeIntro":
-            MessageLookupByLibrary.simpleMessage("Lass den Ballon platzen!"),
+        "taskReactionTimeIntro": MessageLookupByLibrary.simpleMessage(
+            "Lassen Sie den Ballon platzen!"),
         "taskReadingCorrect": MessageLookupByLibrary.simpleMessage("RICHTIG"),
         "taskReadingCorrectionDialogText": MessageLookupByLibrary.simpleMessage(
-            "Bitte korrigiere deine Antworten."),
+            "Bitte korrigieren Sie Ihre Antworten."),
         "taskReadingCorrectionDialogTitle": m4,
         "taskReadingIncorrect": MessageLookupByLibrary.simpleMessage("FALSCH"),
         "taskResultsFinishExperiment":
@@ -148,9 +148,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("ÜBUNGSAUFGABE WIEDERHOLEN"),
         "taskResultsSecondsTaken": m5,
         "taskRotateLandscape": MessageLookupByLibrary.simpleMessage(
-            "Drehe dein Gerät ins Querformat"),
+            "Drehen Sie Ihr Gerät ins Querformat"),
         "taskRotatePortrait": MessageLookupByLibrary.simpleMessage(
-            "Drehe dein Gerät ins Hochformat"),
+            "Drehen Sie Ihr Gerät ins Hochformat"),
         "taskTrailMakingStart": MessageLookupByLibrary.simpleMessage("START"),
         "tutorialName": MessageLookupByLibrary.simpleMessage("Tutorial")
       };
