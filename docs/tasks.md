@@ -215,6 +215,7 @@ A text is presented (optionally with a preceding introductory text for context),
     "textWidth": 300,
     "textHeight": 200,
     "fontSize": 25.0,
+    "lineHeight": 2.0,
     "ratings": [
       {
         "question": "How easy was it?",
@@ -237,7 +238,7 @@ A text is presented (optionally with a preceding introductory text for context),
     ],
   }
   ```
-  **NOTE:** `text` can be Markdown. `intro` is an optional Markdown text to be shown before the actual text. `fontSize` is optional and specifies the font size of the text (not the questions; default is 20.0). `questions` is optional. If it is not provided, the questions stage is skipped. `ratings` is optional. If it is not provided, the ratings stage is skipped. Ratings follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)). `correctAnswerIndex` is optional. If it is provided, the participant will receive feedback and are required to correct their answers. 
+  **NOTE:** `text` can be Markdown. `intro` is an optional Markdown text to be shown before the actual text. `fontSize` is optional and specifies the font size of the text (not the questions; default is 20.0). `lineHeight` is optional and specifies the line spacing factor (default is 1.5). `questions` is optional. If it is not provided, the questions stage is skipped. `ratings` is optional. If it is not provided, the ratings stage is skipped. Ratings follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)). `correctAnswerIndex` is optional. If it is provided, the participant will receive feedback and are required to correct their answers. 
 - All results are included in the event logs. The results data is empty.
 
 ### Simon game

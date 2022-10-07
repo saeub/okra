@@ -40,11 +40,13 @@ class Reading extends MultistageTask {
     double textWidth = data['textWidth'].toDouble();
     double textHeight = data['textHeight'].toDouble();
     double fontSize = (data['fontSize'] ?? 20.0).toDouble();
+    double lineHeight = (data['lineHeight'] ?? 1.5).toDouble();
     _textStage = ScrollableTextStage(
       text: _text,
       textWidth: textWidth,
       textHeight: textHeight,
       fontSize: fontSize,
+      lineHeight: lineHeight,
     );
 
     if (data['ratings'] != null) {
@@ -139,7 +141,7 @@ class IntroStage extends TaskStage {
 class ScrollableTextStage extends TaskStage {
   final String text;
   final double textWidth, textHeight;
-  final double fontSize;
+  final double fontSize, lineHeight;
   bool _scrolledToBottom;
   String? _loggedText;
 
@@ -147,7 +149,8 @@ class ScrollableTextStage extends TaskStage {
       {required this.text,
       required this.textWidth,
       required this.textHeight,
-      required this.fontSize})
+      required this.fontSize,
+      required this.lineHeight})
       : _scrolledToBottom = false;
 
   @override
@@ -164,7 +167,7 @@ class ScrollableTextStage extends TaskStage {
                     text: text,
                     width: textWidth,
                     height: textHeight,
-                    style: TextStyle(fontSize: fontSize, color: Colors.black),
+                    style: TextStyle(fontSize: fontSize, color: Colors.black, height: lineHeight, leadingDistribution: TextLeadingDistribution.even),
                     onVisibleRangeChanged: (text, visibleRange) {
                       if (text != _loggedText) {
                         logger.log('text changed', {
@@ -352,8 +355,8 @@ class _ScrollableTextState extends State<ScrollableText>
     var textOffset = -1;
     for (var paragraph in _paragraphs) {
       textOffset += 1; // newline between paragraphs
-      // Consider a line visible if at least 3/4 of its height is on screen
-      var minVisibleLineRatio = 3 / 4;
+      // Consider a line visible if at least 1/2 of its height is on screen
+      var minVisibleLineRatio = 1 / 2;
       // Screen edges relative to paragraph
       var relativeTopEdge = _topEdge -
           paragraph.verticalOffset +
@@ -416,6 +419,7 @@ class _ScrollableTextState extends State<ScrollableText>
           return false;
         },
         child: Scrollbar(
+          // TODO: Use ListView, optimize for long texts
           child: SingleChildScrollView(
             padding: EdgeInsets.all(widget.padding),
             child: Column(
