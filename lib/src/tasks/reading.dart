@@ -315,6 +315,8 @@ class _ScrollableTextState extends State<ScrollableText>
         case 'strong':
           style = const TextStyle(fontWeight: FontWeight.bold);
           break;
+        case 'br':
+          return const TextSpan(text: '\n');
         default:
           style = const TextStyle();
       }
