@@ -167,7 +167,11 @@ class ScrollableTextStage extends TaskStage {
                     text: text,
                     width: textWidth,
                     height: textHeight,
-                    style: TextStyle(fontSize: fontSize, color: Colors.black, height: lineHeight, leadingDistribution: TextLeadingDistribution.even),
+                    style: TextStyle(
+                        fontSize: fontSize,
+                        color: Colors.black,
+                        height: lineHeight,
+                        leadingDistribution: TextLeadingDistribution.even),
                     onVisibleRangeChanged: (text, visibleRange) {
                       if (text != _loggedText) {
                         logger.log('text changed', {
@@ -286,22 +290,22 @@ class _ScrollableTextState extends State<ScrollableText>
       switch (node.tag) {
         case 'h1':
           style = TextStyle(
-              fontSize: widget.style.fontSize! * 2,
+              fontSize: widget.style.fontSize! * 1.6,
               fontWeight: FontWeight.bold);
           break;
         case 'h2':
           style = TextStyle(
-              fontSize: widget.style.fontSize! * 1.6,
+              fontSize: widget.style.fontSize! * 1.4,
               fontWeight: FontWeight.bold);
           break;
         case 'h3':
           style = TextStyle(
-              fontSize: widget.style.fontSize! * 1.3,
+              fontSize: widget.style.fontSize! * 1.2,
               fontWeight: FontWeight.bold);
           break;
         case 'h4':
           style = TextStyle(
-              fontSize: widget.style.fontSize! * 1.2,
+              fontSize: widget.style.fontSize! * 1.1,
               fontWeight: FontWeight.bold);
           break;
         case 'h5':
@@ -646,7 +650,7 @@ class QuestionsStage extends TaskStage {
               ),
             ),
           SizedBox(
-            height: 200,
+            height: 250,
             child: ReadingWidth(
               child: Row(
                 children: [
