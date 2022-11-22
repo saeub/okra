@@ -265,7 +265,7 @@ class _ScrollableTextState extends State<ScrollableText>
     _topEdge = 0;
     _bottomEdge = widget.height + widget.padding;
     _updateParagraphs(emitEvent: false);
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _emitVisibleRangeChanged();
     });
   }
