@@ -55,6 +55,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "errorGeneric": m1,
         "errorRetry": MessageLookupByLibrary.simpleMessage("RETRY"),
         "errorUnknown": MessageLookupByLibrary.simpleMessage("Unknown error"),
+        "experimentsIntro": MessageLookupByLibrary.simpleMessage(
+            "Okra is an app built at the University of Zurich. Researchers can use Okra to find out how well people can understand texts.\n\nIf you are a study participant, you should have a QR code. Scan this QR code to get your tasks."),
         "experimentsNoTasks": MessageLookupByLibrary.simpleMessage(
             "No tasks available at the moment"),
         "experimentsPageTitle":

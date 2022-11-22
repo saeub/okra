@@ -68,43 +68,57 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
         ],
       ),
       body: storage.webApis.isEmpty
-          ? buildRegisterButton(context)
+          ? buildIntro(context)
           : buildExperimentsList(context, storage.showCompleted),
     );
   }
 
-  Widget buildRegisterButton(BuildContext context) {
-    return Center(
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          try {
-            var registrationData = await Navigator.of(context)
-                .push<RegistrationData>(MaterialPageRoute(
-                    builder: (context) => const RegistrationCodeScanner()));
-            if (registrationData != null) {
-              var api = await WebApi.register(
-                  registrationData.url,
-                  registrationData.participantId,
-                  registrationData.registrationKey);
-              context.read<Storage>().addWebApi(api);
-              setState(() {
-                _experiments = loadExperiments();
-              });
-            }
-          } on QrScanError catch (e) {
-            showErrorSnackBar(context, e.message);
-          } on ApiError catch (e) {
-            showErrorSnackBar(
-              context,
-              e.message(S.of(context)),
-            );
-          } catch (_) {
-            // TODO: Report error
-            showErrorSnackBar(context, S.of(context).errorUnknown);
-          }
-        },
-        icon: const Icon(Icons.camera_alt),
-        label: Text(S.of(context).experimentsScanQrCode),
+  Widget buildIntro(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ReadingWidth(
+              width: 400.0,
+              child: Text(S.of(context).experimentsIntro,
+                  style: const TextStyle(color: Colors.black, fontSize: 18.0)),
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                try {
+                  var registrationData = await Navigator.of(context)
+                      .push<RegistrationData>(MaterialPageRoute(
+                          builder: (context) =>
+                              const RegistrationCodeScanner()));
+                  if (registrationData != null) {
+                    var api = await WebApi.register(
+                        registrationData.url,
+                        registrationData.participantId,
+                        registrationData.registrationKey);
+                    context.read<Storage>().addWebApi(api);
+                    setState(() {
+                      _experiments = loadExperiments();
+                    });
+                  }
+                } on QrScanError catch (e) {
+                  showErrorSnackBar(context, e.message);
+                } on ApiError catch (e) {
+                  showErrorSnackBar(
+                    context,
+                    e.message(S.of(context)),
+                  );
+                } catch (_) {
+                  // TODO: Report error
+                  showErrorSnackBar(context, S.of(context).errorUnknown);
+                }
+              },
+              icon: const Icon(Icons.camera_alt),
+              label: Text(S.of(context).experimentsScanQrCode),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -222,9 +236,12 @@ class ApiTitle extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
         children: [
-          SizedBox(
-            height: 40.0,
-            child: api.getIcon(),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 8.0),
+            child: SizedBox(
+              height: 30.0,
+              child: api.getIcon(),
+            ),
           ),
           Flexible(
             child: Text(

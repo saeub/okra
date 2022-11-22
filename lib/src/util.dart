@@ -93,14 +93,16 @@ class _AnimatedLinearProgressIndicatorState
 }
 
 class ReadingWidth extends StatelessWidget {
+  final double width;
   final Widget child;
 
-  const ReadingWidth({required this.child, Key? key}) : super(key: key);
+  const ReadingWidth({this.width = 700.0, required this.child, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 700.0),
+      constraints: BoxConstraints(maxWidth: width),
       child: child,
     );
   }

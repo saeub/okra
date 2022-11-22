@@ -56,6 +56,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "errorRetry": MessageLookupByLibrary.simpleMessage("ERNEUT VERSUCHEN"),
         "errorUnknown":
             MessageLookupByLibrary.simpleMessage("Unbekannter Fehler"),
+        "experimentsIntro": MessageLookupByLibrary.simpleMessage(
+            "Okra ist eine App von der Universität Zürich. Mit Okra können Forscher*innen herausfinden, wie gut Menschen Texte verstehen können.\n\nWenn Sie Studien-Teilnehmer*in sind, sollten Sie einen QR-Code haben. Scannen Sie diesen QR-Code. Dann bekommen Sie Aufgaben zum Lösen."),
         "experimentsNoTasks": MessageLookupByLibrary.simpleMessage(
             "Momentan keine Aufgaben verfügbar"),
         "experimentsPageTitle":

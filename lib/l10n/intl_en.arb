@@ -12,6 +12,7 @@
   "errorGeneric": "Error: {error}",
   "errorRetry": "RETRY",
   "errorUnknown": "Unknown error",
+  "experimentsIntro": "Okra is an app built at the University of Zurich. Researchers can use Okra to find out how well people can understand texts.\n\nIf you are a study participant, you should have a QR code. Scan this QR code to get your tasks.",
   "experimentsNoTasks": "No tasks available at the moment",
   "experimentsPageTitle": "Experiments",
   "experimentsScanQrCode": "SCAN QR-CODE",
