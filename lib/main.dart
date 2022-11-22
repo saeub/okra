@@ -28,6 +28,10 @@ class App extends StatelessWidget {
       secondary: AppColors.secondary.shade600,
       error: AppColors.negative.shade700,
     ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: AppColors.primary,
+      foregroundColor: Colors.white,
+    ),
     textTheme: GoogleFonts.robotoTextTheme(),
     progressIndicatorTheme: ProgressIndicatorThemeData(
       linearTrackColor: AppColors.primary.shade100,
