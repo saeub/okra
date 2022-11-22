@@ -17,6 +17,7 @@ To register from an Android emulator, use 10.0.2.2 as the IP address.
 
 import requests
 from flask import Flask, make_response, request
+from flask_cors import CORS
 
 HOST = "0.0.0.0"
 PORT = "5000"
@@ -257,6 +258,7 @@ EXPERIMENTS_TASKS = [
 ]
 
 app = Flask(__name__)
+CORS(app)
 
 
 def check_credentials():
