@@ -278,9 +278,10 @@ class _ScrollableTextState extends State<ScrollableText>
     }
   }
 
-  TextSpan _nodeToSpan(md.Node node) {
+  TextSpan _nodeToSpan(md.Node node, {int indent = 0, bool isFirst = false}) {
     if (node is md.Element) {
       TextStyle style;
+      String? prefix;
       // TODO: Support all generated tags
       switch (node.tag) {
         case 'h1':
@@ -315,14 +316,34 @@ class _ScrollableTextState extends State<ScrollableText>
         case 'strong':
           style = const TextStyle(fontWeight: FontWeight.bold);
           break;
+        case 'ul':
+          style = const TextStyle();
+          if (indent > 0) {
+            prefix = '\n';
+          }
+          indent += 1;
+          break;
+        case 'li':
+          style = const TextStyle();
+          prefix = '   ' * (indent - 1) + '• ';
+          if (!isFirst) {
+            prefix = '\n' + prefix;
+          }
+          break;
         case 'br':
           return const TextSpan(text: '\n');
         default:
           style = const TextStyle();
       }
-      return TextSpan(children: [
-        for (var child in node.children ?? <md.Node>[]) _nodeToSpan(child)
-      ], style: style);
+      return TextSpan(
+        children: [
+          if (prefix != null) TextSpan(text: prefix),
+          for (var child in node.children ?? <md.Node>[])
+            _nodeToSpan(child,
+                indent: indent, isFirst: child == node.children?.first),
+        ],
+        style: style,
+      );
     } else if (node is md.Text) {
       var text = node.text.replaceAll(RegExp(r'\n'), ' ');
       return TextSpan(text: text);
