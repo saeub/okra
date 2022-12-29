@@ -68,6 +68,7 @@ class Reading extends MultistageTask {
         textWidth: textWidth,
         textHeight: textHeight,
         fontSize: fontSize,
+        lineHeight: lineHeight,
       );
     } else {
       _questionsStage = null;
@@ -508,7 +509,7 @@ class QuestionsStage extends TaskStage {
   final List<Question> questions;
   final String? text;
   final double textWidth, textHeight;
-  final double fontSize;
+  final double fontSize, lineHeight;
   late final PageController _pageController;
   int _currentQuestionIndex;
   final List<int?> _selectedAnswerIndices;
@@ -520,7 +521,8 @@ class QuestionsStage extends TaskStage {
       required this.text,
       required this.textWidth,
       required this.textHeight,
-      required this.fontSize})
+      required this.fontSize,
+      required this.lineHeight})
       : _currentQuestionIndex = 0,
         _selectedAnswerIndices = [
           for (var i = 0; i < questions.length; i++) null
@@ -627,8 +629,11 @@ class QuestionsStage extends TaskStage {
                         text: text,
                         width: textWidth,
                         height: textHeight,
-                        style:
-                            TextStyle(fontSize: fontSize, color: Colors.black),
+                        style: TextStyle(
+                            fontSize: fontSize,
+                            color: Colors.black,
+                            height: lineHeight,
+                            leadingDistribution: TextLeadingDistribution.even),
                         onVisibleRangeChanged: (text, visibleRange) {
                           if (text != _loggedText) {
                             logger.log('text changed', {
