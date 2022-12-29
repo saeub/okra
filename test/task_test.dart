@@ -1463,13 +1463,21 @@ void main() {
         'text': 'This is an example text.',
       });
       l.expectLogged('visible range changed', data: {
-        'characterRange': [0, 16] // 'This is an examp'
+        'characterRange': [0, 10] // 'This is an'
       });
       await tester.tap(find.text('CONTINUE'), warnIfMissed: false); // invisible
       l.expectDoneLogging();
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
       l.expectLogged('visible range changed', data: {
-        'characterRange': [5, 19] // 'is an example '
+        'characterRange': [0, 16] // 'This is an examp'
+      });
+      await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
+      l.expectLogged('visible range changed', data: {
+        'characterRange': [5, 16] // 'is an examp'
+      });
+      await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
+      l.expectLogged('visible range changed', data: {
+        'characterRange': [11, 19] // 'example'
       });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
       l.expectLogged('visible range changed', data: {
@@ -1486,16 +1494,24 @@ void main() {
         'text': 'This is an example text.',
       });
       l.expectLogged('visible range changed', data: {
-        'characterRange': [0, 16]
+        'characterRange': [0, 10] // 'This is an'
       });
       expect(find.text('CONTINUE'), findsNothing);
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
       l.expectLogged('visible range changed', data: {
-        'characterRange': [5, 19]
+        'characterRange': [0, 16] // 'This is an examp'
       });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
       l.expectLogged('visible range changed', data: {
-        'characterRange': [11, 24]
+        'characterRange': [5, 16] // 'is an examp'
+      });
+      await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
+      l.expectLogged('visible range changed', data: {
+        'characterRange': [11, 19] // 'example'
+      });
+      await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
+      l.expectLogged('visible range changed', data: {
+        'characterRange': [11, 24] // 'example text.'
       });
       await tester.tap(find.text('No'));
       await tester.pumpAndSettle();
