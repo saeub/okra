@@ -111,13 +111,11 @@ enum TaskRatingType {
 }
 
 class TaskResults {
-  Map<String, dynamic>? data;
   List<TaskEvent> events;
   String? message;
   List<num>? ratingAnswers;
 
   TaskResults({
-    this.data,
     this.events = const [],
     this.message,
     this.ratingAnswers,
@@ -125,7 +123,6 @@ class TaskResults {
 
   Map<String, dynamic> toJson() {
     return {
-      'data': data,
       'events': events.map((event) => event.toJson()).toList(),
       'message': message,
       'ratingAnswers': ratingAnswers,

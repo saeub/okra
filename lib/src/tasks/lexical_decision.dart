@@ -28,7 +28,7 @@ class LexicalDecision extends Task {
     setState(() {
       _visibleWord = _words[_currentWordIndex];
     });
-    logger.log('started word', {'wordIndex': _currentWordIndex});
+    logger.log('started word', {'word': _currentWordIndex});
   }
 
   @override
@@ -152,8 +152,7 @@ class LexicalDecision extends Task {
   }
 
   void _onTap(bool answer) async {
-    logger.log(
-        'finished word', {'wordIndex': _currentWordIndex, 'answer': answer});
+    logger.log('finished word', {'word': _currentWordIndex, 'answer': answer});
     _visibleWord = null;
     var _correctAnswers = this._correctAnswers;
     if (_correctAnswers != null) {
@@ -161,10 +160,10 @@ class LexicalDecision extends Task {
         _feedback = answer == _correctAnswers[_currentWordIndex];
       });
       logger.log('started feedback',
-          {'wordIndex': _currentWordIndex, 'positive': _feedback});
+          {'word': _currentWordIndex, 'positive': _feedback});
       await Future.delayed(const Duration(milliseconds: 600));
       _feedback = null;
-      logger.log('finished feedback', {'wordIndex': _currentWordIndex});
+      logger.log('finished feedback', {'word': _currentWordIndex});
     }
     if (_currentWordIndex < _words.length - 1) {
       _nextWord();

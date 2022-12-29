@@ -77,9 +77,10 @@ class Cloze extends Task {
             label: Text(S.of(context).taskAdvance),
             onPressed: !_feedbacking
                 ? () async {
-                    logger.log(
-                        'finished segment', {'segment': _currentSegmentIndex});
-                    _chosenOptionIndices.add(_chosenOptionIndex);
+                    logger.log('finished segment', {
+                      'segment': _currentSegmentIndex,
+                      'finalResponse': _chosenOptionIndex
+                    });
                     if (segment.correctOptionIndex != null) {
                       logger.log('started feedback',
                           {'segment': _currentSegmentIndex});
@@ -99,8 +100,7 @@ class Cloze extends Task {
                       logger.log(
                           'started segment', {'segment': _currentSegmentIndex});
                     } else {
-                      finish(
-                          data: {'chosenOptionIndices': _chosenOptionIndices});
+                      finish();
                     }
                   }
                 : null,

@@ -114,9 +114,10 @@ class PictureNaming extends Task {
               label: Text(S.of(context).taskAdvance),
               onPressed: !_feedbacking
                   ? () async {
-                      logger.log('finished subtask',
-                          {'subtask': _currentSubtaskIndex});
-                      _chosenPictureIndices.add(_chosenPictureIndex!);
+                      logger.log('finished subtask', {
+                        'subtask': _currentSubtaskIndex,
+                        'finalResponse': _chosenPictureIndex
+                      });
                       if (subtask.correctPictureIndex != null) {
                         logger.log('started feedback',
                             {'subtask': _currentSubtaskIndex});
@@ -136,9 +137,7 @@ class PictureNaming extends Task {
                         logger.log('started subtask',
                             {'subtask': _currentSubtaskIndex});
                       } else {
-                        finish(data: {
-                          'chosenPictureIndices': _chosenPictureIndices
-                        });
+                        finish();
                       }
                     }
                   : null,

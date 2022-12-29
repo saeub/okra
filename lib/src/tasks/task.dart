@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../data/models.dart';
 
 typedef FinishCallback = void Function({
-  Map<String, dynamic>? data,
   String? message,
 });
 
@@ -35,8 +34,7 @@ abstract class Task {
 
   void setState(VoidCallback fn) => _setState(fn);
 
-  void finish({Map<String, dynamic>? data, String? message}) =>
-      _finish(data: data, message: message);
+  void finish({String? message}) => _finish(message: message);
 }
 
 class TaskEventLogger {
@@ -50,8 +48,8 @@ class TaskEventLogger {
   List<TaskEvent> get events => _events;
 
   void log(String label, [Map<String, dynamic>? data]) {
-    debugPrint('TaskEventLogger: $label $data');
     _events.add(TaskEvent(DateTime.now(), label, data));
+    debugPrint('TaskEventLogger: $label $data');
   }
 }
 

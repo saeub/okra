@@ -180,9 +180,8 @@ class SimonGame extends Task {
       logger.log('started feedback', {'feedback': _feedback});
       Future.delayed(const Duration(milliseconds: 1000)).then((_) {
         logger.log('finished feedback', {'feedback': _feedback});
-        finish(data: {
-          'maxCorrectItems': _sequence.length - 1,
-        });
+        logger.log('finished task', {'longestSequence': _sequence.length - 1});
+        finish();
       });
     }
   }

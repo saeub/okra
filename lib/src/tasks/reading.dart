@@ -560,7 +560,7 @@ class QuestionsStage extends TaskStage {
       }
     }
     logger.log('submitted answers', {
-      'answerIndices': _selectedAnswerIndices,
+      'finalResponses': _selectedAnswerIndices,
     });
     if (questionIndicesToCorrect.isNotEmpty) {
       setState(() {

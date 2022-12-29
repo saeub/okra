@@ -154,9 +154,6 @@ void main() {
       // Results
       expect(find.text('The next task will count!'), findsNothing);
       expect(find.text('REPEAT PRACTICE TASK'), findsNothing);
-      expect(testApi.taskResults?.data, {
-        'chosenOptionIndices': [1],
-      });
       expect(testApi.taskResults?.ratingAnswers, [0.5]);
       expect(testApi.taskResults?.events.length, 3);
     });
@@ -179,9 +176,6 @@ void main() {
       // Results
       expect(find.text('The next task will count!'), findsOneWidget);
       expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
-      expect(testApi.taskResults?.data, {
-        'chosenOptionIndices': [1],
-      });
       expect(testApi.taskResults?.ratingAnswers, null);
       expect(testApi.taskResults?.events.length, 3);
 
@@ -199,9 +193,6 @@ void main() {
       // Results
       expect(find.text('The next task will count!'), findsOneWidget);
       expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
-      expect(testApi.taskResults?.data, {
-        'chosenOptionIndices': [0],
-      });
       expect(testApi.taskResults?.ratingAnswers, null);
       expect(testApi.taskResults?.events.length, 3);
     });
@@ -250,9 +241,6 @@ void main() {
       // Results
       expect(find.text('The next task will count!'), findsNothing);
       expect(find.text('REPEAT PRACTICE TASK'), findsNothing);
-      expect(unstableTestApi.taskResults?.data, {
-        'chosenOptionIndices': [1],
-      });
       expect(unstableTestApi.taskResults?.ratingAnswers, [0.5]);
       expect(unstableTestApi.taskResults?.events.length, 3);
     }, skip: true);

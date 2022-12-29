@@ -19,8 +19,6 @@ class ReactionTime extends Task {
   late int _minMillisecondsBetweenStimuli, _maxMillisecondsBetweenStimuli;
   late bool _starting;
   late Random _random;
-  DateTime? _stimulusStart;
-  late List<Duration> _reactionTimes;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -35,7 +33,6 @@ class ReactionTime extends Task {
 
     _starting = true;
     _random = Random(data['randomSeed']);
-    _reactionTimes = [];
 
     logger.log('started stimulus', {'stimulus': null});
   }
@@ -81,11 +78,6 @@ class ReactionTime extends Task {
               });
               var hitbox = getStimulusHitbox();
               if (hitbox != null && hitbox.contains(details.localPosition)) {
-                var _stimulusStart = this._stimulusStart;
-                if (_stimulusStart != null) {
-                  _reactionTimes.add(DateTime.now().difference(_stimulusStart));
-                  _stimulusStart = null;
-                }
                 logger.log('tapped stimulus',
                     {'stimulus': _starting ? null : _nStimuliDone});
                 setState(() {
@@ -106,7 +98,6 @@ class ReactionTime extends Task {
                   setState(() {
                     randomizeStimulusPosition(constraints);
                   });
-                  _stimulusStart = DateTime.now();
                   logger.log('started stimulus', {
                     'stimulus': _nStimuliDone,
                     'hitbox': {
@@ -117,11 +108,7 @@ class ReactionTime extends Task {
                     }
                   });
                 } else {
-                  finish(data: {
-                    'reactionTimes': _reactionTimes
-                        .map((duration) => duration.inMilliseconds / 1000)
-                        .toList(),
-                  });
+                  finish();
                 }
               }
             },

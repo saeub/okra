@@ -103,11 +103,10 @@ class _TaskPageState extends State<TaskPage> {
                   widget.experiment.type.taskFactory,
                   snapshot.data!.data,
                   _logger,
-                  ({data, message}) {
+                  ({message}) {
                     _logger.stopwatch.stop();
                     _taskData = snapshot.data;
                     _results = TaskResults(
-                      data: data,
                       events: _logger.events,
                       message: message,
                     );
