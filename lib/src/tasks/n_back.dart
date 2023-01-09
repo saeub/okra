@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 
-import '../util.dart';
+import '../colors.dart';
 import 'task.dart';
 
 class NBack extends Task {
@@ -50,11 +50,6 @@ class NBack extends Task {
   }
 
   @override
-  double? getProgress() {
-    return _currentStimulusIndex / _stimuli.length;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTapDown: (details) async {
@@ -86,7 +81,7 @@ class NBack extends Task {
         }
       },
       child: ColoredBox(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: Colors.transparent,
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -98,26 +93,36 @@ class NBack extends Task {
                 maintainState: true,
                 child: Icon(
                   _feedback == true ? Icons.thumb_up : Icons.thumb_down,
-                  color: _feedback == true ? Colors.green : Colors.red,
+                  color: _feedback == true
+                      ? AppColors.positive
+                      : AppColors.negative,
                   size: 50.0,
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 16.0, bottom: 66.0),
-                child: SizedBox(
-                  height: 200.0,
-                  child: Center(
-                    child: _currentStimulusIndex >= 0 && _stimulusVisible
-                        ? Text(
-                            _currentStimulusIndex >= 0
-                                ? _stimuli[_currentStimulusIndex]
-                                : '',
-                            style: const TextStyle(
-                              fontSize: 50.0,
-                            ),
-                          )
-                        : const FixationCross(),
-                  ),
+                child: Column(
+                  children: [
+                    Icon(Icons.arrow_drop_down,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 30.0),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 60.0),
+                      child: _currentStimulusIndex >= 0 && _stimulusVisible
+                          ? Text(
+                              _currentStimulusIndex >= 0
+                                  ? _stimuli[_currentStimulusIndex]
+                                  : '',
+                              style: const TextStyle(
+                                fontSize: 50.0,
+                              ),
+                            )
+                          : null,
+                    ),
+                    Icon(Icons.arrow_drop_up,
+                        color: Theme.of(context).colorScheme.secondary,
+                        size: 30.0),
+                  ],
                 ),
               ),
             ],

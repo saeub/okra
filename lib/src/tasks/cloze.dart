@@ -157,8 +157,8 @@ class ClozeBlank extends StatelessWidget {
     return Card(
       color: feedback != null
           ? feedback
-              ? Colors.green
-              : Colors.red
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.error
           : null,
       child: InkWell(
         onTap: onTap,
@@ -167,7 +167,12 @@ class ClozeBlank extends StatelessWidget {
           child: text != null
               ? Text(
                   text,
-                  style: TextStyle(fontSize: fontSize),
+                  style: TextStyle(
+                    fontSize: fontSize,
+                    color: feedback != null
+                        ? Theme.of(context).colorScheme.onPrimary
+                        : null,
+                  ),
                 )
               : ConstrainedBox(
                   constraints: const BoxConstraints(minWidth: 50.0),

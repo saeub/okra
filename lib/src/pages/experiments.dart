@@ -68,43 +68,57 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
         ],
       ),
       body: storage.webApis.isEmpty
-          ? buildRegisterButton(context)
+          ? buildIntro(context)
           : buildExperimentsList(context, storage.showCompleted),
     );
   }
 
-  Widget buildRegisterButton(BuildContext context) {
-    return Center(
-      child: ElevatedButton.icon(
-        onPressed: () async {
-          try {
-            var registrationData = await Navigator.of(context)
-                .push<RegistrationData>(MaterialPageRoute(
-                    builder: (context) => const RegistrationCodeScanner()));
-            if (registrationData != null) {
-              var api = await WebApi.register(
-                  registrationData.url,
-                  registrationData.participantId,
-                  registrationData.registrationKey);
-              context.read<Storage>().addWebApi(api);
-              setState(() {
-                _experiments = loadExperiments();
-              });
-            }
-          } on QrScanError catch (e) {
-            showErrorSnackBar(context, e.message);
-          } on ApiError catch (e) {
-            showErrorSnackBar(
-              context,
-              e.message(S.of(context)),
-            );
-          } catch (_) {
-            // TODO: Report error
-            showErrorSnackBar(context, S.of(context).errorUnknown);
-          }
-        },
-        icon: const Icon(Icons.camera_alt),
-        label: Text(S.of(context).experimentsScanQrCode),
+  Widget buildIntro(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ReadingWidth(
+              width: 400.0,
+              child: Text(S.of(context).experimentsIntro,
+                  style: const TextStyle(color: Colors.black, fontSize: 18.0)),
+            ),
+            ElevatedButton.icon(
+              onPressed: () async {
+                try {
+                  var registrationData = await Navigator.of(context)
+                      .push<RegistrationData>(MaterialPageRoute(
+                          builder: (context) =>
+                              const RegistrationCodeScanner()));
+                  if (registrationData != null) {
+                    var api = await WebApi.register(
+                        registrationData.url,
+                        registrationData.participantId,
+                        registrationData.registrationKey);
+                    context.read<Storage>().addWebApi(api);
+                    setState(() {
+                      _experiments = loadExperiments();
+                    });
+                  }
+                } on QrScanError catch (e) {
+                  showErrorSnackBar(context, e.message);
+                } on ApiError catch (e) {
+                  showErrorSnackBar(
+                    context,
+                    e.message(S.of(context)),
+                  );
+                } catch (_) {
+                  // TODO: Report error
+                  showErrorSnackBar(context, S.of(context).errorUnknown);
+                }
+              },
+              icon: const Icon(Icons.camera_alt),
+              label: Text(S.of(context).experimentsScanQrCode),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -168,10 +182,10 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                     content = null;
                   } else {
                     content = Column(children: [
-                      const Icon(
+                      Icon(
                         Icons.assignment,
                         size: 50.0,
-                        color: Colors.grey,
+                        color: Theme.of(context).colorScheme.secondary,
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top: 8.0),
@@ -222,9 +236,12 @@ class ApiTitle extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Row(
         children: [
-          SizedBox(
-            height: 40.0,
-            child: api.getIcon(),
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8.0, right: 8.0),
+            child: SizedBox(
+              height: 30.0,
+              child: api.getIcon(),
+            ),
           ),
           Flexible(
             child: Text(
@@ -268,7 +285,10 @@ class ExperimentCard extends StatelessWidget {
                         child: Icon(
                           experiment.type.icon,
                           size: 200.0,
-                          color: Colors.green[200],
+                          color: Theme.of(context)
+                              .colorScheme
+                              .primary
+                              .withOpacity(0.4),
                         ),
                       ),
                     ),
@@ -320,7 +340,7 @@ class ExperimentCard extends StatelessWidget {
               child: InkWell(
                 highlightColor: Colors.transparent,
                 splashColor:
-                    Theme.of(context).colorScheme.secondary.withOpacity(0.5),
+                    Theme.of(context).colorScheme.primary.withOpacity(0.4),
                 onTap: enabled ? onTap : null,
               ),
             ),

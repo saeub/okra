@@ -1,28 +1,53 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 
 import 'generated/l10n.dart';
+import 'src/colors.dart';
 import 'src/data/storage.dart';
 import 'src/pages/experiments.dart';
 
 void main() {
+  GoogleFonts.config.allowRuntimeFetching = false;
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('fonts/LICENSE.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
+
   runApp(const App());
 }
 
 class App extends StatelessWidget {
+  static final theme = ThemeData(
+    colorScheme: ColorScheme.light(
+      primary: AppColors.primary,
+      secondary: AppColors.secondary.shade600,
+      error: AppColors.negative.shade700,
+    ),
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
+      backgroundColor: AppColors.primary,
+      foregroundColor: Colors.white,
+    ),
+    textTheme: GoogleFonts.robotoTextTheme(),
+    progressIndicatorTheme: ProgressIndicatorThemeData(
+      linearTrackColor: AppColors.primary.shade100,
+    ),
+    materialTapTargetSize: MaterialTapTargetSize.padded,
+    visualDensity: VisualDensity.standard,
+  );
+
   const App({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Okra',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        primaryColor: Colors.green[600],
-      ),
-      home: const StorageWrapper(),
+      theme: theme,
+      home: const StorageWrapper(child: ExperimentsMenuPage()),
       localizationsDelegates: const <LocalizationsDelegate>[
         S.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -35,7 +60,9 @@ class App extends StatelessWidget {
 }
 
 class StorageWrapper extends StatefulWidget {
-  const StorageWrapper({Key? key}) : super(key: key);
+  final Widget child;
+
+  const StorageWrapper({required this.child, Key? key}) : super(key: key);
 
   @override
   _StorageWrapperState createState() => _StorageWrapperState();
@@ -80,11 +107,9 @@ class _StorageWrapperState extends State<StorageWrapper> {
                       icon: const Icon(Icons.delete),
                       label: const Text('YES, DELETE'),
                       style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all<Color>(Colors.red),
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            Theme.of(context).colorScheme.error),
                       ),
-                      // color: Colors.red,
-                      // textColor: Colors.white,
                       onPressed: () async {
                         await snapshot.data!.clear();
                         setState(() {
@@ -99,7 +124,7 @@ class _StorageWrapperState extends State<StorageWrapper> {
           }
           return ChangeNotifierProvider.value(
             value: storage,
-            child: const ExperimentsMenuPage(),
+            child: widget.child,
           );
         } else if (snapshot.hasError) {
           return Center(

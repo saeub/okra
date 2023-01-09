@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../generated/l10n.dart';
+import '../colors.dart';
 import '../data/models.dart';
 import '../pages/task.dart';
 import '../util.dart';
@@ -378,7 +379,7 @@ class _SelfPacedReadingState extends State<SelfPacedReading> {
         }
       },
       child: ColoredBox(
-        color: Theme.of(context).scaffoldBackgroundColor,
+        color: Theme.of(context).colorScheme.background,
         child: Column(
           children: [
             const Spacer(),
@@ -580,7 +581,7 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                                     const Padding(
                                       padding: EdgeInsets.only(right: 8.0),
                                       child: Icon(Icons.check,
-                                          color: Colors.green),
+                                          color: AppColors.positive),
                                     )
                                   else if (_feedbacking &&
                                       j ==
@@ -589,7 +590,7 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                                     const Padding(
                                       padding: EdgeInsets.only(right: 8.0),
                                       child: Icon(Icons.arrow_forward,
-                                          color: Colors.red),
+                                          color: AppColors.negative),
                                     ),
                                   Expanded(
                                     child: GestureDetector(

@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:math';
 
-import 'package:badges/badges.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:markdown/markdown.dart' as md;
 
 import '../../generated/l10n.dart';
+import '../colors.dart';
 import '../data/models.dart';
 import '../pages/task.dart';
 import '../util.dart';
@@ -19,6 +22,13 @@ class Reading extends MultistageTask {
   late final QuestionsStage? _questionsStage;
 
   @override
+  get backgroundColor {
+    return currentStage == _textStage || currentStage == _questionsStage
+        ? Colors.grey.shade300
+        : null;
+  }
+
+  @override
   void init(Map<String, dynamic> data) {
     if (data['intro'] != null) {
       _introStage = IntroStage(markdown: data['intro']);
@@ -30,11 +40,13 @@ class Reading extends MultistageTask {
     double textWidth = data['textWidth'].toDouble();
     double textHeight = data['textHeight'].toDouble();
     double fontSize = (data['fontSize'] ?? 20.0).toDouble();
+    double lineHeight = (data['lineHeight'] ?? 1.5).toDouble();
     _textStage = ScrollableTextStage(
       text: _text,
       textWidth: textWidth,
       textHeight: textHeight,
       fontSize: fontSize,
+      lineHeight: lineHeight,
     );
 
     if (data['ratings'] != null) {
@@ -56,6 +68,7 @@ class Reading extends MultistageTask {
         textWidth: textWidth,
         textHeight: textHeight,
         fontSize: fontSize,
+        lineHeight: lineHeight,
       );
     } else {
       _questionsStage = null;
@@ -122,9 +135,6 @@ class IntroStage extends TaskStage {
       ),
     );
   }
-
-  @override
-  double? getProgress() => null;
 }
 
 // Scrollable text
@@ -132,87 +142,97 @@ class IntroStage extends TaskStage {
 class ScrollableTextStage extends TaskStage {
   final String text;
   final double textWidth, textHeight;
-  final double fontSize;
+  final double fontSize, lineHeight;
   bool _scrolledToBottom;
+  String? _loggedText;
 
   ScrollableTextStage(
       {required this.text,
       required this.textWidth,
       required this.textHeight,
-      required this.fontSize})
+      required this.fontSize,
+      required this.lineHeight})
       : _scrolledToBottom = false;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      alignment: Alignment.center,
-      color: Colors.grey.shade300,
-      child: Column(
-        children: [
-          Expanded(
-            child: ReadingWidth(
-              child: Center(
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: Card(
-                    child: ScrollableText(
-                      text: text,
-                      width: textWidth,
-                      height: textHeight,
-                      style: TextStyle(fontSize: fontSize, color: Colors.black),
-                      onVisibleRangeChanged: (visibleRange) {
-                        logger.log('visible range', {
-                          'characterRange': [
-                            visibleRange.start,
-                            visibleRange.end
-                          ]
+    return Column(
+      children: [
+        Expanded(
+          child: ReadingWidth(
+            child: Center(
+              child: FittedBox(
+                fit: BoxFit.contain,
+                child: Card(
+                  child: ScrollableText(
+                    text: text,
+                    width: textWidth,
+                    height: textHeight,
+                    style: TextStyle(
+                        fontSize: fontSize,
+                        color: Colors.black,
+                        height: lineHeight,
+                        leadingDistribution: TextLeadingDistribution.even),
+                    onVisibleRangeChanged: (text, visibleRange) {
+                      if (text != _loggedText) {
+                        logger.log('text changed', {
+                          'text': text,
                         });
-                        if (!_scrolledToBottom &&
-                            visibleRange.end >= text.length) {
-                          setState(() {
-                            _scrolledToBottom = true;
-                          });
-                        }
-                      },
-                    ),
+                        _loggedText = text;
+                      }
+                      logger.log('visible range changed', {
+                        'characterRange': [
+                          visibleRange.start,
+                          visibleRange.end
+                        ],
+                      });
+                      if (!_scrolledToBottom &&
+                          visibleRange.end >= text.length) {
+                        setState(() {
+                          _scrolledToBottom = true;
+                        });
+                      }
+                    },
                   ),
                 ),
               ),
             ),
           ),
-          Visibility(
-            visible: _scrolledToBottom,
-            maintainAnimation: true,
-            maintainSize: true,
-            maintainState: true,
+        ),
+        Visibility(
+          visible: _scrolledToBottom,
+          maintainAnimation: true,
+          maintainSize: true,
+          maintainState: true,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
               onPressed: finish,
               icon: const Icon(Icons.arrow_forward),
               label: Text(S.of(context).taskAdvance),
             ),
-          )
-        ],
-      ),
+          ),
+        )
+      ],
     );
   }
-
-  @override
-  double? getProgress() => null;
 }
 
 class ScrollableText extends StatefulWidget {
   final String text;
   final double width, height;
   final double padding;
-  final TextStyle? style;
-  final Function(TextRange visibleRange)? onVisibleRangeChanged;
+  final TextStyle style;
+  final double paragraphSpacing;
+  final Function(String text, TextRange visibleRange)? onVisibleRangeChanged;
 
   const ScrollableText(
       {required this.text,
       required this.width,
       required this.height,
+      required this.style,
+      this.paragraphSpacing = 16.0,
       this.padding = 8.0,
-      this.style,
       this.onVisibleRangeChanged,
       Key? key})
       : super(key: key);
@@ -221,16 +241,32 @@ class ScrollableText extends StatefulWidget {
   State<ScrollableText> createState() => _ScrollableTextState();
 }
 
-class _ScrollableTextState extends State<ScrollableText> {
-  late TextPainter _painter;
+class _Paragraph {
+  final TextPainter painter;
+  final String text;
+  final double lineHeight;
+  final double verticalOffset;
+
+  _Paragraph(this.painter, this.verticalOffset)
+      : text = painter.text!.toPlainText(),
+        lineHeight = painter.computeLineMetrics().first.height;
+}
+
+class _ScrollableTextState extends State<ScrollableText>
+    implements MarkdownBuilderDelegate {
+  late List<_Paragraph> _paragraphs;
+  String? _text;
+  late double _topEdge, _bottomEdge;
   late TextRange _visibleRange;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _updatePainter();
-    _visibleRange = _getVisibleRange(0, widget.height + widget.padding);
-    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+    _paragraphs = [];
+    _topEdge = 0;
+    _bottomEdge = widget.height + widget.padding;
+    _updateParagraphs(emitEvent: false);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       _emitVisibleRangeChanged();
     });
   }
@@ -240,37 +276,162 @@ class _ScrollableTextState extends State<ScrollableText> {
     super.didUpdateWidget(oldWidget);
     if (widget.text != oldWidget.text ||
         widget.width != oldWidget.width ||
-        widget.height != oldWidget.height) {
-      _updatePainter();
-      var newVisibleRange = _getVisibleRange(0, widget.height + widget.padding);
-      if (newVisibleRange != _visibleRange) {
-        _visibleRange = newVisibleRange;
+        widget.height != oldWidget.height ||
+        widget.style != oldWidget.style ||
+        widget.paragraphSpacing != oldWidget.paragraphSpacing) {
+      _updateParagraphs();
+    }
+  }
+
+  TextSpan _nodeToSpan(md.Node node, {int indent = 0, bool isFirst = false}) {
+    if (node is md.Element) {
+      TextStyle style;
+      String? prefix;
+      // TODO: Support all generated tags
+      switch (node.tag) {
+        case 'h1':
+          style = TextStyle(
+              fontSize: widget.style.fontSize! * 1.6,
+              fontWeight: FontWeight.bold);
+          break;
+        case 'h2':
+          style = TextStyle(
+              fontSize: widget.style.fontSize! * 1.4,
+              fontWeight: FontWeight.bold);
+          break;
+        case 'h3':
+          style = TextStyle(
+              fontSize: widget.style.fontSize! * 1.2,
+              fontWeight: FontWeight.bold);
+          break;
+        case 'h4':
+          style = TextStyle(
+              fontSize: widget.style.fontSize! * 1.1,
+              fontWeight: FontWeight.bold);
+          break;
+        case 'h5':
+          style = const TextStyle(fontWeight: FontWeight.bold);
+          break;
+        case 'h6':
+          style = const TextStyle(fontStyle: FontStyle.italic);
+          break;
+        case 'em':
+          style = const TextStyle(fontStyle: FontStyle.italic);
+          break;
+        case 'strong':
+          style = const TextStyle(fontWeight: FontWeight.bold);
+          break;
+        case 'ul':
+          style = const TextStyle();
+          if (indent > 0) {
+            prefix = '\n';
+          }
+          indent += 1;
+          break;
+        case 'li':
+          style = const TextStyle();
+          prefix = '   ' * (indent - 1) + '• ';
+          if (!isFirst) {
+            prefix = '\n' + prefix;
+          }
+          break;
+        case 'br':
+          return const TextSpan(text: '\n');
+        default:
+          style = const TextStyle();
+      }
+      return TextSpan(
+        children: [
+          if (prefix != null) TextSpan(text: prefix),
+          for (var child in node.children ?? <md.Node>[])
+            _nodeToSpan(child,
+                indent: indent, isFirst: child == node.children?.first),
+        ],
+        style: style,
+      );
+    } else if (node is md.Text) {
+      var text = node.text.replaceAll(RegExp(r'\n'), ' ');
+      return TextSpan(text: text);
+    } else {
+      throw ArgumentError('$node is neither an Element nor a Text');
+    }
+  }
+
+  void _updateParagraphs({bool emitEvent = true}) {
+    var document = md.Document();
+    var lines = const LineSplitter().convert(widget.text);
+    var astNodes = document.parseLines(lines);
+    _paragraphs = [];
+    var offset = 0.0;
+    for (var node in astNodes) {
+      var painter = TextPainter(
+          text: TextSpan(children: [_nodeToSpan(node)], style: widget.style),
+          textDirection: TextDirection.ltr);
+      painter.layout(minWidth: widget.width, maxWidth: widget.width);
+      _paragraphs.add(_Paragraph(painter, offset));
+      offset += painter.height + widget.paragraphSpacing;
+    }
+    var newText = _paragraphs.map((paragraph) => paragraph.text).join('\n');
+    if (newText != _text) {
+      _text = newText;
+      _updateVisibleRange(textChanged: true, emitEvent: emitEvent);
+    }
+  }
+
+  void _updateVisibleRange({bool textChanged = false, bool emitEvent = true}) {
+    int? rangeStart, rangeEnd;
+    var textOffset = -1;
+    for (var paragraph in _paragraphs) {
+      textOffset += 1; // newline between paragraphs
+      // Consider a line visible if at least 1/2 of its height is on screen
+      var minVisibleLineRatio = 1 / 2;
+      // Screen edges relative to paragraph
+      var relativeTopEdge = _topEdge -
+          paragraph.verticalOffset +
+          paragraph.lineHeight * minVisibleLineRatio;
+      var relativeBottomEdge = _bottomEdge -
+          paragraph.verticalOffset -
+          paragraph.lineHeight * minVisibleLineRatio;
+      if (relativeTopEdge < paragraph.painter.height &&
+          relativeBottomEdge > 0) {
+        // Calculate visible range within paragraph
+        var paragraphRangeStart = paragraph.painter
+            .getPositionForOffset(Offset(0, relativeTopEdge))
+            .offset;
+        var paragraphRangeEnd = paragraph.painter
+            .getPositionForOffset(Offset(widget.width, relativeBottomEdge))
+            .offset;
+        // Update visible range within entire text
+        rangeStart ??= textOffset + paragraphRangeStart;
+        rangeEnd = textOffset + paragraphRangeEnd;
+      }
+      textOffset += paragraph.text.length;
+    }
+
+    var newVisibleRange = TextRange(start: rangeStart ?? 0, end: rangeEnd ?? 0);
+    if ((textChanged || newVisibleRange != _visibleRange)) {
+      _visibleRange = newVisibleRange;
+      if (emitEvent) {
         _emitVisibleRangeChanged();
       }
     }
   }
 
-  void _updatePainter() {
-    _painter = TextPainter(
-        text: TextSpan(text: widget.text, style: widget.style),
-        textDirection: TextDirection.ltr);
-    _painter.layout(minWidth: widget.width, maxWidth: widget.width);
-  }
-
-  TextRange _getVisibleRange(double topEdge, double bottomEdge) {
-    // Consider a line visible if at least 3/4 of its height is on screen
-    var start = _painter.getPositionForOffset(
-        Offset(0, topEdge + _painter.preferredLineHeight * 0.75));
-    var end = _painter.getPositionForOffset(
-        Offset(widget.width, bottomEdge - _painter.preferredLineHeight * 0.75));
-    return TextRange(start: start.offset, end: end.offset);
-  }
-
   void _emitVisibleRangeChanged() {
     var onVisibleRangeChanged = widget.onVisibleRangeChanged;
     if (onVisibleRangeChanged != null) {
-      onVisibleRangeChanged(_visibleRange);
+      onVisibleRangeChanged(_text ?? '', _visibleRange);
     }
+  }
+
+  @override
+  GestureRecognizer createLink(String text, String? href, String title) {
+    return TapGestureRecognizer();
+  }
+
+  @override
+  TextSpan formatText(MarkdownStyleSheet styleSheet, String code) {
+    return TextSpan(text: code);
   }
 
   @override
@@ -280,21 +441,27 @@ class _ScrollableTextState extends State<ScrollableText> {
       height: widget.height + 2 * widget.padding,
       child: NotificationListener<ScrollUpdateNotification>(
         onNotification: (notification) {
-          var topEdge = notification.metrics.extentBefore - widget.padding;
-          var bottomEdge = topEdge + notification.metrics.extentInside;
-          var newVisibleRange = _getVisibleRange(topEdge, bottomEdge);
-          if (newVisibleRange != _visibleRange) {
-            _visibleRange = newVisibleRange;
-            _emitVisibleRangeChanged();
-          }
+          _topEdge = notification.metrics.extentBefore - widget.padding;
+          _bottomEdge = _topEdge + notification.metrics.extentInside;
+          _updateVisibleRange();
           return false;
         },
         child: Scrollbar(
+          // TODO: Use ListView, optimize for long texts
           child: SingleChildScrollView(
             padding: EdgeInsets.all(widget.padding),
-            child: CustomPaint(
-              size: Size(widget.width, _painter.height),
-              painter: CustomTextPainter(_painter),
+            child: Column(
+              children: [
+                for (var i = 0; i < _paragraphs.length; i++)
+                  Padding(
+                    padding: EdgeInsets.only(
+                        top: i > 0 ? widget.paragraphSpacing : 0),
+                    child: CustomPaint(
+                      size: Size(widget.width, _paragraphs[i].painter.height),
+                      painter: CustomTextPainter(_paragraphs[i].painter),
+                    ),
+                  ),
+              ],
             ),
           ),
         ),
@@ -342,18 +509,20 @@ class QuestionsStage extends TaskStage {
   final List<Question> questions;
   final String? text;
   final double textWidth, textHeight;
-  final double fontSize;
+  final double fontSize, lineHeight;
   late final PageController _pageController;
   int _currentQuestionIndex;
   final List<int?> _selectedAnswerIndices;
   Set<int>? _questionIndicesToCorrect;
+  String? _loggedText;
 
   QuestionsStage(
       {required this.questions,
       required this.text,
       required this.textWidth,
       required this.textHeight,
-      required this.fontSize})
+      required this.fontSize,
+      required this.lineHeight})
       : _currentQuestionIndex = 0,
         _selectedAnswerIndices = [
           for (var i = 0; i < questions.length; i++) null
@@ -460,14 +629,23 @@ class QuestionsStage extends TaskStage {
                         text: text,
                         width: textWidth,
                         height: textHeight,
-                        style:
-                            TextStyle(fontSize: fontSize, color: Colors.black),
-                        onVisibleRangeChanged: (visibleRange) {
-                          logger.log('visible range', {
+                        style: TextStyle(
+                            fontSize: fontSize,
+                            color: Colors.black,
+                            height: lineHeight,
+                            leadingDistribution: TextLeadingDistribution.even),
+                        onVisibleRangeChanged: (text, visibleRange) {
+                          if (text != _loggedText) {
+                            logger.log('text changed', {
+                              'text': text,
+                            });
+                            _loggedText = text;
+                          }
+                          logger.log('visible range changed', {
                             'characterRange': [
                               visibleRange.start,
                               visibleRange.end
-                            ]
+                            ],
                           });
                         },
                       ),
@@ -477,24 +655,35 @@ class QuestionsStage extends TaskStage {
               ),
             ),
           SizedBox(
-            height: 200,
+            height: 250,
             child: ReadingWidth(
               child: Row(
                 children: [
-                  Badge(
-                    showBadge: nToAnswerLeft > 0,
-                    position: BadgePosition.topStart(top: 4, start: 4),
-                    toAnimate: false,
-                    child: IconButton(
-                      alignment: Alignment.centerRight,
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: _currentQuestionIndex > 0
-                          ? () {
-                              _pageToQuestion(
-                                _currentQuestionIndex - 1,
-                              );
-                            }
-                          : null,
+                  Visibility(
+                    visible: _currentQuestionIndex > 0,
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    maintainState: true,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: ElevatedButton(
+                        child: const Icon(Icons.arrow_back),
+                        style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all(
+                                const Size.fromWidth(40.0)),
+                            padding: MaterialStateProperty.all(EdgeInsets.zero),
+                            backgroundColor: MaterialStateProperty.all(
+                                nToAnswerLeft > 0
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.secondary),
+                            elevation: MaterialStateProperty.all(
+                                nToAnswerLeft > 0 ? null : 0.0)),
+                        onPressed: () {
+                          _pageToQuestion(
+                            _currentQuestionIndex - 1,
+                          );
+                        },
+                      ),
                     ),
                   ),
                   Expanded(
@@ -523,20 +712,31 @@ class QuestionsStage extends TaskStage {
                       ],
                     ),
                   ),
-                  Badge(
-                    showBadge: nToAnswerRight > 0,
-                    position: BadgePosition.topEnd(top: 4, end: 4),
-                    toAnimate: false,
-                    child: IconButton(
-                      alignment: Alignment.centerLeft,
-                      icon: const Icon(Icons.arrow_forward),
-                      onPressed: _currentQuestionIndex < questions.length - 1
-                          ? () {
-                              _pageToQuestion(
-                                _currentQuestionIndex + 1,
-                              );
-                            }
-                          : null,
+                  Visibility(
+                    visible: _currentQuestionIndex < questions.length - 1,
+                    maintainAnimation: true,
+                    maintainSize: true,
+                    maintainState: true,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: ElevatedButton(
+                        child: const Icon(Icons.arrow_forward),
+                        style: ButtonStyle(
+                            minimumSize: MaterialStateProperty.all(
+                                const Size.fromWidth(40.0)),
+                            padding: MaterialStateProperty.all(EdgeInsets.zero),
+                            backgroundColor: MaterialStateProperty.all(
+                                nToAnswerRight > 0
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).colorScheme.secondary),
+                            elevation: MaterialStateProperty.all(
+                                nToAnswerRight > 0 ? null : 0.0)),
+                        onPressed: () {
+                          _pageToQuestion(
+                            _currentQuestionIndex + 1,
+                          );
+                        },
+                      ),
                     ),
                   ),
                 ],
@@ -545,19 +745,19 @@ class QuestionsStage extends TaskStage {
           ),
           Visibility(
             visible: !_selectedAnswerIndices.contains(null),
-            child: ElevatedButton.icon(
-              onPressed: () => _checkAnswers(context),
-              icon: const Icon(Icons.arrow_forward),
-              label: Text(S.of(context).taskAdvance),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: ElevatedButton.icon(
+                onPressed: () => _checkAnswers(context),
+                icon: const Icon(Icons.arrow_forward),
+                label: Text(S.of(context).taskAdvance),
+              ),
             ),
           )
         ],
       ),
     );
   }
-
-  @override
-  double? getProgress() => null;
 }
 
 class QuestionCard extends StatelessWidget {
@@ -608,13 +808,13 @@ class QuestionCard extends StatelessWidget {
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 4.0),
                             child: Icon(Icons.check,
-                                color: Colors.green.shade700,
+                                color: AppColors.positive.shade700,
                                 size: fontSize + 4.0),
                           ),
                           Text(
                             S.of(context).taskReadingCorrect,
                             style: TextStyle(
-                              color: Colors.green.shade700,
+                              color: AppColors.positive.shade700,
                               fontSize: fontSize,
                               fontWeight: FontWeight.bold,
                             ),
@@ -628,13 +828,13 @@ class QuestionCard extends StatelessWidget {
                             padding:
                                 const EdgeInsets.symmetric(horizontal: 4.0),
                             child: Icon(Icons.clear,
-                                color: Colors.red.shade700,
+                                color: AppColors.negative.shade700,
                                 size: fontSize + 4.0),
                           ),
                           Text(
                             S.of(context).taskReadingIncorrect,
                             style: TextStyle(
-                              color: Colors.red.shade700,
+                              color: AppColors.negative.shade700,
                               fontSize: fontSize,
                               fontWeight: FontWeight.bold,
                             ),
@@ -689,7 +889,4 @@ class RatingsStage extends TaskStage {
       },
     );
   }
-
-  @override
-  double? getProgress() => null;
 }

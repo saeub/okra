@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 import '../data/models.dart';
 
@@ -8,6 +8,8 @@ typedef FinishCallback = void Function({
 });
 
 abstract class Task {
+  final Color? backgroundColor = null;
+
   late TaskEventLogger logger;
   late StateSetter _setState;
   late FinishCallback _finish;
@@ -16,7 +18,7 @@ abstract class Task {
 
   Future<void> loadAssets() async {}
 
-  double? getProgress();
+  double? getProgress() => null;
 
   Widget build(BuildContext context);
 
@@ -55,6 +57,7 @@ class TaskEventLogger {
 
 abstract class MultistageTask extends Task {
   TaskStage? _currentStage;
+  TaskStage? get currentStage => _currentStage;
 
   @override
   @mustCallSuper
@@ -108,7 +111,7 @@ abstract class TaskStage {
     _finish = finish;
   }
 
-  double? getProgress();
+  double? getProgress() => null;
 
   Widget build(BuildContext context);
 

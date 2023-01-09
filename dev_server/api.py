@@ -17,6 +17,7 @@ To register from an Android emulator, use 10.0.2.2 as the IP address.
 
 import requests
 from flask import Flask, make_response, request
+from flask_cors import CORS
 
 HOST = "0.0.0.0"
 PORT = "5000"
@@ -37,6 +38,17 @@ def example_rating(type: str = "emoticon"):
 
 
 EXPERIMENTS_TASKS = [
+    (
+        {
+            "id": "0",
+            "type": "n-back",
+            "title": "n-back task",
+            "instructions": "This experiment has already been completed.",
+            "nTasks": 5,
+            "nTasksDone": 5,
+        },
+        None,
+    ),
     (
         {
             "id": "1",
@@ -195,12 +207,15 @@ EXPERIMENTS_TASKS = [
             "instructions": "",
             "nTasks": 1,
             "nTasksDone": 0,
+            "hasPracticeTask": True,
         },
         {
             "intro": "# Context\nHere's some *context*.",
-            "text": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eget urna sed diam pulvinar efficitur vel tincidunt diam. Aliquam et ante quis lacus pretium tempus quis id dolor. Aenean semper turpis in ex tempus, at egestas dolor consectetur. Vestibulum eu facilisis metus. Nullam nisi turpis, faucibus et vulputate et, aliquet quis urna. Etiam mollis eros nibh, nec congue sem maximus ut. Ut non metus scelerisque, volutpat lectus consequat, sollicitudin augue. Aenean dapibus gravida ex vitae accumsan. Vivamus a commodo nisi. Phasellus tincidunt felis malesuada felis pretium, in aliquam risus commodo.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eget urna sed diam pulvinar efficitur vel tincidunt diam. Aliquam et ante quis lacus pretium tempus quis id dolor. Aenean semper turpis in ex tempus, at egestas dolor consectetur. Vestibulum eu facilisis metus. Nullam nisi turpis, faucibus et vulputate et, aliquet quis urna. Etiam mollis eros nibh, nec congue sem maximus ut. Ut non metus scelerisque, volutpat lectus consequat, sollicitudin augue. Aenean dapibus gravida ex vitae accumsan. Vivamus a commodo nisi. Phasellus tincidunt felis malesuada felis pretium, in aliquam risus commodo.\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eget urna sed diam pulvinar efficitur vel tincidunt diam. Aliquam et ante quis lacus pretium tempus quis id dolor. Aenean semper turpis in ex tempus, at egestas dolor consectetur. Vestibulum eu facilisis metus. Nullam nisi turpis, faucibus et vulputate et, aliquet quis urna. Etiam mollis eros nibh, nec congue sem maximus ut. Ut non metus scelerisque, volutpat lectus consequat, sollicitudin augue. Aenean dapibus gravida ex vitae accumsan. Vivamus a commodo nisi. Phasellus tincidunt felis malesuada felis pretium, in aliquam risus commodo.",
+            "text": "# Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eget urna sed diam pulvinar efficitur vel tincidunt diam. Aliquam et ante quis lacus pretium tempus quis id dolor. Aenean semper turpis in ex tempus, at egestas dolor consectetur. Vestibulum eu facilisis metus. Nullam nisi turpis, faucibus et vulputate et, aliquet quis urna. Etiam mollis eros nibh, nec congue sem maximus ut. Ut non metus scelerisque, volutpat lectus consequat, sollicitudin augue. Aenean dapibus gravida ex vitae accumsan. Vivamus a commodo nisi. Phasellus tincidunt felis malesuada felis pretium, in aliquam risus commodo.\n\n## Lorem ipsum  \ndolor  \nsit amet,  \nconsectetur adipiscing elit.\n\n- Lorem\n- ipsum\n- dolor\n- sit\n- amet,\n  - consectetur\n  - adipiscing\n- elit.\n\n- Aliquam eget urna sed diam\n- pulvinar efficitur vel tincidunt diam.\n  - Aliquam et ante quis lacus pretium tempus quis id dolor.\n- Aenean semper turpis in ex tempus, at egestas dolor consectetur. Vestibulum eu facilisis metus. Nullam nisi turpis, faucibus et vulputate et, aliquet quis urna. Etiam mollis eros nibh, nec congue sem maximus ut. Ut non metus scelerisque, volutpat lectus consequat, sollicitudin augue. Aenean dapibus gravida ex vitae accumsan. Vivamus a commodo nisi. Phasellus tincidunt felis malesuada felis pretium, in aliquam risus commodo.\n\n### Lorem ipsum\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eget urna sed diam pulvinar efficitur vel tincidunt diam. Aliquam et ante quis lacus pretium tempus quis id dolor. Aenean semper turpis in ex tempus, at egestas dolor consectetur. Vestibulum eu facilisis metus. Nullam nisi turpis, faucibus et vulputate et, aliquet quis urna. Etiam mollis eros nibh, nec congue sem maximus ut. Ut non metus scelerisque, volutpat lectus consequat, sollicitudin augue. Aenean dapibus gravida ex vitae accumsan. Vivamus a commodo nisi. Phasellus tincidunt felis malesuada felis pretium, in aliquam risus commodo.",
             "textWidth": 300,
             "textHeight": 200,
+            "fontSize": 25,
+            "lineHeight": 1.2,
             "ratings": [example_rating("emoticon")],
             "questions": [
                 {
@@ -235,8 +250,6 @@ EXPERIMENTS_TASKS = [
         },
         {
             "stimuli": [str(i) for i in range(1, 7)],
-            "colors": ["FFFFFF", "000000"],
-            "nDistractors": 6,
             "gridWidth": 5,
             "gridHeight": 7,
             "jiggle": True,
@@ -245,6 +258,7 @@ EXPERIMENTS_TASKS = [
 ]
 
 app = Flask(__name__)
+CORS(app)
 
 
 def check_credentials():

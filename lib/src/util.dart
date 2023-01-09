@@ -93,37 +93,50 @@ class _AnimatedLinearProgressIndicatorState
 }
 
 class ReadingWidth extends StatelessWidget {
+  final double width;
   final Widget child;
 
-  const ReadingWidth({required this.child, Key? key}) : super(key: key);
+  const ReadingWidth({this.width = 700.0, required this.child, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 700.0),
+      constraints: BoxConstraints(maxWidth: width),
       child: child,
     );
   }
 }
 
-class FixationCross extends StatelessWidget {
-  final double size;
-  final Color color;
-  final double strokeWidth;
+enum FixationTargetType {
+  cross,
+  point,
+}
 
-  const FixationCross(
-      {this.size = 30.0,
-      this.color = const Color(0xFF616161),
-      this.strokeWidth = 3.0,
+class FixationTarget extends StatelessWidget {
+  final FixationTargetType type;
+  final Color color;
+
+  const FixationTarget(
+      {this.type = FixationTargetType.cross,
+      this.color = const Color(0xFF777777),
       Key? key})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _FixationCrossPainter(color, strokeWidth),
-      size: Size(size, size),
-    );
+    switch (type) {
+      case FixationTargetType.cross:
+        return CustomPaint(
+          painter: _FixationCrossPainter(color, 2.0),
+          size: const Size(30.0, 30.0),
+        );
+      case FixationTargetType.point:
+        return CustomPaint(
+          painter: _FixationPointPainter(color, 3.0),
+          size: const Size(5.0, 5.0),
+        );
+    }
   }
 }
 
@@ -146,6 +159,24 @@ class _FixationCrossPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_FixationCrossPainter oldDelegate) {
+    return true;
+  }
+}
+
+class _FixationPointPainter extends CustomPainter {
+  final Color color;
+  final double radius;
+
+  _FixationPointPainter(this.color, this.radius);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    var paint = Paint()..color = color;
+    canvas.drawCircle(Offset(size.width / 2, size.height / 2), radius, paint);
+  }
+
+  @override
+  bool shouldRepaint(_FixationPointPainter oldDelegate) {
     return true;
   }
 }

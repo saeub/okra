@@ -180,6 +180,16 @@ class S {
     );
   }
 
+  /// `Okra is an app built at the University of Zurich. Researchers can use Okra to find out how well people can understand texts.\n\nIf you are a study participant, you should have a QR code. Scan this QR code to get your tasks.`
+  String get experimentsIntro {
+    return Intl.message(
+      'Okra is an app built at the University of Zurich. Researchers can use Okra to find out how well people can understand texts.\n\nIf you are a study participant, you should have a QR code. Scan this QR code to get your tasks.',
+      name: 'experimentsIntro',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `No tasks available at the moment`
   String get experimentsNoTasks {
     return Intl.message(
