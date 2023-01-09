@@ -16,7 +16,6 @@ class PictureNaming extends Task {
   late bool _showQuestionMark;
   late bool _feedbacking;
   int? _chosenPictureIndex;
-  late List<int> _chosenPictureIndices;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -26,7 +25,6 @@ class PictureNaming extends Task {
     _currentSubtaskIndex = 0;
     _showQuestionMark = data['showQuestionMark'];
     _feedbacking = false;
-    _chosenPictureIndices = [];
     logger.log('started subtask', {'subtask': _currentSubtaskIndex});
   }
 
