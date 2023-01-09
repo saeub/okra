@@ -1345,7 +1345,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
@@ -1355,9 +1355,9 @@ void main() {
       });
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('finished stage', data: {'stage': 'text'});
 
-      l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
+      l.expectLogged('started stage', data: {'stage': 'questions'});
       expect(find.byType(ScrollableText), findsOneWidget);
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
@@ -1393,7 +1393,7 @@ void main() {
       l.expectLogged('submitted answers', data: {
         'finalResponses': [2, 0]
       });
-      l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
+      l.expectLogged('finished stage', data: {'stage': 'questions'});
 
       l.expectDoneLogging();
     });
@@ -1425,7 +1425,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
@@ -1454,9 +1454,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('finished stage', data: {'stage': 'text'});
 
-      l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
+      l.expectLogged('started stage', data: {'stage': 'questions'});
       expect(find.byType(ScrollableText), findsOneWidget);
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
@@ -1490,7 +1490,7 @@ void main() {
       l.expectLogged('submitted answers', data: {
         'finalResponses': [1]
       });
-      l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
+      l.expectLogged('finished stage', data: {'stage': 'questions'});
 
       l.expectDoneLogging();
     });
@@ -1536,7 +1536,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
@@ -1546,9 +1546,9 @@ void main() {
       });
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('finished stage', data: {'stage': 'text'});
 
-      l.expectLogged('started stage', data: {'type': 'RatingsStage'});
+      l.expectLogged('started stage', data: {'stage': 'ratings'});
       expect(find.text('How is it?'), findsOneWidget);
       expect(find.text('bad'), findsOneWidget);
       expect(find.text('good'), findsOneWidget);
@@ -1566,9 +1566,9 @@ void main() {
       l.expectLogged('finished ratings', data: {
         'answers': [3, 0.5]
       });
-      l.expectLogged('finished stage', data: {'type': 'RatingsStage'});
+      l.expectLogged('finished stage', data: {'stage': 'ratings'});
 
-      l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
+      l.expectLogged('started stage', data: {'stage': 'questions'});
       expect(find.byType(ScrollableText), findsOneWidget);
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
@@ -1585,7 +1585,7 @@ void main() {
       l.expectLogged('submitted answers', data: {
         'finalResponses': [1]
       });
-      l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
+      l.expectLogged('finished stage', data: {'stage': 'questions'});
 
       l.expectDoneLogging();
     });
@@ -1623,7 +1623,7 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
@@ -1633,9 +1633,9 @@ void main() {
       });
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('finished stage', data: {'stage': 'text'});
 
-      l.expectLogged('started stage', data: {'type': 'QuestionsStage'});
+      l.expectLogged('started stage', data: {'stage': 'questions'});
       expect(find.byType(ScrollableText), findsOneWidget);
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
@@ -1694,7 +1694,7 @@ void main() {
       l.expectLogged('submitted answers', data: {
         'finalResponses': [0, 0]
       });
-      l.expectLogged('finished stage', data: {'type': 'QuestionsStage'});
+      l.expectLogged('finished stage', data: {'stage': 'questions'});
 
       l.expectDoneLogging();
     });
@@ -1721,13 +1721,13 @@ void main() {
       ));
       await tester.pumpAndSettle();
 
-      l.expectLogged('started stage', data: {'type': 'IntroStage'});
+      l.expectLogged('started stage', data: {'stage': 'intro'});
       expect(find.byType(MarkdownBody), findsOneWidget);
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished stage', data: {'type': 'IntroStage'});
+      l.expectLogged('finished stage', data: {'stage': 'intro'});
 
-      l.expectLogged('started stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
@@ -1737,7 +1737,7 @@ void main() {
       });
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      l.expectLogged('finished stage', data: {'type': 'ScrollableTextStage'});
+      l.expectLogged('finished stage', data: {'stage': 'text'});
 
       l.expectDoneLogging();
     });

@@ -65,8 +65,7 @@ abstract class MultistageTask extends Task {
 
   void _startNextStage() {
     if (_currentStage != null) {
-      logger.log(
-          'finished stage', {'type': _currentStage.runtimeType.toString()});
+      logger.log('finished stage', {'stage': _currentStage?.name});
     }
     var nextStage = getNextStage(_currentStage);
     if (nextStage != null) {
@@ -74,8 +73,7 @@ abstract class MultistageTask extends Task {
       setState(() {
         _currentStage = nextStage;
       });
-      logger
-          .log('started stage', {'type': _currentStage.runtimeType.toString()});
+      logger.log('started stage', {'stage': _currentStage?.name});
     }
   }
 
@@ -108,6 +106,8 @@ abstract class TaskStage {
     _setState = setState;
     _finish = finish;
   }
+
+  String get name;
 
   double? getProgress() => null;
 
