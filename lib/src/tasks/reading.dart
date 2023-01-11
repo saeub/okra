@@ -853,23 +853,33 @@ class QuestionCard extends StatelessWidget {
                   ],
                 ),
                 for (var i = 0; i < question.answers.length; i++)
-                  Row(
-                    children: [
-                      Radio(
-                        value: i,
-                        groupValue: selectedAnswerIndex,
-                        onChanged: disabled ? null : onAnswerChanged,
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: disabled ? null : () => onAnswerChanged(i),
-                          child: Text(
-                            question.answers[i],
-                            style: TextStyle(fontSize: fontSize),
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Radio(
+                          value: i,
+                          groupValue: selectedAnswerIndex,
+                          onChanged: disabled ? null : onAnswerChanged,
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: disabled ? null : () => onAnswerChanged(i),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  question.answers[i],
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
               ],
             ),
