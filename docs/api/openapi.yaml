@@ -238,9 +238,6 @@ components:
     TaskResults:
       type: "object"
       properties:
-        data:
-          type: "object"
-          description: "Task result data (schema specific to task type)"
         events:
           type: "array"
           description: "Events logged during task"

@@ -18,7 +18,6 @@ enum _QuestionAnsweringStage {
 class QuestionAnswering extends Task {
   late List<Question> _questions;
   late List<TaskRating>? _ratingsBeforeQuestions;
-  List<num>? _ratingsBeforeQuestionsAnswers;
   late _QuestionAnsweringStage _stage;
   late bool _questionsExpanded;
   double? _progress;
@@ -68,10 +67,7 @@ class QuestionAnswering extends Task {
     if (_questions.isEmpty) {
       finishedReadingCallback = () {
         logger.log('finished reading', {'stage': 1});
-        finish(data: {
-          'chosenAnswerIndices': [],
-          'ratingsBeforeQuestionsAnswers': _ratingsBeforeQuestionsAnswers,
-        });
+        finish();
       };
     }
     firstStageFinishedReadingCallback() {
@@ -109,10 +105,7 @@ class QuestionAnswering extends Task {
     }
 
     _questionsWidget = QuestionsWidget(_questions, logger, (answers) {
-      finish(data: {
-        'chosenAnswerIndices': answers,
-        'ratingsBeforeQuestionsAnswers': _ratingsBeforeQuestionsAnswers,
-      });
+      finish();
     });
 
     logger.log('started reading',
@@ -135,8 +128,8 @@ class QuestionAnswering extends Task {
         return RatingsWidget(
           _ratingsBeforeQuestions!,
           onFinished: (answers) {
-            logger.log('finished ratings before questions');
-            _ratingsBeforeQuestionsAnswers = answers;
+            logger.log('finished ratings before questions',
+                {'finalResponses': answers});
             setState(() {
               _stage = _QuestionAnsweringStage.textAndQuestions;
               if (_readingWidget is SelfPacedReading) {
@@ -625,7 +618,10 @@ class _QuestionsWidgetState extends State<QuestionsWidget> {
                           widget.onFinishedAnswering(
                               _chosenAnswerIndices.cast<int>());
                         } else {
-                          widget.logger.log('finished reading', {'stage': 1});
+                          widget.logger.log('finished reading', {
+                            'stage': 1,
+                            'finalResponses': _chosenAnswerIndices
+                          });
                           for (var i = 0; i < widget.questions.length; i++) {
                             if (widget.questions[i].correctAnswerIndex !=
                                 null) {

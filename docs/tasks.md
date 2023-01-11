@@ -27,13 +27,6 @@ One segment of text is shown at a time, with a blank which has to be filled in b
   }
   ```
   **NOTE:** There can be at most one blank per segment. Only the first double brackets in the segment will replaced by the blank. `correctOptionIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
-- Results data structure:
-  ```json
-  {
-    "chosenOptionIndices": [0, null, ...]
-  }
-  ```
-  **NOTE:** An index of `null` means that there was no blank in this segment.
 
 ### Digit span
 
@@ -53,7 +46,6 @@ A random sequence of digits is presented one digit at a time, and the participan
   }
   ```
   **NOTE:** `excludeDigits`, `initialLength`, and `maxErrors` are optional. By default, all digits from 0 to 9 are included, the initial sequence length is 3, and the task ends after 2 failed trials. `secondsShowingDigit` and `secondsBetweenDigits` are optional and default to `0.5` and `1.5`, respectively. `randomSeed` is an optional numerical seed for the random generation of digit sequences.
-- All results are included in the event logs. The results data is empty.
 
 ### Lexical decision
 
@@ -69,7 +61,6 @@ One word is shown at a time. The task is to determine whether it is a real word 
   }
   ```
   **NOTE:** `correctAnswers` is optional and must be the same length as `words`. If it is provided, the participant will get immediate feedback about the correctness of their answer.
-- All results are included in the event logs. The results data is empty.
 
 ### _n_-back
 
@@ -90,13 +81,6 @@ A single textual stimulus (usually a letter) is shown for 500 milliseconds with 
   }
   ```
   **NOTE:** `secondsShowingStimulus` and `secondsBetweenStimuli` are optional and default to `0.5` and `1.5`, respectively. `randomSeed` is an optional numerical seed for the random generation of stimulus sequences.
-- Results data structure:
-  ```json
-  {
-    "nTruePositives": 3,
-    "nFalsePositives": 1
-  }
-  ```
 
 ### Picture naming
 
@@ -123,13 +107,6 @@ A textual stimulus is shown above a number of pictures. One of the pictures (or 
   }
   ```
   **NOTE:** The image should be adequately resized and compressed before encoding, especially for large numbers of subtasks, to keep HTTP response sizes low. `correctPictureIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
-- Results data structure:
-  ```json
-  {
-    "chosenPictureIndices": [0, -1, ...]
-  }
-  ```
-  **NOTE:** An index of `-1` means the question mark.
 
 ### Question answering
 
@@ -167,13 +144,6 @@ A text is presented, and several single-answer multiple-choice questions have to
   }
   ```
   **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment. `fontSize` is optional and specifies the font size of the text (not the questions; default is 16.0). `correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer. `ratingsBeforeQuestions` is optional. If it is provided, the text is shown without questions in the beginning, followed by the specified ratings, followed by the text with questions visible. They follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)).
-- Results data structure:
-  ```json
-  {
-    "chosenAnswerIndices": [0, -1, ...],
-    "ratingsBeforeQuestionsAnswers": [3]
-  }
-  ```
 
 ### Reaction time
 
@@ -191,13 +161,6 @@ A single picture of a red balloon is shown at a time, which disappears with a po
   }
   ```
   **NOTE:** `nStimuli` does not include an introductory stimuli, which is already shown when starting the task. If `minSecondsBetweenStimuli` is smaller than `maxSecondsBetweenStimuli`, a (uniformly distributed) random number between them is generated after each stimulus. `randomSeed` is an optional numerical seed for the random generation of stimulus positions.
-- Results data structure:
-  ```json
-  {
-    "reactionTimes": [0.123, 1.234, ...]
-  }
-  ```
-  **NOTE:** Reaction times are in seconds. The reaction time for the introductory stimulus is not included.
 
 ### Reading
 
@@ -239,7 +202,6 @@ A text is presented (optionally with a preceding introductory text for context),
   }
   ```
   **NOTE:** `text` can be Markdown. `intro` is an optional Markdown text to be shown before the actual text. `fontSize` is optional and specifies the font size of the text (not the questions; default is 20.0). `lineHeight` is optional and specifies the line spacing factor (default is 1.5). `questions` is optional. If it is not provided, the questions stage is skipped. `ratings` is optional. If it is not provided, the ratings stage is skipped. Ratings follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)). `correctAnswerIndex` is optional. If it is provided, the participant will receive feedback and are required to correct their answers. 
-- All results are included in the event logs. The results data is empty.
 
 ### Simon game
 
@@ -248,14 +210,6 @@ Four buttons are shown. They light up in a specific sequence, which has to be re
 - Identifier: `simon-game`
 - Implementation: [`lib/src/tasks/simon_game.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/simon_game.dart)
 - Data structure: (no data)
-- Results data structure:
-  ```json
-  {
-    "maxCorrectItems": 7,
-    "randomSeed": 42
-  }
-  ```
-  **NOTE:** `randomSeed` is an optional numerical seed for the random generation of stimulus sequences.
 
 ### Trail making
 
@@ -276,4 +230,3 @@ Circular buttons with numbers or letters are presented, which have to be connect
   }
   ```
   **NOTE:** `colors` is optional and specifies the alternating colors of the buttons. `nDistractors` is only allowed when there are at least 2 `colors` and specifies the number of distractor buttons (same stimuli, but wrong color). `gridWidth`, `gridHeight`, `jiggle` are optional and determine the spatial distribution of the buttons. `randomSeed` is an optional numerical seed for the random generation of stimulus positions and distractors.
-- All results are included in the event logs. The results data is empty.

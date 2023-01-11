@@ -107,6 +107,9 @@ class IntroStage extends TaskStage {
   IntroStage({required this.markdown});
 
   @override
+  String get name => 'intro';
+
+  @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Padding(
@@ -153,6 +156,9 @@ class ScrollableTextStage extends TaskStage {
       required this.fontSize,
       required this.lineHeight})
       : _scrolledToBottom = false;
+
+  @override
+  String get name => 'text';
 
   @override
   Widget build(BuildContext context) {
@@ -541,6 +547,9 @@ class QuestionsStage extends TaskStage {
       });
   }
 
+  @override
+  String get name => 'questions';
+
   void _pageToQuestion(int index) {
     _pageController.animateToPage(
       index,
@@ -560,7 +569,7 @@ class QuestionsStage extends TaskStage {
       }
     }
     logger.log('submitted answers', {
-      'answerIndices': _selectedAnswerIndices,
+      'finalResponses': _selectedAnswerIndices,
     });
     if (questionIndicesToCorrect.isNotEmpty) {
       setState(() {
@@ -878,6 +887,9 @@ class RatingsStage extends TaskStage {
   final List<TaskRating> ratings;
 
   RatingsStage({required this.ratings});
+
+  @override
+  String get name => 'ratings';
 
   @override
   Widget build(BuildContext context) {

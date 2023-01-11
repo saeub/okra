@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../data/models.dart';
 
 typedef FinishCallback = void Function({
-  Map<String, dynamic>? data,
   String? message,
 });
 
@@ -35,8 +34,7 @@ abstract class Task {
 
   void setState(VoidCallback fn) => _setState(fn);
 
-  void finish({Map<String, dynamic>? data, String? message}) =>
-      _finish(data: data, message: message);
+  void finish({String? message}) => _finish(message: message);
 }
 
 class TaskEventLogger {
@@ -50,8 +48,8 @@ class TaskEventLogger {
   List<TaskEvent> get events => _events;
 
   void log(String label, [Map<String, dynamic>? data]) {
-    debugPrint('TaskEventLogger: $label $data');
     _events.add(TaskEvent(DateTime.now(), label, data));
+    debugPrint('TaskEventLogger: $label $data');
   }
 }
 
@@ -67,8 +65,7 @@ abstract class MultistageTask extends Task {
 
   void _startNextStage() {
     if (_currentStage != null) {
-      logger.log(
-          'finished stage', {'type': _currentStage.runtimeType.toString()});
+      logger.log('finished stage', {'stage': _currentStage?.name});
     }
     var nextStage = getNextStage(_currentStage);
     if (nextStage != null) {
@@ -76,8 +73,7 @@ abstract class MultistageTask extends Task {
       setState(() {
         _currentStage = nextStage;
       });
-      logger
-          .log('started stage', {'type': _currentStage.runtimeType.toString()});
+      logger.log('started stage', {'stage': _currentStage?.name});
     }
   }
 
@@ -110,6 +106,9 @@ abstract class TaskStage {
     _setState = setState;
     _finish = finish;
   }
+
+  /// Stage name used in event logs
+  String get name;
 
   double? getProgress() => null;
 

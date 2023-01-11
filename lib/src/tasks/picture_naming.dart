@@ -16,7 +16,6 @@ class PictureNaming extends Task {
   late bool _showQuestionMark;
   late bool _feedbacking;
   int? _chosenPictureIndex;
-  late List<int> _chosenPictureIndices;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -26,7 +25,6 @@ class PictureNaming extends Task {
     _currentSubtaskIndex = 0;
     _showQuestionMark = data['showQuestionMark'];
     _feedbacking = false;
-    _chosenPictureIndices = [];
     logger.log('started subtask', {'subtask': _currentSubtaskIndex});
   }
 
@@ -114,9 +112,10 @@ class PictureNaming extends Task {
               label: Text(S.of(context).taskAdvance),
               onPressed: !_feedbacking
                   ? () async {
-                      logger.log('finished subtask',
-                          {'subtask': _currentSubtaskIndex});
-                      _chosenPictureIndices.add(_chosenPictureIndex!);
+                      logger.log('finished subtask', {
+                        'subtask': _currentSubtaskIndex,
+                        'finalResponse': _chosenPictureIndex
+                      });
                       if (subtask.correctPictureIndex != null) {
                         logger.log('started feedback',
                             {'subtask': _currentSubtaskIndex});
@@ -136,9 +135,7 @@ class PictureNaming extends Task {
                         logger.log('started subtask',
                             {'subtask': _currentSubtaskIndex});
                       } else {
-                        finish(data: {
-                          'chosenPictureIndices': _chosenPictureIndices
-                        });
+                        finish();
                       }
                     }
                   : null,

@@ -16,7 +16,6 @@ class NBack extends Task {
   late bool _stimulusVisible;
   bool? _feedback;
   late bool _feedbacked;
-  late int _nTruePositives, _nFalsePositives;
 
   @override
   void init(Map<String, dynamic> data) {
@@ -43,7 +42,6 @@ class NBack extends Task {
     _currentStimulusIndex = -1;
     _stimulusVisible = false;
     _feedbacked = false;
-    _nTruePositives = _nFalsePositives = 0;
     Future.delayed(initialDelayDuration).then((_) {
       _nextStimulus();
     });
@@ -60,10 +58,8 @@ class NBack extends Task {
           setState(() {
             if (_isPositiveStimulus(_currentStimulusIndex)) {
               _feedback = true;
-              _nTruePositives++;
             } else {
               _feedback = false;
-              _nFalsePositives++;
             }
           });
           _feedbacked = true;
@@ -152,10 +148,7 @@ class NBack extends Task {
       await Future.delayed(_betweenStimuliDuration);
       _nextStimulus(); // ignore: unawaited_futures
     } else {
-      finish(data: {
-        'nTruePositives': _nTruePositives,
-        'nFalsePositives': _nFalsePositives,
-      });
+      finish();
     }
   }
 
