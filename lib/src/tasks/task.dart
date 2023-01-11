@@ -107,6 +107,7 @@ abstract class TaskStage {
     _finish = finish;
   }
 
+  /// Stage name used in event logs
   String get name;
 
   double? getProgress() => null;
