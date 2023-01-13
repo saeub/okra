@@ -172,11 +172,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      // No ratings for practice tasks
+      // Ratings
+      expect(find.text('Question?'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
       // Results
       expect(find.text('The next task will count!'), findsOneWidget);
       expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
-      expect(testApi.taskResults?.ratingAnswers, null);
+      expect(testApi.taskResults?.ratingAnswers, [0.5]);
       expect(testApi.taskResults?.events.length, 3);
 
       // Repeat
@@ -189,11 +192,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      // No ratings for practice tasks
+      // Ratings
+      expect(find.text('Question?'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
       // Results
       expect(find.text('The next task will count!'), findsOneWidget);
       expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
-      expect(testApi.taskResults?.ratingAnswers, null);
+      expect(testApi.taskResults?.ratingAnswers, [0.5]);
       expect(testApi.taskResults?.events.length, 3);
     });
 
@@ -210,7 +216,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      // No ratings for practice tasks
+      // Ratings
+      expect(find.text('Question?'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
       // Results
       expect(
           find.text(
