@@ -614,12 +614,19 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                   inputWidget,
                   if (rating.lowExtreme != null || rating.highExtreme != null)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(rating.lowExtreme ?? ''),
-                          Text(rating.highExtreme ?? ''),
+                          Text(
+                            rating.lowExtreme ?? '',
+                            style: const TextStyle(fontSize: 17.0),
+                          ),
+                          Text(
+                            rating.highExtreme ?? '',
+                            textAlign: TextAlign.right,
+                            style: const TextStyle(fontSize: 17.0),
+                          ),
                         ],
                       ),
                     ),
