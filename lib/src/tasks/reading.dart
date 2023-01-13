@@ -175,6 +175,8 @@ class ScrollableTextStage extends TaskStage {
                     width: textWidth,
                     height: textHeight,
                     style: TextStyle(
+                        fontFamily:
+                            Theme.of(context).textTheme.bodyMedium!.fontFamily,
                         fontSize: fontSize,
                         color: Colors.black,
                         height: lineHeight,
