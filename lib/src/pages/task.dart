@@ -568,14 +568,60 @@ class _RatingsWidgetState extends State<RatingsWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (var i = 0; i < TaskRating.radioLevels; i++)
-              Radio<num>(
-                value: i,
-                groupValue: _answers[_currentRatingIndex],
-                onChanged: (value) {
-                  setState(() {
-                    _answers[_currentRatingIndex] = value;
-                  });
-                },
+              Column(
+                children: [
+                  Radio<num>(
+                    value: i,
+                    groupValue: _answers[_currentRatingIndex],
+                    onChanged: (value) {
+                      setState(() {
+                        _answers[_currentRatingIndex] = value;
+                      });
+                    },
+                  ),
+                  Text('${i + 1}'),
+                ],
+              ),
+          ],
+        );
+        break;
+
+      case TaskRatingType.radioVertical:
+        inputWidget = Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var i = 0; i < TaskRating.radioLevels; i++)
+              Row(
+                children: [
+                  Radio<num>(
+                    value: i,
+                    groupValue: _answers[_currentRatingIndex],
+                    onChanged: (value) {
+                      setState(() {
+                        _answers[_currentRatingIndex] = value;
+                      });
+                    },
+                  ),
+                  Text('${i + 1}'),
+                  if (i == 0 && rating.lowExtreme != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Text(
+                        rating.lowExtreme!,
+                        style: TextStyle(fontSize: 17.0),
+                      ),
+                    ),
+                  if (i == TaskRating.radioLevels - 1 &&
+                      rating.highExtreme != null)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Text(
+                        rating.highExtreme!,
+                        style: TextStyle(fontSize: 17.0),
+                      ),
+                    ),
+                ],
               ),
           ],
         );
@@ -612,7 +658,8 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                     ),
                   ),
                   inputWidget,
-                  if (rating.lowExtreme != null || rating.highExtreme != null)
+                  if (rating.type != TaskRatingType.radioVertical &&
+                      (rating.lowExtreme != null || rating.highExtreme != null))
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(
