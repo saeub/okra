@@ -609,7 +609,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                       padding: const EdgeInsets.only(left: 16.0),
                       child: Text(
                         rating.lowExtreme!,
-                        style: TextStyle(fontSize: 17.0),
+                        style: const TextStyle(fontSize: 17.0),
                       ),
                     ),
                   if (i == TaskRating.radioLevels - 1 &&
@@ -618,7 +618,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                       padding: const EdgeInsets.only(left: 16.0),
                       child: Text(
                         rating.highExtreme!,
-                        style: TextStyle(fontSize: 17.0),
+                        style: const TextStyle(fontSize: 17.0),
                       ),
                     ),
                 ],
