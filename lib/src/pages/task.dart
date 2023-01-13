@@ -111,7 +111,7 @@ class _TaskPageState extends State<TaskPage> {
                       message: message,
                     );
                     var ratings = widget.experiment.ratings;
-                    if (ratings != null && ratings.isNotEmpty && !_practicing) {
+                    if (ratings != null && ratings.isNotEmpty) {
                       startRatings();
                     } else {
                       finishTask();
