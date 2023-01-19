@@ -586,6 +586,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
         );
         break;
 
+      // TODO: Allow tapping on the text to select the radio button (as in reading task)
       case TaskRatingType.radioVertical:
         inputWidget = Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -605,20 +606,26 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                   ),
                   Text('${i + 1}'),
                   if (i == 0 && rating.lowExtreme != null)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Text(
-                        rating.lowExtreme!,
-                        style: const TextStyle(fontSize: 17.0),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Flexible(
+                          child: Text(
+                            rating.lowExtreme!,
+                            style: const TextStyle(fontSize: 17.0),
+                          ),
+                        ),
                       ),
                     ),
                   if (i == TaskRating.radioLevels - 1 &&
                       rating.highExtreme != null)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Text(
-                        rating.highExtreme!,
-                        style: const TextStyle(fontSize: 17.0),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 16.0),
+                        child: Text(
+                          rating.highExtreme!,
+                          style: const TextStyle(fontSize: 17.0),
+                        ),
                       ),
                     ),
                 ],
