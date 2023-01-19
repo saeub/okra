@@ -228,6 +228,7 @@ components:
             - emoticon
             - emoticon-reversed
             - radio
+            - radio-vertical
             - slider
         lowExtreme:
           type: "string"

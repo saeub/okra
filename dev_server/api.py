@@ -216,7 +216,7 @@ EXPERIMENTS_TASKS = [
             "textHeight": 200,
             "fontSize": 25,
             "lineHeight": 1.2,
-            "ratings": [example_rating("emoticon")],
+            "ratings": [example_rating("emoticon"), example_rating("radio-vertical")],
             "questions": [
                 {
                     "question": f"Question {i + 1}",
