@@ -67,7 +67,7 @@ class TaskRating {
     'emoticon': TaskRatingType.emoticon,
     'emoticon-reversed': TaskRatingType.emoticonReversed,
     'radio': TaskRatingType.radio,
-    'radioVertical': TaskRatingType.radioVertical,
+    'radio-vertical': TaskRatingType.radioVertical,
     'slider': TaskRatingType.slider,
   };
 
