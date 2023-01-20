@@ -111,27 +111,32 @@ class IntroStage extends TaskStage {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: ReadingWidth(
-            child: Column(
-              children: [
-                MarkdownBody(
-                  data: markdown,
-                  fitContent: false,
-                  styleSheet: MarkdownStyleSheet(
-                    textScaleFactor: 1.3,
-                    p: const TextStyle(height: 1.5),
+    return Center(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: ReadingWidth(
+              child: Column(
+                children: [
+                  MarkdownBody(
+                    data: markdown,
+                    fitContent: false,
+                    styleSheet: MarkdownStyleSheet(
+                      textScaleFactor: 1.3,
+                      p: const TextStyle(height: 1.5),
+                    ),
                   ),
-                ),
-                ElevatedButton.icon(
-                  label: Text(S.of(context).taskAdvance),
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: finish,
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: ElevatedButton.icon(
+                      label: Text(S.of(context).taskAdvance),
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: finish,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -175,6 +180,8 @@ class ScrollableTextStage extends TaskStage {
                     width: textWidth,
                     height: textHeight,
                     style: TextStyle(
+                        fontFamily:
+                            Theme.of(context).textTheme.bodyMedium!.fontFamily,
                         fontSize: fontSize,
                         color: Colors.black,
                         height: lineHeight,
@@ -639,6 +646,10 @@ class QuestionsStage extends TaskStage {
                         width: textWidth,
                         height: textHeight,
                         style: TextStyle(
+                            fontFamily: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .fontFamily,
                             fontSize: fontSize,
                             color: Colors.black,
                             height: lineHeight,
@@ -853,23 +864,33 @@ class QuestionCard extends StatelessWidget {
                   ],
                 ),
                 for (var i = 0; i < question.answers.length; i++)
-                  Row(
-                    children: [
-                      Radio(
-                        value: i,
-                        groupValue: selectedAnswerIndex,
-                        onChanged: disabled ? null : onAnswerChanged,
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          onTap: disabled ? null : () => onAnswerChanged(i),
-                          child: Text(
-                            question.answers[i],
-                            style: TextStyle(fontSize: fontSize),
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Radio(
+                          value: i,
+                          groupValue: selectedAnswerIndex,
+                          onChanged: disabled ? null : onAnswerChanged,
+                        ),
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: disabled ? null : () => onAnswerChanged(i),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  question.answers[i],
+                                  style: TextStyle(fontSize: fontSize),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
               ],
             ),

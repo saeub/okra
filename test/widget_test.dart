@@ -172,11 +172,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      // No ratings for practice tasks
+      // Ratings
+      expect(find.text('Question?'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
       // Results
       expect(find.text('The next task will count!'), findsOneWidget);
       expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
-      expect(testApi.taskResults?.ratingAnswers, null);
+      expect(testApi.taskResults?.ratingAnswers, [0.5]);
       expect(testApi.taskResults?.events.length, 3);
 
       // Repeat
@@ -189,11 +192,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      // No ratings for practice tasks
+      // Ratings
+      expect(find.text('Question?'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
       // Results
       expect(find.text('The next task will count!'), findsOneWidget);
       expect(find.text('REPEAT PRACTICE TASK'), findsOneWidget);
-      expect(testApi.taskResults?.ratingAnswers, null);
+      expect(testApi.taskResults?.ratingAnswers, [0.5]);
       expect(testApi.taskResults?.events.length, 3);
     });
 
@@ -210,7 +216,10 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('CONTINUE'));
       await tester.pumpAndSettle();
-      // No ratings for practice tasks
+      // Ratings
+      expect(find.text('Question?'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
       // Results
       expect(
           find.text(
@@ -263,6 +272,125 @@ void main() {
       expect(find.text('1.2.3'), findsOneWidget);
       expect(find.text('VIEW LICENSES'), findsOneWidget);
       expect(find.text('CLOSE'), findsOneWidget);
+    });
+  });
+
+  group('RatingsWidget', () {
+    testWidgets('supports emoticon ratings', (WidgetTester tester) async {
+      const ratings = [
+        TaskRating('How easy was this task?', TaskRatingType.emoticon,
+            lowExtreme: 'difficult', highExtreme: 'easy'),
+        TaskRating('How boring was this task?', TaskRatingType.emoticonReversed,
+            lowExtreme: 'boring', highExtreme: 'interesting'),
+      ];
+      await tester.pumpWidget(getApp(RatingsWidget(
+        ratings,
+        onFinished: ((answers) {
+          expect(answers, [0, 4]);
+        }),
+      )));
+      await tester.pumpAndSettle();
+
+      expect(find.text('How easy was this task?'), findsOneWidget);
+      for (var emoticon in TaskRating.emoticons) {
+        expect(find.byIcon(emoticon), findsOneWidget);
+      }
+      expect(find.text('difficult'), findsOneWidget);
+      expect(find.text('easy'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE')); // disabled
+      expect(find.text('How easy was this task?'), findsOneWidget);
+      await tester.tap(find.byIcon(TaskRating.emoticons.first));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('How boring was this task?'), findsOneWidget);
+      for (var emoticon in TaskRating.emoticons) {
+        expect(find.byIcon(emoticon), findsOneWidget);
+      }
+      expect(find.text('boring'), findsOneWidget);
+      expect(find.text('interesting'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE')); // disabled
+      expect(find.text('How boring was this task?'), findsOneWidget);
+      await tester.tap(find.byIcon(TaskRating.emoticons.first));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('supports radio ratings', (WidgetTester tester) async {
+      const ratings = [
+        TaskRating('How easy was this task?', TaskRatingType.radio,
+            lowExtreme: 'difficult', highExtreme: 'easy'),
+        TaskRating('How boring was this task?', TaskRatingType.radioVertical,
+            lowExtreme: 'boring', highExtreme: 'interesting'),
+      ];
+      await tester.pumpWidget(getApp(RatingsWidget(
+        ratings,
+        onFinished: ((answers) {
+          expect(answers, [0, 4]);
+        }),
+      )));
+      await tester.pumpAndSettle();
+
+      expect(find.text('How easy was this task?'), findsOneWidget);
+      expect(find.byType(Radio<num>), findsNWidgets(5));
+      for (var i = 1; i <= 5; i++) {
+        expect(find.text(i.toString()), findsOneWidget);
+      }
+      expect(find.text('difficult'), findsOneWidget);
+      expect(find.text('easy'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE')); // disabled
+      expect(find.text('How easy was this task?'), findsOneWidget);
+      await tester.tap(find.byType(Radio<num>).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('How boring was this task?'), findsOneWidget);
+      expect(find.byType(Radio<num>), findsNWidgets(5));
+      for (var i = 1; i <= 5; i++) {
+        expect(find.text(i.toString()), findsOneWidget);
+      }
+      expect(find.text('boring'), findsOneWidget);
+      expect(find.text('interesting'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE')); // disabled
+      expect(find.text('How boring was this task?'), findsOneWidget);
+      await tester.tap(find.text('interesting'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('supports slider ratings', (WidgetTester tester) async {
+      const ratings = [
+        TaskRating('How easy was this task?', TaskRatingType.slider,
+            lowExtreme: 'difficult', highExtreme: 'easy'),
+        TaskRating('How boring was this task?', TaskRatingType.slider,
+            lowExtreme: 'boring', highExtreme: 'interesting'),
+      ];
+      await tester.pumpWidget(getApp(RatingsWidget(
+        ratings,
+        onFinished: ((answers) {
+          expect(answers, [0.5, 1]);
+        }),
+      )));
+      await tester.pumpAndSettle();
+
+      expect(find.text('How easy was this task?'), findsOneWidget);
+      expect(find.byType(Slider), findsOneWidget);
+      expect(find.text('difficult'), findsOneWidget);
+      expect(find.text('easy'), findsOneWidget);
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('How boring was this task?'), findsOneWidget);
+      expect(find.byType(Slider), findsOneWidget);
+      expect(find.text('boring'), findsOneWidget);
+      expect(find.text('interesting'), findsOneWidget);
+      await tester.drag(find.byType(Slider), const Offset(300, 0));
+      await tester.tap(find.text('CONTINUE'));
+      await tester.pumpAndSettle();
     });
   });
 }
