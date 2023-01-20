@@ -553,6 +553,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
     var rating = widget.ratings[_currentRatingIndex];
     Widget inputWidget;
 
+    // TODO: Refactor into separate widgets
     switch (rating.type) {
       case TaskRatingType.emoticon:
         inputWidget = _getEmoticons();
@@ -593,42 +594,63 @@ class _RatingsWidgetState extends State<RatingsWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (var i = 0; i < TaskRating.radioLevels; i++)
-              Row(
-                children: [
-                  Radio<num>(
-                    value: i,
-                    groupValue: _answers[_currentRatingIndex],
-                    onChanged: (value) {
-                      setState(() {
-                        _answers[_currentRatingIndex] = value;
-                      });
-                    },
-                  ),
-                  Text('${i + 1}'),
-                  if (i == 0 && rating.lowExtreme != null)
+              IntrinsicHeight(
+                child: Row(
+                  children: [
+                    Radio<num>(
+                      value: i,
+                      groupValue: _answers[_currentRatingIndex],
+                      onChanged: (value) {
+                        setState(() {
+                          _answers[_currentRatingIndex] = value;
+                        });
+                      },
+                    ),
                     Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 16.0),
-                        child: Flexible(
-                          child: Text(
-                            rating.lowExtreme!,
-                            style: const TextStyle(fontSize: 17.0),
-                          ),
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () => {
+                          setState(() {
+                            _answers[_currentRatingIndex] = i;
+                          }),
+                        },
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Row(
+                              children: [
+                                Text('${i + 1}'),
+                                if (i == 0 && rating.lowExtreme != null)
+                                  Expanded(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: Text(
+                                        rating.lowExtreme!,
+                                        style: const TextStyle(fontSize: 17.0),
+                                      ),
+                                    ),
+                                  ),
+                                if (i == TaskRating.radioLevels - 1 &&
+                                    rating.highExtreme != null)
+                                  Expanded(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: Text(
+                                        rating.highExtreme!,
+                                        style: const TextStyle(fontSize: 17.0),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            )
+                          ],
                         ),
                       ),
                     ),
-                  if (i == TaskRating.radioLevels - 1 &&
-                      rating.highExtreme != null)
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 16.0),
-                        child: Text(
-                          rating.highExtreme!,
-                          style: const TextStyle(fontSize: 17.0),
-                        ),
-                      ),
-                    ),
-                ],
+                  ],
+                ),
               ),
           ],
         );
