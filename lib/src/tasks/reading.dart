@@ -111,27 +111,32 @@ class IntroStage extends TaskStage {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Center(
-          child: ReadingWidth(
-            child: Column(
-              children: [
-                MarkdownBody(
-                  data: markdown,
-                  fitContent: false,
-                  styleSheet: MarkdownStyleSheet(
-                    textScaleFactor: 1.3,
-                    p: const TextStyle(height: 1.5),
+    return Center(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Center(
+            child: ReadingWidth(
+              child: Column(
+                children: [
+                  MarkdownBody(
+                    data: markdown,
+                    fitContent: false,
+                    styleSheet: MarkdownStyleSheet(
+                      textScaleFactor: 1.3,
+                      p: const TextStyle(height: 1.5),
+                    ),
                   ),
-                ),
-                ElevatedButton.icon(
-                  label: Text(S.of(context).taskAdvance),
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: finish,
-                ),
-              ],
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    child: ElevatedButton.icon(
+                      label: Text(S.of(context).taskAdvance),
+                      icon: const Icon(Icons.arrow_forward),
+                      onPressed: finish,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
