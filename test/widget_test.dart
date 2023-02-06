@@ -223,7 +223,8 @@ void main() {
       // Results
       expect(
           find.text(
-              "You've completed the practice task. Now continue with the main task."),
+              "You've completed the practice task. Now continue with the main task.",
+              findRichText: true),
           findsOneWidget);
     });
 
