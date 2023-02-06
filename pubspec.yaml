@@ -3,7 +3,7 @@ description: An app for text readability and comprehension experiments.
 
 publish_to: none
 
-version: 0.2.6-alpha
+version: 0.3.0-alpha
 
 environment:
   sdk: ">=2.15.0 <3.0.0"
