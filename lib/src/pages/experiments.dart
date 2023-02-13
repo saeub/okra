@@ -191,6 +191,16 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(S.of(context).experimentsNoTasks),
                       ),
+                      TextButton.icon(
+                        icon: const Icon(Icons.refresh),
+                        label: Text(S.of(context).experimentsRefresh),
+                        onPressed: () async {
+                          setState(() {
+                            _experiments = loadExperiments();
+                          });
+                          await Future.wait(_experiments.values);
+                        },
+                      ),
                     ]);
                   }
                 } else if (snapshot.hasError) {

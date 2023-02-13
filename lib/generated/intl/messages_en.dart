@@ -61,6 +61,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "No tasks available at the moment"),
         "experimentsPageTitle":
             MessageLookupByLibrary.simpleMessage("Experiments"),
+        "experimentsRefresh": MessageLookupByLibrary.simpleMessage("Refresh"),
         "experimentsScanQrCode":
             MessageLookupByLibrary.simpleMessage("SCAN QR-CODE"),
         "experimentsTasksLeft": m2,
