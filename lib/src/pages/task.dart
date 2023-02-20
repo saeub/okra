@@ -842,12 +842,15 @@ class _ResultsWidgetState extends State<ResultsWidget> {
             ),
             const Spacer(flex: 1),
             if (instructionsAfter != null && instructionsAfter.isNotEmpty)
-              Text(
-                instructionsAfter,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 20.0,
-                  color: Theme.of(context).colorScheme.primary,
+              MarkdownBody(
+                data: instructionsAfter,
+                fitContent: false,
+                styleSheet: MarkdownStyleSheet(
+                  textAlign: WrapAlignment.center,
+                  p: TextStyle(
+                    fontSize: 20.0,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                 ),
               ),
             const Spacer(flex: 1),
