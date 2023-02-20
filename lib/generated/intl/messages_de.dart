@@ -65,6 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "experimentsRefresh": MessageLookupByLibrary.simpleMessage("Neu laden"),
         "experimentsScanQrCode":
             MessageLookupByLibrary.simpleMessage("QR-CODE SCANNEN"),
+        "experimentsStart": MessageLookupByLibrary.simpleMessage("START"),
         "experimentsTasksLeft": m2,
         "instructionsLoadingAudioFailed":
             MessageLookupByLibrary.simpleMessage("Laden fehlgeschlagen"),

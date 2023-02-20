@@ -310,17 +310,30 @@ class ExperimentCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(experiment.title,
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                  )),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    S.of(context).experimentsTasksLeft(
-                        experiment.nTasks - experiment.nTasksDone),
-                  )
+                  Flexible(
+                    child: Text(experiment.title,
+                        style: const TextStyle(
+                          fontSize: 20.0,
+                        )),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: onTap,
+                        icon: const Icon(Icons.arrow_forward),
+                        label: Text(S.of(context).experimentsStart),
+                      ),
+                      Text(
+                        S.of(context).experimentsTasksLeft(
+                            experiment.nTasks - experiment.nTasksDone),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ],

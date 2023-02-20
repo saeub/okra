@@ -17,6 +17,7 @@
   "experimentsPageTitle": "Experimente",
   "experimentsRefresh": "Neu laden",
   "experimentsScanQrCode": "QR-CODE SCANNEN",
+  "experimentsStart": "START",
   "experimentsTasksLeft": "{howMany, plural, one{1 Aufgabe übrig} other{{howMany} Aufgaben übrig}}",
   "instructionsLoadingAudioFailed": "Laden fehlgeschlagen",
   "instructionsRestartPracticeTask": "ÜBUNGSAUFGABE ERNEUT STARTEN",

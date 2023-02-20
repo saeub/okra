@@ -230,6 +230,16 @@ class S {
     );
   }
 
+  /// `START`
+  String get experimentsStart {
+    return Intl.message(
+      'START',
+      name: 'experimentsStart',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `{howMany, plural, one{1 task left} other{{howMany} tasks left}}`
   String experimentsTasksLeft(num howMany) {
     return Intl.plural(
