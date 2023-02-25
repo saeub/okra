@@ -239,6 +239,7 @@ class ScrollableText extends StatefulWidget {
   final double padding;
   final TextStyle style;
   final double paragraphSpacing;
+  final double emitScrollEventEvery;
   final Function(double topEdge)? onScrolled;
   final Function(String text, TextRange range)? onVisibleTextChanged;
 
@@ -249,6 +250,7 @@ class ScrollableText extends StatefulWidget {
       required this.style,
       this.paragraphSpacing = 16.0,
       this.padding = 8.0,
+      this.emitScrollEventEvery = 20.0,
       this.onScrolled,
       this.onVisibleTextChanged,
       Key? key})
@@ -428,7 +430,8 @@ class _ScrollableTextState extends State<ScrollableText>
       textOffset += paragraph.text.length;
     }
 
-    if (emitEvent && (_topEdge - _lastEmittedTopEdge).abs() >= 20.0) {
+    if (emitEvent &&
+        (_topEdge - _lastEmittedTopEdge).abs() >= widget.emitScrollEventEvery) {
       _lastEmittedTopEdge = _topEdge;
       _emitScrolled();
     }
