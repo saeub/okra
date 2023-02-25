@@ -180,27 +180,29 @@ class ScrollableTextStage extends TaskStage {
                     width: textWidth,
                     height: textHeight,
                     style: TextStyle(
-                        fontFamily:
-                            Theme.of(context).textTheme.bodyMedium!.fontFamily,
-                        fontSize: fontSize,
-                        color: Colors.black,
-                        height: lineHeight,
-                        leadingDistribution: TextLeadingDistribution.even),
-                    onVisibleRangeChanged: (text, visibleRange) {
+                      fontFamily:
+                          Theme.of(context).textTheme.bodyMedium!.fontFamily,
+                      fontSize: fontSize,
+                      color: Colors.black,
+                      height: lineHeight,
+                      leadingDistribution: TextLeadingDistribution.even,
+                    ),
+                    onScrolled: (topEdge) {
+                      logger.log('scrolled text', {
+                        'topEdge': topEdge,
+                      });
+                    },
+                    onVisibleTextChanged: (text, range) {
                       if (text != _loggedText) {
                         logger.log('text changed', {
                           'text': text,
                         });
                         _loggedText = text;
                       }
-                      logger.log('visible range changed', {
-                        'characterRange': [
-                          visibleRange.start,
-                          visibleRange.end
-                        ],
+                      logger.log('visible text range changed', {
+                        'characterRange': [range.start, range.end],
                       });
-                      if (!_scrolledToBottom &&
-                          visibleRange.end >= text.length) {
+                      if (!_scrolledToBottom && range.end >= text.length) {
                         setState(() {
                           _scrolledToBottom = true;
                         });
@@ -237,7 +239,8 @@ class ScrollableText extends StatefulWidget {
   final double padding;
   final TextStyle style;
   final double paragraphSpacing;
-  final Function(String text, TextRange visibleRange)? onVisibleRangeChanged;
+  final Function(double topEdge)? onScrolled;
+  final Function(String text, TextRange range)? onVisibleTextChanged;
 
   const ScrollableText(
       {required this.text,
@@ -246,7 +249,8 @@ class ScrollableText extends StatefulWidget {
       required this.style,
       this.paragraphSpacing = 16.0,
       this.padding = 8.0,
-      this.onVisibleRangeChanged,
+      this.onScrolled,
+      this.onVisibleTextChanged,
       Key? key})
       : super(key: key);
 
@@ -270,17 +274,19 @@ class _ScrollableTextState extends State<ScrollableText>
   late List<_Paragraph> _paragraphs;
   String? _text;
   late double _topEdge, _bottomEdge;
-  late TextRange _visibleRange;
+  late double _lastEmittedTopEdge;
+  late TextRange _visibleTextRange;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _paragraphs = [];
-    _topEdge = 0;
+    _topEdge = _lastEmittedTopEdge = -widget.padding;
     _bottomEdge = widget.height + widget.padding;
     _updateParagraphs(emitEvent: false);
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      _emitVisibleRangeChanged();
+      _emitScrolled();
+      _emitVisibleTextChanged();
     });
   }
 
@@ -387,11 +393,12 @@ class _ScrollableTextState extends State<ScrollableText>
     var newText = _paragraphs.map((paragraph) => paragraph.text).join('\n');
     if (newText != _text) {
       _text = newText;
-      _updateVisibleRange(textChanged: true, emitEvent: emitEvent);
+      _updateVisibleTextRange(textChanged: true, emitEvent: emitEvent);
     }
   }
 
-  void _updateVisibleRange({bool textChanged = false, bool emitEvent = true}) {
+  void _updateVisibleTextRange(
+      {bool textChanged = false, bool emitEvent = true}) {
     int? rangeStart, rangeEnd;
     var textOffset = -1;
     for (var paragraph in _paragraphs) {
@@ -421,19 +428,32 @@ class _ScrollableTextState extends State<ScrollableText>
       textOffset += paragraph.text.length;
     }
 
-    var newVisibleRange = TextRange(start: rangeStart ?? 0, end: rangeEnd ?? 0);
-    if ((textChanged || newVisibleRange != _visibleRange)) {
-      _visibleRange = newVisibleRange;
+    if (emitEvent && (_topEdge - _lastEmittedTopEdge).abs() >= 20.0) {
+      _lastEmittedTopEdge = _topEdge;
+      _emitScrolled();
+    }
+
+    var newVisibleTextRange =
+        TextRange(start: rangeStart ?? 0, end: rangeEnd ?? 0);
+    if ((textChanged || newVisibleTextRange != _visibleTextRange)) {
+      _visibleTextRange = newVisibleTextRange;
       if (emitEvent) {
-        _emitVisibleRangeChanged();
+        _emitVisibleTextChanged();
       }
     }
   }
 
-  void _emitVisibleRangeChanged() {
-    var onVisibleRangeChanged = widget.onVisibleRangeChanged;
-    if (onVisibleRangeChanged != null) {
-      onVisibleRangeChanged(_text ?? '', _visibleRange);
+  void _emitScrolled() {
+    var onScrolled = widget.onScrolled;
+    if (onScrolled != null) {
+      onScrolled(_topEdge);
+    }
+  }
+
+  void _emitVisibleTextChanged() {
+    var onVisibleTextChanged = widget.onVisibleTextChanged;
+    if (onVisibleTextChanged != null) {
+      onVisibleTextChanged(_text ?? '', _visibleTextRange);
     }
   }
 
@@ -456,7 +476,7 @@ class _ScrollableTextState extends State<ScrollableText>
         onNotification: (notification) {
           _topEdge = notification.metrics.extentBefore - widget.padding;
           _bottomEdge = _topEdge + notification.metrics.extentInside;
-          _updateVisibleRange();
+          _updateVisibleTextRange();
           return false;
         },
         child: Scrollbar(
@@ -646,26 +666,29 @@ class QuestionsStage extends TaskStage {
                         width: textWidth,
                         height: textHeight,
                         style: TextStyle(
-                            fontFamily: Theme.of(context)
-                                .textTheme
-                                .bodyMedium!
-                                .fontFamily,
-                            fontSize: fontSize,
-                            color: Colors.black,
-                            height: lineHeight,
-                            leadingDistribution: TextLeadingDistribution.even),
-                        onVisibleRangeChanged: (text, visibleRange) {
+                          fontFamily: Theme.of(context)
+                              .textTheme
+                              .bodyMedium!
+                              .fontFamily,
+                          fontSize: fontSize,
+                          color: Colors.black,
+                          height: lineHeight,
+                          leadingDistribution: TextLeadingDistribution.even,
+                        ),
+                        onScrolled: (topEdge) {
+                          logger.log('scrolled text', {
+                            'topEdge': topEdge,
+                          });
+                        },
+                        onVisibleTextChanged: (text, range) {
                           if (text != _loggedText) {
                             logger.log('text changed', {
                               'text': text,
                             });
                             _loggedText = text;
                           }
-                          logger.log('visible range changed', {
-                            'characterRange': [
-                              visibleRange.start,
-                              visibleRange.end
-                            ],
+                          logger.log('visible text range changed', {
+                            'characterRange': [range.start, range.end],
                           });
                         },
                       ),
