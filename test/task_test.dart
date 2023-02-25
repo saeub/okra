@@ -1347,10 +1347,11 @@ void main() {
 
       l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('scrolled text', data: {'topEdge': -8.0});
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
       });
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 24]
       });
       await tester.tap(find.text('CONTINUE'));
@@ -1359,10 +1360,11 @@ void main() {
 
       l.expectLogged('started stage', data: {'stage': 'questions'});
       expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('scrolled text', data: {'topEdge': -8.0});
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
       });
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 24]
       });
       expect(find.text('Is this a question?'), findsOneWidget);
@@ -1427,28 +1429,33 @@ void main() {
 
       l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('scrolled text', data: {'topEdge': -8.0});
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
       });
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 10] // 'This is an'
       });
       await tester.tap(find.text('CONTINUE'), warnIfMissed: false); // invisible
       l.expectDoneLogging();
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('scrolled text', data: {'topEdge': 12.0});
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 16] // 'This is an examp'
       });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('scrolled text', data: {'topEdge': 32.0});
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [5, 16] // 'is an examp'
       });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('scrolled text', data: {'topEdge': 52.0});
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [11, 19] // 'example'
       });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('scrolled text', data: {'topEdge': 72.0});
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [11, 24] // 'example text.'
       });
       await tester.pumpAndSettle();
@@ -1458,27 +1465,32 @@ void main() {
 
       l.expectLogged('started stage', data: {'stage': 'questions'});
       expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('scrolled text', data: {'topEdge': -8.0});
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
       });
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 10] // 'This is an'
       });
       expect(find.text('CONTINUE'), findsNothing);
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('scrolled text', data: {'topEdge': 12.0});
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 16] // 'This is an examp'
       });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('scrolled text', data: {'topEdge': 32.0});
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [5, 16] // 'is an examp'
       });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('scrolled text', data: {'topEdge': 52.0});
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [11, 19] // 'example'
       });
       await tester.drag(find.byType(ScrollableText), const Offset(0, -20));
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('scrolled text', data: {'topEdge': 72.0});
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [11, 24] // 'example text.'
       });
       await tester.tap(find.text('No'));
@@ -1538,10 +1550,11 @@ void main() {
 
       l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('scrolled text', data: {'topEdge': -8.0});
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
       });
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 24]
       });
       await tester.tap(find.text('CONTINUE'));
@@ -1570,10 +1583,11 @@ void main() {
 
       l.expectLogged('started stage', data: {'stage': 'questions'});
       expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('scrolled text', data: {'topEdge': -8.0});
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
       });
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 24]
       });
       await tester.tap(find.text('No'));
@@ -1625,10 +1639,11 @@ void main() {
 
       l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('scrolled text', data: {'topEdge': -8.0});
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
       });
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 24]
       });
       await tester.tap(find.text('CONTINUE'));
@@ -1637,10 +1652,11 @@ void main() {
 
       l.expectLogged('started stage', data: {'stage': 'questions'});
       expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('scrolled text', data: {'topEdge': -8.0});
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
       });
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 24]
       });
       expect(find.text('Is this a question?'), findsOneWidget);
@@ -1729,10 +1745,11 @@ void main() {
 
       l.expectLogged('started stage', data: {'stage': 'text'});
       expect(find.byType(ScrollableText), findsOneWidget);
+      l.expectLogged('scrolled text', data: {'topEdge': -8.0});
       l.expectLogged('text changed', data: {
         'text': 'This is an example text.',
       });
-      l.expectLogged('visible range changed', data: {
+      l.expectLogged('visible text range changed', data: {
         'characterRange': [0, 24]
       });
       await tester.tap(find.text('CONTINUE'));
