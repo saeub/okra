@@ -1,6 +1,6 @@
 > **NOTE:** This project is in alpha stage and under ongoing development. It may be subject to fundamental changes anytime.
 
-Okra is a mobile (Android/iOS) app which allows its users to participate in psycholinguistic experiments. It receives the experiment setup and stimuli from a server of the institution conducting the experiment, presents the stimuli to the participant, collects responses and behavioral data, and sends them back to the server.
+Okra is a mobile (Android/iOS/web) app which allows its users to participate in psycholinguistic experiments. It receives the experiment setup and stimuli from a server of the institution conducting the experiment, presents the stimuli to the participant, collects responses and behavioral data, and sends them back to the server.
 
 ## Supported tasks
 
@@ -14,7 +14,7 @@ The app currently provides implementations of various types of tasks related to 
 - Reaction time test
 - Simon game (working memory task)
 
-Issues and pull requests about adding more tasks are welcome (as long as they make sense).
+Issues and pull requests about adding more tasks are welcome.
 
 ## Supported languages
 
@@ -26,6 +26,8 @@ The app is currently available in these [localizations](https://github.com/saeub
 
 Pull requests adding more languages are welcome.
 
+## [📄 Paper](https://doi.org/10.3389/fcomm.2023.1175625)
+
 ## [💻 Source code](https://github.com/saeub/okra)
 
 ## [🖼️ Screenshots](https://github.com/saeub/okra/wiki/Screenshots)
@@ -36,6 +38,21 @@ Pull requests adding more languages are welcome.
 - [System architecture and technical overview](architecture.md)
 - [API specification](api/index.html)
 - [Task specifications](tasks.md)
+
+## Citation
+
+```bibtex
+@article{okra,
+  author   = {Säuberli, Andreas and Hansen-Schirra, Silvia and Holzknecht, Franz and Gutermuth, Silke and Deilen, Silvana and Schiffl, Laura and Ebling, Sarah},
+  title    = {Enabling text comprehensibility assessment for people with intellectual disabilities using a mobile application},
+  journal  = {Frontiers in Communication},
+  volume   = {8},
+  year     = {2023},
+  url      = {https://www.frontiersin.org/articles/10.3389/fcomm.2023.1175625},
+  doi      = {10.3389/fcomm.2023.1175625},
+  issn     = {2297-900X}
+}
+```
 
 ## Getting started
 
