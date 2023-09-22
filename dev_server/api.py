@@ -160,33 +160,6 @@ EXPERIMENTS_TASKS = [
     (
         {
             "id": "6",
-            "type": "question-answering",
-            "title": "Question answering task (normal)",
-            "instructions": "Answer the questions.",
-            "nTasks": 3,
-            "nTasksDone": 1,
-            "ratings": [example_rating("emoticon-reversed"), example_rating("slider")],
-        },
-        {
-            "readingType": "normal",
-            "text": "# Title\n\n## Subtitle 1\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\nDuis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n### Subtitle 2\n\nLorem ipsum",
-            "fontSize": 22,
-            "questions": [
-                {
-                    "question": "Question",
-                    "answers": ["Answer 1", "Answer 2", "Answer 3"],
-                    "correctAnswer": 1,
-                },
-            ] * 3,
-            "ratingsBeforeQuestions": [
-                example_rating("emoticon"),
-                example_rating("radio"),
-            ],
-        },
-    ),
-    (
-        {
-            "id": "7",
             "type": "reaction-time",
             "title": "Reaction time task",
             "instructions": "Pop the balloons as quickly as possible.",
@@ -201,7 +174,7 @@ EXPERIMENTS_TASKS = [
     ),
     (
         {
-            "id": "8",
+            "id": "7",
             "type": "reading",
             "title": "Reading task",
             "instructions": "",
@@ -229,7 +202,7 @@ EXPERIMENTS_TASKS = [
     ),
     (
         {
-            "id": "9",
+            "id": "8",
             "type": "simon-game",
             "title": "Simon game",
             "instructions": "Repeat the sequence by tapping the boxes.",
@@ -241,7 +214,7 @@ EXPERIMENTS_TASKS = [
     ),
     (
         {
-            "id": "10",
+            "id": "9",
             "type": "trail-making",
             "title": "Trail making task",
             "instructions": "Make those trails.",

@@ -108,43 +108,6 @@ A textual stimulus is shown above a number of pictures. One of the pictures (or 
   ```
   **NOTE:** The image should be adequately resized and compressed before encoding, especially for large numbers of subtasks, to keep HTTP response sizes low. `correctPictureIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer.
 
-### Question answering
-
-A text is presented, and several single-answer multiple-choice questions have to be answered. On smaller screen sizes, the question panel is expandable and collapsible from the bottom of the screen. On larger screen sizes, it is constantly visible side-by-side with the text. There are two modes of text presentation: `normal`, where all text is presented at once on a single screen, and `self-paced`, where two segments of text are shown at once and the participant advances by tapping the screen.
-
-**NOTE:** The `self-paced` reading type is currently neither optimized nor well tested. At the moment, using it for smaller screen sizes is a bad idea.
-
-- Identifier: `question-answering`
-- Implementation: [`lib/src/tasks/question_answering.dart`](https://github.com/saeub/okra/blob/main/lib/src/tasks/question_answering.dart)
-- Data structure:
-  ```json
-  {
-    "readingType": "self-paced",
-    "text": "First segment.\nSecond segment.",
-    "fontSize": 25.0,
-    "questions": [
-      {
-        "question": "Question?",
-        "answers": [
-          "Answer 1",
-          "Answer 2",
-        ],
-        "correctAnswerIndex": 0
-      },
-      ...
-    ],
-    "ratingsBeforeQuestions": [
-      {
-        "question": "How easy was it?",
-        "type": "emoticon",
-        "lowExtreme": "very difficult",
-        "highExtreme": "very easy"
-      }
-    ]
-  }
-  ```
-  **NOTE:** In the `normal` reading type, the string is interpreted as Markdown, while in the `self-paced` reading type, every line (separated by `\n`) is interpreted as a plain-text segment. `fontSize` is optional and specifies the font size of the text (not the questions; default is 16.0). `correctAnswerIndex` is optional. If it is provided, the participant will get immediate feedback about the correctness after confirming their answer. `ratingsBeforeQuestions` is optional. If it is provided, the text is shown without questions in the beginning, followed by the specified ratings, followed by the text with questions visible. They follow the same format as the ratings at the end of the task (described in the [API specs](api/index.html)).
-
 ### Reaction time
 
 A single picture of a red balloon is shown at a time, which disappears with a popping animation as soon as it is being touched. A new one then appears in a (uniformly distributed) random location after a configurable amount of time.
