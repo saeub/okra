@@ -56,7 +56,7 @@ class TutorialApi extends Api {
       '1': _TutorialExperiment(
         this,
         '1',
-        type: TaskType.questionAnswering,
+        type: TaskType.reading,
         title: 'What is Okra?',
         instructions: '''
 # What you will learn in this tutorial:

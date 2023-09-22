@@ -5,7 +5,6 @@ import 'reaction_time.dart';
 import 'cloze.dart';
 import 'n_back.dart';
 import 'picture_naming.dart';
-import 'question_answering.dart';
 import 'simon_game.dart';
 import 'reading.dart';
 import 'digit_span.dart';
@@ -43,10 +42,6 @@ class TaskType {
     () => PictureNaming(),
     forceOrientation: Orientation.portrait,
   );
-  static final TaskType questionAnswering = TaskType(
-    Icons.question_answer,
-    () => QuestionAnswering(),
-  );
   static final TaskType reactionTime = TaskType(
     Icons.offline_bolt,
     () => ReactionTime(),
@@ -78,8 +73,6 @@ class TaskType {
         return nBack;
       case 'picture-naming':
         return pictureNaming;
-      case 'question-answering':
-        return questionAnswering;
       case 'reaction-time':
         return reactionTime;
       case 'reading':

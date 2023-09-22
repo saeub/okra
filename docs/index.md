@@ -8,7 +8,7 @@ The app currently provides implementations of various types of tasks related to 
 
 - Cloze test
 - Lexical decision task
-- Multiple-choice question answering task
+- Reading task with multiple-choice questions
 - *n*-back working memory task
 - Picture naming task
 - Reaction time test
