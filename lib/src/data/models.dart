@@ -67,6 +67,7 @@ class TaskRating {
     'emoticon': TaskRatingType.emoticon,
     'emoticon-reversed': TaskRatingType.emoticonReversed,
     'radio': TaskRatingType.radio,
+    'radio-vertical': TaskRatingType.radioVertical,
     'slider': TaskRatingType.slider,
   };
 
@@ -107,6 +108,7 @@ enum TaskRatingType {
   emoticon,
   emoticonReversed,
   radio,
+  radioVertical,
   slider,
 }
 

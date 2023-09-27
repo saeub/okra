@@ -210,11 +210,31 @@ class S {
     );
   }
 
+  /// `Refresh`
+  String get experimentsRefresh {
+    return Intl.message(
+      'Refresh',
+      name: 'experimentsRefresh',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `SCAN QR-CODE`
   String get experimentsScanQrCode {
     return Intl.message(
       'SCAN QR-CODE',
       name: 'experimentsScanQrCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `START`
+  String get experimentsStart {
+    return Intl.message(
+      'START',
+      name: 'experimentsStart',
       desc: '',
       args: [],
     );

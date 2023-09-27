@@ -101,7 +101,7 @@ class _StorageWrapperState extends State<StorageWrapper> {
                         'Alternatively, exit the app and try downgrading it.\n'),
                     Text(
                       'Delete all data now?',
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                     ),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.delete),

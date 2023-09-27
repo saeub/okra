@@ -191,6 +191,16 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(S.of(context).experimentsNoTasks),
                       ),
+                      TextButton.icon(
+                        icon: const Icon(Icons.refresh),
+                        label: Text(S.of(context).experimentsRefresh),
+                        onPressed: () async {
+                          setState(() {
+                            _experiments = loadExperiments();
+                          });
+                          await Future.wait(_experiments.values);
+                        },
+                      ),
                     ]);
                   }
                 } else if (snapshot.hasError) {
@@ -201,8 +211,8 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                     });
                   });
                 } else {
-                  content = Column(
-                    children: const [
+                  content = const Column(
+                    children: [
                       CircularProgressIndicator(),
                     ],
                   );
@@ -247,7 +257,7 @@ class ApiTitle extends StatelessWidget {
             child: Text(
               api.getName(),
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
         ],
@@ -300,17 +310,30 @@ class ExperimentCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(experiment.title,
-                  style: const TextStyle(
-                    fontSize: 20.0,
-                  )),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    S.of(context).experimentsTasksLeft(
-                        experiment.nTasks - experiment.nTasksDone),
-                  )
+                  Flexible(
+                    child: Text(experiment.title,
+                        style: const TextStyle(
+                          fontSize: 20.0,
+                        )),
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ElevatedButton.icon(
+                        onPressed: onTap,
+                        icon: const Icon(Icons.arrow_forward),
+                        label: Text(S.of(context).experimentsStart),
+                      ),
+                      Text(
+                        S.of(context).experimentsTasksLeft(
+                            experiment.nTasks - experiment.nTasksDone),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ],
