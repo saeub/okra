@@ -28,7 +28,6 @@
   "instructionsTitle": "Anleitung",
   "registrationCameraPermissionRequired": "Kamera-Berechtigung erforderlich",
   "registrationInvalidQrCode": "Ungültiger QR-Code",
-  "registrationInvalidUrl": "Ungültige URL",
   "registrationKey": "Registrierungsschlüssel",
   "registrationOk": "OK",
   "registrationPageTitle": "API registrieren",
