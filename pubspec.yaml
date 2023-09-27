@@ -14,15 +14,15 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   auto_size_text: ^3.0.0
-  flutter_markdown: ^0.6.10
-  google_fonts: ^3.0.1
-  http: ^0.13.4
-  intl: ^0.17.0
-  just_audio: ^0.9.21
-  localstorage: ^4.0.0
-  mobile_scanner: ^1.1.2
-  package_info_plus: ^1.4.2
-  provider: ^6.0.2
+  flutter_markdown: ^0.6.17
+  google_fonts: ^6.1.0
+  http: ^1.1.0
+  intl: ^0.18.1
+  just_audio: ^0.9.35
+  localstorage: ^4.0.1
+  mobile_scanner: ^3.2.0
+  package_info_plus: ^4.1.0
+  provider: ^6.0.5
 
 dev_dependencies:
   flutter_test:

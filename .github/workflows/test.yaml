@@ -16,23 +16,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: '3.3.10'
-      - run: flutter format -n --set-exit-if-changed lib/main.dart lib/src/ test/ integration_test/
+          flutter-version: '3.13.0'
+      - run: dart format -o none --set-exit-if-changed lib/main.dart lib/src/ test/ integration_test/
       - run: flutter analyze
   test:
     name: Unit tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: '3.3.10'
+          flutter-version: '3.13.0'
       - run: sudo apt-get update && sudo apt-get install -y lcov
       - run: flutter test --coverage
       - run: lcov --remove coverage/lcov.info 'lib/generated/*' > coverage/lcov_nogen.info
@@ -52,11 +52,11 @@ jobs:
           - 29
     needs: test
     steps:
-      - uses: actions/checkout@v2
-      - uses: subosito/flutter-action@v1
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: '3.3.10'
+          flutter-version: '3.13.0'
       - uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}

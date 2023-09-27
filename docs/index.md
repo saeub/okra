@@ -84,6 +84,6 @@ Running tests:
 
 Code formatting / static analysis:
 
-- `flutter format lib/main.dart lib/src/ test/ integration_test/`
+- `dart format lib/main.dart lib/src/ test/ integration_test/`
 - `flutter analyze`
 - Keep translation files (`lib/i10n/*.arb`) sorted
