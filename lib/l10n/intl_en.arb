@@ -16,7 +16,7 @@
   "experimentsNoTasks": "No tasks available at the moment",
   "experimentsPageTitle": "Experiments",
   "experimentsRefresh": "Refresh",
-  "experimentsScanQrCode": "SCAN QR-CODE",
+  "experimentsScanQrCode": "SCAN QR CODE",
   "experimentsStart": "START",
   "experimentsTasksLeft": "{howMany, plural, one{1 task left} other{{howMany} tasks left}}",
   "instructionsLoadingAudioFailed": "Loading audio failed",
