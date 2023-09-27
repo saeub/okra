@@ -211,8 +211,8 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
                     });
                   });
                 } else {
-                  content = Column(
-                    children: const [
+                  content = const Column(
+                    children: [
                       CircularProgressIndicator(),
                     ],
                   );
@@ -257,7 +257,7 @@ class ApiTitle extends StatelessWidget {
             child: Text(
               api.getName(),
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
         ],

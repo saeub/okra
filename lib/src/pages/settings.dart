@@ -162,7 +162,7 @@ class ListHeadingTile extends StatelessWidget {
     return ListTile(
       title: Text(
         text,
-        style: Theme.of(context).textTheme.subtitle2,
+        style: Theme.of(context).textTheme.titleSmall,
       ),
       dense: true,
     );

@@ -743,8 +743,8 @@ void main() {
 
     testWidgets('supports feedback', (tester) async {
       // TODO: Make the task screen size independent, remove this setup
-      tester.binding.window.physicalSizeTestValue = const Size(600, 1100);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.view.physicalSize = const Size(600, 1100);
+      addTearDown(tester.view.resetPhysicalSize);
 
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
@@ -839,8 +839,8 @@ void main() {
   group('Reaction time', () {
     testWidgets('can be completed', (tester) async {
       // Reduce screen size to restrict stimulus positions
-      tester.binding.window.physicalSizeTestValue = const Size(100, 100);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.view.physicalSize = const Size(100, 100);
+      addTearDown(tester.view.resetPhysicalSize);
 
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
@@ -948,8 +948,8 @@ void main() {
 
   group('Reading', () {
     testWidgets('can be completed', (tester) async {
-      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.view.physicalSize = const Size(20000, 20000);
+      addTearDown(tester.view.resetPhysicalSize);
 
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
@@ -1034,8 +1034,8 @@ void main() {
     });
 
     testWidgets('logs scroll events', (tester) async {
-      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.view.physicalSize = const Size(20000, 20000);
+      addTearDown(tester.view.resetPhysicalSize);
 
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
@@ -1141,8 +1141,8 @@ void main() {
     });
 
     testWidgets('supports ratings', (tester) async {
-      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.view.physicalSize = const Size(20000, 20000);
+      addTearDown(tester.view.resetPhysicalSize);
 
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
@@ -1238,8 +1238,8 @@ void main() {
     });
 
     testWidgets('supports answer correction', (tester) async {
-      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.view.physicalSize = const Size(20000, 20000);
+      addTearDown(tester.view.resetPhysicalSize);
 
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);
@@ -1349,8 +1349,8 @@ void main() {
     });
 
     testWidgets('supports intro for context', (tester) async {
-      tester.binding.window.physicalSizeTestValue = const Size(20000, 20000);
-      addTearDown(tester.binding.window.clearPhysicalSizeTestValue);
+      tester.view.physicalSize = const Size(20000, 20000);
+      addTearDown(tester.view.resetPhysicalSize);
 
       var logger = TaskEventLogger();
       var l = LoggerTester(logger);

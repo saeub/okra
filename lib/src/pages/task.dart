@@ -361,7 +361,7 @@ class InstructionsWidget extends StatelessWidget {
                   padding: const EdgeInsets.only(bottom: 10.0),
                   child: Text(
                     S.of(context).instructionsTitle,
-                    style: Theme.of(context).textTheme.headline4,
+                    style: Theme.of(context).textTheme.headlineMedium,
                   ),
                 ),
                 if (audioUrl != null) ReadAloudWidget(audioUrl),
@@ -682,7 +682,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                     padding: const EdgeInsets.only(bottom: 8.0),
                     child: Text(
                       rating.question,
-                      style: Theme.of(context).textTheme.headline6,
+                      style: Theme.of(context).textTheme.titleLarge,
                       textAlign: TextAlign.center,
                     ),
                   ),
@@ -864,7 +864,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                       children: [
                         if (widget.practice)
                           Text(S.of(context).taskResultsNextTaskCounts,
-                              style: Theme.of(context).textTheme.headline6),
+                              style: Theme.of(context).textTheme.titleLarge),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
