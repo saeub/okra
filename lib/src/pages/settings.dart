@@ -87,7 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
             },
           ),
           CheckboxListTile(
-            title: const Text(S.of(context).settingsShowCompletedExperiments),
+            title: Text(S.of(context).settingsShowCompletedExperiments),
             value: storage.showCompleted,
             onChanged: (checked) => storage.setShowCompleted(checked ?? false),
           ),
