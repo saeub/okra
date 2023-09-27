@@ -220,10 +220,10 @@ class S {
     );
   }
 
-  /// `SCAN QR-CODE`
+  /// `SCAN QR CODE`
   String get experimentsScanQrCode {
     return Intl.message(
-      'SCAN QR-CODE',
+      'SCAN QR CODE',
       name: 'experimentsScanQrCode',
       desc: '',
       args: [],
@@ -507,6 +507,16 @@ class S {
     return Intl.message(
       'Reset tutorial?',
       name: 'settingsResetTutorialDialogTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show completed experiments`
+  String get settingsShowCompletedExperiments {
+    return Intl.message(
+      'Show completed experiments',
+      name: 'settingsShowCompletedExperiments',
       desc: '',
       args: [],
     );

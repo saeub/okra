@@ -30,7 +30,7 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m3(date, time) => "Aggiunto il ${date} ${time}";
 
   static String m4(howMany) =>
-      "${Intl.plural(howMany, one: '1 answer', other: '${howMany} answers')} incorrect";
+      "${Intl.plural(howMany, one: '1 risposta sbagliata', other: '${howMany} risposte sbagliate')}";
 
   static String m5(howMany) =>
       "${Intl.plural(howMany, one: '1 secondo', other: '${howMany} secondi')}";
@@ -38,7 +38,7 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "apiErrorConnectionFailed":
-            MessageLookupByLibrary.simpleMessage("Connessione falita"),
+            MessageLookupByLibrary.simpleMessage("Connessione fallita"),
         "apiErrorGeneric": m0,
         "apiErrorInvalidCredentials": MessageLookupByLibrary.simpleMessage(
             "ID utilizzatore o chiave invalida"),
@@ -57,13 +57,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "errorUnknown":
             MessageLookupByLibrary.simpleMessage("Errore sconosciuto"),
         "experimentsIntro": MessageLookupByLibrary.simpleMessage(
-            "Okra is an app built at the University of Zurich. Researchers can use Okra to find out how well people can understand texts.\n\nIf you are a study participant, you should have a QR code. Scan this QR code to get your tasks."),
+            "Okra è un\'app dell\'Università di Zurigo. Con Okra, i ricercatori possono scoprire se le persone capiscono un testo o no.\n\nSe partecipi a uno studio dovresti avere un QR code. Scannerizza questo QR code per vedere i tuoi compiti."),
         "experimentsNoTasks": MessageLookupByLibrary.simpleMessage(
             "Nessun compito disponibile al momento"),
         "experimentsPageTitle":
             MessageLookupByLibrary.simpleMessage("Esperimenti"),
+        "experimentsRefresh":
+            MessageLookupByLibrary.simpleMessage("Aggiornare"),
         "experimentsScanQrCode":
-            MessageLookupByLibrary.simpleMessage("SCANNERIZZA IL QR-CODE"),
+            MessageLookupByLibrary.simpleMessage("SCANNERIZZA IL QR CODE"),
+        "experimentsStart": MessageLookupByLibrary.simpleMessage("INIZIARE"),
         "experimentsTasksLeft": m2,
         "instructionsLoadingAudioFailed":
             MessageLookupByLibrary.simpleMessage("Caricamento audio fallito"),
@@ -82,7 +85,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage(
                 "Autorizzazione camera richiesta"),
         "registrationInvalidQrCode":
-            MessageLookupByLibrary.simpleMessage("QR-Code invalido"),
+            MessageLookupByLibrary.simpleMessage("QR code invalido"),
         "registrationKey":
             MessageLookupByLibrary.simpleMessage("Chiave di registrazione"),
         "registrationOk": MessageLookupByLibrary.simpleMessage("OK"),
@@ -93,7 +96,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "registrationQrScannerTitle":
             MessageLookupByLibrary.simpleMessage("Scan QR code"),
         "registrationScanQrCode":
-            MessageLookupByLibrary.simpleMessage("QR-CODE"),
+            MessageLookupByLibrary.simpleMessage("QR CODE"),
         "registrationUrl": MessageLookupByLibrary.simpleMessage("API URL"),
         "settingsAboutHeading": MessageLookupByLibrary.simpleMessage("Info"),
         "settingsAboutText": MessageLookupByLibrary.simpleMessage(
@@ -111,6 +114,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Riavviare il tutorial"),
         "settingsResetTutorialDialogTitle":
             MessageLookupByLibrary.simpleMessage("Riavviare il tutorial?"),
+        "settingsShowCompletedExperiments":
+            MessageLookupByLibrary.simpleMessage(
+                "Mostrare gli esperimenti terminati"),
         "settingsTutorialHeading":
             MessageLookupByLibrary.simpleMessage("Tutorial"),
         "taskAbortDialogTitle":
@@ -129,12 +135,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Rispondere alle domande"),
         "taskReactionTimeIntro": MessageLookupByLibrary.simpleMessage(
             "Fai scoppiare il palloncino!"),
-        "taskReadingCorrect": MessageLookupByLibrary.simpleMessage("CORRECT"),
+        "taskReadingCorrect": MessageLookupByLibrary.simpleMessage("CORRETTO"),
         "taskReadingCorrectionDialogText": MessageLookupByLibrary.simpleMessage(
-            "Please correct your answers."),
+            "Per favore correggi le tue risposte."),
         "taskReadingCorrectionDialogTitle": m4,
         "taskReadingIncorrect":
-            MessageLookupByLibrary.simpleMessage("INCORRECT"),
+            MessageLookupByLibrary.simpleMessage("SBAGLIATO"),
         "taskResultsFinishExperiment":
             MessageLookupByLibrary.simpleMessage("TERMINARE L\'ESPERIMENTO"),
         "taskResultsMessage1": MessageLookupByLibrary.simpleMessage("Super!"),
@@ -147,7 +153,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "taskResultsNextTaskCounts":
             MessageLookupByLibrary.simpleMessage("Il prossimo compito conta!"),
         "taskResultsNoNextTask":
-            MessageLookupByLibrary.simpleMessage("PIU\' TARDI"),
+            MessageLookupByLibrary.simpleMessage("PIÙ TARDI"),
         "taskResultsRepeatPracticeTask":
             MessageLookupByLibrary.simpleMessage("RIPETI ESERCIZIO"),
         "taskResultsSecondsTaken": m5,
@@ -155,7 +161,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Gira il tuo telefono in orizzontale"),
         "taskRotatePortrait": MessageLookupByLibrary.simpleMessage(
             "Gira il tuo telefono in verticale"),
-        "taskTrailMakingStart": MessageLookupByLibrary.simpleMessage("START"),
+        "taskTrailMakingStart":
+            MessageLookupByLibrary.simpleMessage("INIZIARE"),
         "tutorialName": MessageLookupByLibrary.simpleMessage("Tutorial")
       };
 }

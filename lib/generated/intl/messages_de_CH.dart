@@ -114,6 +114,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Tutorial zurücksetzen"),
         "settingsResetTutorialDialogTitle":
             MessageLookupByLibrary.simpleMessage("Tutorial zurücksetzen?"),
+        "settingsShowCompletedExperiments":
+            MessageLookupByLibrary.simpleMessage(
+                "Abgeschlossene Experimente anzeigen"),
         "settingsTutorialHeading":
             MessageLookupByLibrary.simpleMessage("Tutorial"),
         "taskAbortDialogTitle": MessageLookupByLibrary.simpleMessage(

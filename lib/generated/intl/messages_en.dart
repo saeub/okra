@@ -63,7 +63,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Experiments"),
         "experimentsRefresh": MessageLookupByLibrary.simpleMessage("Refresh"),
         "experimentsScanQrCode":
-            MessageLookupByLibrary.simpleMessage("SCAN QR-CODE"),
+            MessageLookupByLibrary.simpleMessage("SCAN QR CODE"),
         "experimentsStart": MessageLookupByLibrary.simpleMessage("START"),
         "experimentsTasksLeft": m2,
         "instructionsLoadingAudioFailed":
@@ -110,6 +110,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Reset tutorial"),
         "settingsResetTutorialDialogTitle":
             MessageLookupByLibrary.simpleMessage("Reset tutorial?"),
+        "settingsShowCompletedExperiments":
+            MessageLookupByLibrary.simpleMessage("Show completed experiments"),
         "settingsTutorialHeading":
             MessageLookupByLibrary.simpleMessage("Tutorial"),
         "taskAbortDialogTitle": MessageLookupByLibrary.simpleMessage(

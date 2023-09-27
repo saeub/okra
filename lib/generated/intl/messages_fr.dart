@@ -56,13 +56,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "errorRetry": MessageLookupByLibrary.simpleMessage("RECOMMENCER"),
         "errorUnknown": MessageLookupByLibrary.simpleMessage("Erreur inconnue"),
         "experimentsIntro": MessageLookupByLibrary.simpleMessage(
-            "Okra is an app built at the University of Zurich. Researchers can use Okra to find out how well people can understand texts.\n\nIf you are a study participant, you should have a QR code. Scan this QR code to get your tasks."),
+            "Okra est une application de l\'Université de Zurich. Avec Okra, les scientifiques peuvent découvrir si les personnes comprennent un texte ou pas.\n\nSi tu participes à une étude, tu devrais avoir un QR code. Scanne ce QR code pour voir tes tâches."),
         "experimentsNoTasks": MessageLookupByLibrary.simpleMessage(
             "Aucune tache disponible pour l\'instant"),
         "experimentsPageTitle":
             MessageLookupByLibrary.simpleMessage("Expérimentations"),
+        "experimentsRefresh":
+            MessageLookupByLibrary.simpleMessage("Actualiser"),
         "experimentsScanQrCode":
             MessageLookupByLibrary.simpleMessage("SCANNER LE QR CODE"),
+        "experimentsStart": MessageLookupByLibrary.simpleMessage("COMMENCER"),
         "experimentsTasksLeft": m2,
         "instructionsLoadingAudioFailed":
             MessageLookupByLibrary.simpleMessage("Échec du chargement du son"),
@@ -113,6 +116,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "settingsResetTutorialDialogTitle":
             MessageLookupByLibrary.simpleMessage(
                 "Veux-tu relancer le tutoriel ?"),
+        "settingsShowCompletedExperiments":
+            MessageLookupByLibrary.simpleMessage(
+                "Afficher les expérimentations terminées"),
         "settingsTutorialHeading":
             MessageLookupByLibrary.simpleMessage("Tutoriel"),
         "taskAbortDialogTitle":
@@ -132,10 +138,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Éclate le ballon !"),
         "taskReadingCorrect": MessageLookupByLibrary.simpleMessage("CORRECT"),
         "taskReadingCorrectionDialogText": MessageLookupByLibrary.simpleMessage(
-            "Please correct your answers."),
+            "Corrige tes réponses, s\'il te plaît."),
         "taskReadingCorrectionDialogTitle": m4,
-        "taskReadingIncorrect":
-            MessageLookupByLibrary.simpleMessage("INCORRECT"),
+        "taskReadingIncorrect": MessageLookupByLibrary.simpleMessage("FAUX"),
         "taskResultsFinishExperiment":
             MessageLookupByLibrary.simpleMessage("TERMINER L\'EXPERIMENTATION"),
         "taskResultsMessage1": MessageLookupByLibrary.simpleMessage("Super !"),
@@ -155,7 +160,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Fais pivoter ton téléphone en mode paysage"),
         "taskRotatePortrait": MessageLookupByLibrary.simpleMessage(
             "Fais pivoter ton téléphone en mode portrait"),
-        "taskTrailMakingStart": MessageLookupByLibrary.simpleMessage("START"),
+        "taskTrailMakingStart":
+            MessageLookupByLibrary.simpleMessage("COMMENCER"),
         "tutorialName": MessageLookupByLibrary.simpleMessage("Tutoriel")
       };
 }
