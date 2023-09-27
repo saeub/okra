@@ -45,6 +45,7 @@
   "settingsPageTitle": "Settings",
   "settingsResetTutorial": "Reset tutorial",
   "settingsResetTutorialDialogTitle": "Reset tutorial?",
+  "settingsShowCompletedExperiments": "Show completed experiments",
   "settingsTutorialHeading": "Tutorial",
   "taskAbortDialogTitle": "Do you really want to abort?",
   "taskAdvance": "CONTINUE",

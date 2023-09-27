@@ -45,6 +45,7 @@
   "settingsPageTitle": "Paramètres",
   "settingsResetTutorial": "Relancer le tutoriel",
   "settingsResetTutorialDialogTitle": "Veux-tu relancer le tutoriel ?",
+  "settingsShowCompletedExperiments": "Afficher les expérimentations terminées",
   "settingsTutorialHeading": "Tutoriel",
   "taskAbortDialogTitle": "Veux-tu vraiment annuler ?",
   "taskAdvance": "SUITE",
