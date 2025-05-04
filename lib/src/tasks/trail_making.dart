@@ -292,25 +292,25 @@ class StimulusButton extends StatelessWidget {
     return FilledButton(
       child: Text(stimulus.text),
       style: ButtonStyle(
-        shape: MaterialStateProperty.resolveWith(((states) =>
-            !states.contains(MaterialState.disabled)
+        shape: WidgetStateProperty.resolveWith(((states) =>
+            !states.contains(WidgetState.disabled)
                 ? CircleBorder(
                     side: stimulus.outline
                         ? const BorderSide(width: 2.0)
                         : BorderSide.none)
                 : const CircleBorder())),
-        backgroundColor: MaterialStateProperty.resolveWith(((states) =>
-            !states.contains(MaterialState.disabled) ? stimulus.color : null)),
-        foregroundColor: MaterialStateProperty.resolveWith(((states) =>
-            !states.contains(MaterialState.disabled)
+        backgroundColor: WidgetStateProperty.resolveWith(((states) =>
+            !states.contains(WidgetState.disabled) ? stimulus.color : null)),
+        foregroundColor: WidgetStateProperty.resolveWith(((states) =>
+            !states.contains(WidgetState.disabled)
                 ? stimulus.textColor
                 : null)),
-        fixedSize: MaterialStateProperty.all(
+        fixedSize: WidgetStateProperty.all(
             const Size(TrailMaking.buttonSize, TrailMaking.buttonSize)),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        padding: MaterialStateProperty.all(EdgeInsets.zero),
-        minimumSize: MaterialStateProperty.all(Size.zero),
-        textStyle: MaterialStateProperty.all(
+        padding: WidgetStateProperty.all(EdgeInsets.zero),
+        minimumSize: WidgetStateProperty.all(Size.zero),
+        textStyle: WidgetStateProperty.all(
             const TextStyle(fontSize: TrailMaking.buttonSize - 15)),
       ),
       onPressed: onTapped,

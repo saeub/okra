@@ -298,7 +298,7 @@ class ExperimentCard extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .primary
-                              .withOpacity(0.4),
+                              .withValues(alpha: 0.4),
                         ),
                       ),
                     ),
@@ -362,8 +362,10 @@ class ExperimentCard extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 highlightColor: Colors.transparent,
-                splashColor:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                splashColor: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.4),
                 onTap: enabled ? onTap : null,
               ),
             ),

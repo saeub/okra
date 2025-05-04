@@ -181,11 +181,15 @@ class _TaskPageState extends State<TaskPage> {
           ? AppBar(title: Text(widget.experiment.title))
           : null,
       body: SafeArea(
-        child: WillPopScope(
-          onWillPop: () async {
+        child: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
+            if (didPop) {
+              return;
+            }
             if (_mode == TaskPageMode.task || _mode == TaskPageMode.ratings) {
               _logger.log('aborting task');
-              return await showDialog<bool>(
+              var shouldPop = await showDialog<bool>(
                     barrierDismissible: false,
                     context: context,
                     builder: (context) => AlertDialog(
@@ -210,8 +214,9 @@ class _TaskPageState extends State<TaskPage> {
                     ),
                   ) ??
                   false;
-            } else {
-              return true;
+              if (shouldPop) {
+                Navigator.of(context).pop();
+              }
             }
           },
           child: OrientationBuilder(builder: (context, orientation) {
@@ -371,7 +376,7 @@ class InstructionsWidget extends StatelessWidget {
                     data: experiment.instructions,
                     fitContent: false,
                     styleSheet: MarkdownStyleSheet(
-                      textScaleFactor: 1.3,
+                      textScaler: const TextScaler.linear(1.3),
                       p: const TextStyle(height: 1.5),
                     ),
                   ),
@@ -390,7 +395,7 @@ class InstructionsWidget extends StatelessWidget {
                         label:
                             Text(S.of(context).instructionsRestartPracticeTask),
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
+                          backgroundColor: WidgetStateProperty.all<Color>(
                               Theme.of(context).colorScheme.secondary),
                         ),
                         onPressed: onStartPracticePressed,
@@ -875,7 +880,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                                 label:
                                     Text(S.of(context).taskResultsNoNextTask),
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all<
+                                  backgroundColor: WidgetStateProperty.all<
                                           Color>(
                                       Theme.of(context).colorScheme.secondary),
                                 ),
@@ -900,8 +905,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                               label: Text(
                                   S.of(context).taskResultsRepeatPracticeTask),
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<
-                                        Color>(
+                                backgroundColor: WidgetStateProperty.all<Color>(
                                     Theme.of(context).colorScheme.secondary),
                               ),
                               onPressed: widget.onRepeatPracticePressed,

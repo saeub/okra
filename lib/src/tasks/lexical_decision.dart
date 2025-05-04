@@ -104,7 +104,7 @@ class LexicalDecision extends Task {
                               ],
                             ),
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 const RoundedRectangleBorder(
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(8.0),
@@ -112,9 +112,9 @@ class LexicalDecision extends Task {
                                 ),
                               ),
                               backgroundColor:
-                                  MaterialStateProperty.all(AppColors.positive),
+                                  WidgetStateProperty.all(AppColors.positive),
                               foregroundColor:
-                                  MaterialStateProperty.all(Colors.white),
+                                  WidgetStateProperty.all(Colors.white),
                             ),
                             onPressed:
                                 buttonsEnabled ? () => _onTap(true) : null,
@@ -137,7 +137,7 @@ class LexicalDecision extends Task {
                               ],
                             ),
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 const RoundedRectangleBorder(
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(8.0),
@@ -145,9 +145,9 @@ class LexicalDecision extends Task {
                                 ),
                               ),
                               backgroundColor:
-                                  MaterialStateProperty.all(AppColors.negative),
+                                  WidgetStateProperty.all(AppColors.negative),
                               foregroundColor:
-                                  MaterialStateProperty.all(Colors.white),
+                                  WidgetStateProperty.all(Colors.white),
                             ),
                             onPressed:
                                 buttonsEnabled ? () => _onTap(false) : null,

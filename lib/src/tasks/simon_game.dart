@@ -78,14 +78,14 @@ class SimonGame extends Task {
                           child: FilledButton(
                             key: ValueKey(colors[i]),
                             style: ButtonStyle(
-                              shape: MaterialStateProperty.all(
+                              shape: WidgetStateProperty.all(
                                 const RoundedRectangleBorder(
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(8.0),
                                   ),
                                 ),
                               ),
-                              backgroundColor: MaterialStateProperty.all(
+                              backgroundColor: WidgetStateProperty.all(
                                   colors[i][_highlight == i ? 100 : 700]),
                             ),
                             onPressed: _feedback == null &&

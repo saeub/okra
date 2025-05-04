@@ -283,11 +283,11 @@ class DigitButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FilledButton(
       style: ButtonStyle(
-        shape: MaterialStateProperty.all(const CircleBorder()),
+        shape: WidgetStateProperty.all(const CircleBorder()),
         backgroundColor:
-            MaterialStateProperty.all(Theme.of(context).colorScheme.secondary),
-        minimumSize: MaterialStateProperty.all(const Size(70.0, 70.0)),
-        textStyle: MaterialStateProperty.all(const TextStyle(
+            WidgetStateProperty.all(Theme.of(context).colorScheme.secondary),
+        minimumSize: WidgetStateProperty.all(const Size(70.0, 70.0)),
+        textStyle: WidgetStateProperty.all(const TextStyle(
           fontSize: 40.0,
         )),
       ),

@@ -123,7 +123,7 @@ class IntroStage extends TaskStage {
                     data: markdown,
                     fitContent: false,
                     styleSheet: MarkdownStyleSheet(
-                      textScaleFactor: 1.3,
+                      textScaler: const TextScaler.linear(1.3),
                       p: const TextStyle(height: 1.5),
                     ),
                   ),
@@ -715,14 +715,14 @@ class QuestionsStage extends TaskStage {
                       child: FilledButton(
                         child: const Icon(Icons.arrow_back),
                         style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all(
+                            minimumSize: WidgetStateProperty.all(
                                 const Size.fromWidth(40.0)),
-                            padding: MaterialStateProperty.all(EdgeInsets.zero),
-                            backgroundColor: MaterialStateProperty.all(
+                            padding: WidgetStateProperty.all(EdgeInsets.zero),
+                            backgroundColor: WidgetStateProperty.all(
                                 nToAnswerLeft > 0
                                     ? Theme.of(context).colorScheme.primary
                                     : Theme.of(context).colorScheme.secondary),
-                            elevation: MaterialStateProperty.all(
+                            elevation: WidgetStateProperty.all(
                                 nToAnswerLeft > 0 ? null : 0.0)),
                         onPressed: () {
                           _pageToQuestion(
@@ -768,14 +768,14 @@ class QuestionsStage extends TaskStage {
                       child: FilledButton(
                         child: const Icon(Icons.arrow_forward),
                         style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all(
+                            minimumSize: WidgetStateProperty.all(
                                 const Size.fromWidth(40.0)),
-                            padding: MaterialStateProperty.all(EdgeInsets.zero),
-                            backgroundColor: MaterialStateProperty.all(
+                            padding: WidgetStateProperty.all(EdgeInsets.zero),
+                            backgroundColor: WidgetStateProperty.all(
                                 nToAnswerRight > 0
                                     ? Theme.of(context).colorScheme.primary
                                     : Theme.of(context).colorScheme.secondary),
-                            elevation: MaterialStateProperty.all(
+                            elevation: WidgetStateProperty.all(
                                 nToAnswerRight > 0 ? null : 0.0)),
                         onPressed: () {
                           _pageToQuestion(
