@@ -271,8 +271,8 @@ void main() {
       await tester.tap(find.text('About '));
       await tester.pumpAndSettle();
       expect(find.text('1.2.3'), findsOneWidget);
-      expect(find.text('VIEW LICENSES'), findsOneWidget);
-      expect(find.text('CLOSE'), findsOneWidget);
+      expect(find.text('View licenses'), findsOneWidget);
+      expect(find.text('Close'), findsOneWidget);
     });
   });
 
