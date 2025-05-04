@@ -67,7 +67,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ),
                 Row(
                   children: [
-                    ElevatedButton.icon(
+                    FilledButton.icon(
                       icon: const Icon(Icons.check),
                       label: Text(S.of(context).registrationOk),
                       onPressed: _loading ? null : () => register(context),

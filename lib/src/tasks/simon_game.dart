@@ -75,9 +75,16 @@ class SimonGame extends Task {
                       for (var i = 0; i < colors.length; i++)
                         Padding(
                           padding: const EdgeInsets.all(4.0),
-                          child: ElevatedButton(
+                          child: FilledButton(
                             key: ValueKey(colors[i]),
                             style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0),
+                                  ),
+                                ),
+                              ),
                               backgroundColor: MaterialStateProperty.all(
                                   colors[i][_highlight == i ? 100 : 700]),
                             ),

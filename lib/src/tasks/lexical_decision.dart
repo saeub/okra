@@ -91,7 +91,7 @@ class LexicalDecision extends Task {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(right: 4.0),
-                          child: ElevatedButton(
+                          child: FilledButton(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -104,6 +104,13 @@ class LexicalDecision extends Task {
                               ],
                             ),
                             style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0),
+                                  ),
+                                ),
+                              ),
                               backgroundColor:
                                   MaterialStateProperty.all(AppColors.positive),
                               foregroundColor:
@@ -117,7 +124,7 @@ class LexicalDecision extends Task {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 4.0),
-                          child: ElevatedButton(
+                          child: FilledButton(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -130,6 +137,13 @@ class LexicalDecision extends Task {
                               ],
                             ),
                             style: ButtonStyle(
+                              shape: MaterialStateProperty.all(
+                                const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0),
+                                  ),
+                                ),
+                              ),
                               backgroundColor:
                                   MaterialStateProperty.all(AppColors.negative),
                               foregroundColor:

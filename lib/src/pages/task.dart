@@ -377,7 +377,7 @@ class InstructionsWidget extends StatelessWidget {
                   ),
                 ),
                 if (experiment.hasPracticeTask && experiment.nTasksDone == 0)
-                  ElevatedButton.icon(
+                  FilledButton.icon(
                     icon: const Icon(Icons.sports_tennis),
                     label: Text(S.of(context).instructionsStartPracticeTask),
                     onPressed: onStartPracticePressed,
@@ -385,7 +385,7 @@ class InstructionsWidget extends StatelessWidget {
                 else if (experiment.hasPracticeTask)
                   Column(
                     children: [
-                      ElevatedButton.icon(
+                      FilledButton.icon(
                         icon: const Icon(Icons.sports_tennis),
                         label:
                             Text(S.of(context).instructionsRestartPracticeTask),
@@ -395,7 +395,7 @@ class InstructionsWidget extends StatelessWidget {
                         ),
                         onPressed: onStartPracticePressed,
                       ),
-                      ElevatedButton.icon(
+                      FilledButton.icon(
                         icon: const Icon(Icons.arrow_forward),
                         label: Text(S.of(context).instructionsStartTask),
                         onPressed: onStartPressed,
@@ -403,7 +403,7 @@ class InstructionsWidget extends StatelessWidget {
                     ],
                   )
                 else
-                  ElevatedButton.icon(
+                  FilledButton.icon(
                     icon: const Icon(Icons.arrow_forward),
                     label: Text(S.of(context).instructionsStartTask),
                     onPressed: onStartPressed,
@@ -712,7 +712,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
           ),
         ),
         const Spacer(flex: 1),
-        ElevatedButton.icon(
+        FilledButton.icon(
           icon: const Icon(Icons.arrow_forward),
           label: Text(S.of(context).taskAdvance),
           onPressed: _answers[_currentRatingIndex] != null
@@ -870,7 +870,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(4.0),
-                              child: ElevatedButton.icon(
+                              child: FilledButton.icon(
                                 icon: const Icon(Icons.schedule),
                                 label:
                                     Text(S.of(context).taskResultsNoNextTask),
@@ -884,7 +884,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(4.0),
-                              child: ElevatedButton.icon(
+                              child: FilledButton.icon(
                                 icon: const Icon(Icons.arrow_forward),
                                 label: Text(S.of(context).taskResultsNextTask),
                                 onPressed: widget.onContinuePressed,
@@ -895,7 +895,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                         if (widget.practice)
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
-                            child: ElevatedButton.icon(
+                            child: FilledButton.icon(
                               icon: const Icon(Icons.sports_tennis),
                               label: Text(
                                   S.of(context).taskResultsRepeatPracticeTask),
@@ -911,7 +911,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                     );
                   } else {
                     // No tasks left
-                    return ElevatedButton.icon(
+                    return FilledButton.icon(
                       icon: const Icon(Icons.check),
                       label: Text(S.of(context).taskResultsFinishExperiment),
                       onPressed: Navigator.of(context).pop,

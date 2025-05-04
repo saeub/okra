@@ -107,7 +107,7 @@ class PictureNaming extends Task {
             maintainSize: true,
             maintainAnimation: true,
             maintainState: true,
-            child: ElevatedButton.icon(
+            child: FilledButton.icon(
               icon: const Icon(Icons.arrow_forward),
               label: Text(S.of(context).taskAdvance),
               onPressed: !_feedbacking

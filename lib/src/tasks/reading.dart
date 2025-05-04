@@ -129,7 +129,7 @@ class IntroStage extends TaskStage {
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 16.0),
-                    child: ElevatedButton.icon(
+                    child: FilledButton.icon(
                       label: Text(S.of(context).taskAdvance),
                       icon: const Icon(Icons.arrow_forward),
                       onPressed: finish,
@@ -221,7 +221,7 @@ class ScrollableTextStage extends TaskStage {
           maintainState: true,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton.icon(
+            child: FilledButton.icon(
               onPressed: finish,
               icon: const Icon(Icons.arrow_forward),
               label: Text(S.of(context).taskAdvance),
@@ -712,7 +712,7 @@ class QuestionsStage extends TaskStage {
                     maintainState: true,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ElevatedButton(
+                      child: FilledButton(
                         child: const Icon(Icons.arrow_back),
                         style: ButtonStyle(
                             minimumSize: MaterialStateProperty.all(
@@ -765,7 +765,7 @@ class QuestionsStage extends TaskStage {
                     maintainState: true,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ElevatedButton(
+                      child: FilledButton(
                         child: const Icon(Icons.arrow_forward),
                         style: ButtonStyle(
                             minimumSize: MaterialStateProperty.all(
@@ -793,7 +793,7 @@ class QuestionsStage extends TaskStage {
             visible: !_selectedAnswerIndices.contains(null),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton.icon(
+              child: FilledButton.icon(
                 onPressed: () => _checkAnswers(context),
                 icon: const Icon(Icons.arrow_forward),
                 label: Text(S.of(context).taskAdvance),

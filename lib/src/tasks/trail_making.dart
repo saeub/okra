@@ -289,7 +289,7 @@ class StimulusButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
+    return FilledButton(
       child: Text(stimulus.text),
       style: ButtonStyle(
         shape: MaterialStateProperty.resolveWith(((states) =>
