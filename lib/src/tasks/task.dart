@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../data/models.dart';
@@ -49,7 +50,9 @@ class TaskEventLogger {
 
   void log(String label, [Map<String, dynamic>? data]) {
     _events.add(TaskEvent(DateTime.now(), label, data));
-    debugPrint('TaskEventLogger: $label $data');
+    if (kDebugMode) {
+      debugPrint('TaskEventLogger: $label $data');
+    }
   }
 }
 

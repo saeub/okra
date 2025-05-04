@@ -4,7 +4,6 @@ import 'package:integration_test/integration_test.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:okra/main.dart' as app;
-import 'package:okra/src/data/storage.dart';
 
 import 'mock.dart';
 
@@ -16,10 +15,8 @@ void main() {
 
   setUp(() async {
     // Clear local storage
-    var storage = LocalStorage(Storage.storageName);
-    var ready = await storage.ready;
-    expect(ready, true);
-    await storage.clear();
+    await initLocalStorage();
+    localStorage.clear();
   });
 
   group('API registration', () {

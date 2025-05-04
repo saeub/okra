@@ -154,8 +154,8 @@ class RegistrationCodeScanner extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(S.of(context).registrationQrScannerTitle)),
       body: MobileScanner(
-        onDetect: (barcode) {
-          var data = barcode.raw.split('\n');
+        onDetect: (capture) {
+          var data = capture.barcodes.first.rawValue?.split('\n');
           if (data == null || data.length != 3) {
             throw QrScanError(S.of(context).registrationInvalidQrCode);
           }

@@ -1,4 +1,6 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
+
+import 'package:flutter/widgets.dart';
 import 'package:localstorage/localstorage.dart';
 
 import 'api.dart';
@@ -22,13 +24,12 @@ class Storage extends ChangeNotifier {
   static const tutorialKey = 'tutorial';
   static const showCompletedKey = 'showCompleted';
 
-  final LocalStorage storage;
   late List<WebApi> _webApis;
   late TutorialApi _tutorialApi;
   late bool _showCompleted;
 
-  Storage(this.storage) {
-    List<dynamic> apiJsons = storage.getItem(apisKey) ?? [];
+  Storage._init() {
+    List<dynamic> apiJsons = jsonDecode(localStorage.getItem(apisKey) ?? '[]');
     try {
       _webApis =
           apiJsons.cast<Map<String, dynamic>>().map(WebApi.fromJson).toList();
@@ -38,55 +39,55 @@ class Storage extends ChangeNotifier {
       throw IncompatibleStorageError(apisKey, apiJsons);
     }
     Map<String, dynamic> tutorialJson =
-        storage.getItem(tutorialKey) ?? TutorialApi(this).toJson();
+        jsonDecode(localStorage.getItem(tutorialKey) ?? 'null') ??
+            TutorialApi(this).toJson();
     try {
       _tutorialApi = TutorialApi.fromJson(tutorialJson, this);
     } on TypeError {
       throw IncompatibleStorageError(tutorialKey, tutorialJson);
     }
-    _showCompleted = storage.getItem(showCompletedKey) ?? false;
+    _showCompleted =
+        jsonDecode(localStorage.getItem(showCompletedKey) ?? 'false');
   }
 
   List<WebApi> get webApis => _webApis;
   TutorialApi get tutorialApi => _tutorialApi;
   bool get showCompleted => _showCompleted;
 
-  static Future<LocalStorage> loadLocalStorage() async {
-    var storage = LocalStorage(storageName);
-    var ready = await storage.ready;
-    if (ready) {
-      return storage;
-    } else {
-      throw 'Storage not ready';
-    }
+  static Future<Storage> init() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    await initLocalStorage();
+    return Storage._init();
   }
 
   void addWebApi(WebApi api) {
     _webApis.add(api);
-    storage.setItem(apisKey, _webApis.map((api) => api.toJson()).toList());
+    localStorage.setItem(
+        apisKey, jsonEncode(_webApis.map((api) => api.toJson()).toList()));
     notifyListeners();
   }
 
   void removeWebApi(WebApi api) {
     _webApis.remove(api);
-    storage.setItem(apisKey, _webApis.map((api) => api.toJson()).toList());
+    localStorage.setItem(
+        apisKey, jsonEncode(_webApis.map((api) => api.toJson()).toList()));
     notifyListeners();
   }
 
   void resetTutorial() {
     _tutorialApi.resetProgress();
-    storage.setItem(tutorialKey, _tutorialApi.toJson());
+    localStorage.setItem(tutorialKey, jsonEncode(_tutorialApi.toJson()));
     notifyListeners();
   }
 
   void saveTutorial() {
-    storage.setItem(tutorialKey, _tutorialApi.toJson());
+    localStorage.setItem(tutorialKey, jsonEncode(_tutorialApi.toJson()));
     notifyListeners();
   }
 
   void setShowCompleted(bool value) {
     _showCompleted = value;
-    storage.setItem(showCompletedKey, _showCompleted);
+    localStorage.setItem(showCompletedKey, jsonEncode(_showCompleted));
     notifyListeners();
   }
 }
