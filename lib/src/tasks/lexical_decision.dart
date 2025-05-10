@@ -91,7 +91,7 @@ class LexicalDecision extends Task {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(right: 4.0),
-                          child: ElevatedButton(
+                          child: FilledButton(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -104,10 +104,17 @@ class LexicalDecision extends Task {
                               ],
                             ),
                             style: ButtonStyle(
+                              shape: WidgetStateProperty.all(
+                                const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0),
+                                  ),
+                                ),
+                              ),
                               backgroundColor:
-                                  MaterialStateProperty.all(AppColors.positive),
+                                  WidgetStateProperty.all(AppColors.positive),
                               foregroundColor:
-                                  MaterialStateProperty.all(Colors.white),
+                                  WidgetStateProperty.all(Colors.white),
                             ),
                             onPressed:
                                 buttonsEnabled ? () => _onTap(true) : null,
@@ -117,7 +124,7 @@ class LexicalDecision extends Task {
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 4.0),
-                          child: ElevatedButton(
+                          child: FilledButton(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -130,10 +137,17 @@ class LexicalDecision extends Task {
                               ],
                             ),
                             style: ButtonStyle(
+                              shape: WidgetStateProperty.all(
+                                const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(8.0),
+                                  ),
+                                ),
+                              ),
                               backgroundColor:
-                                  MaterialStateProperty.all(AppColors.negative),
+                                  WidgetStateProperty.all(AppColors.negative),
                               foregroundColor:
-                                  MaterialStateProperty.all(Colors.white),
+                                  WidgetStateProperty.all(Colors.white),
                             ),
                             onPressed:
                                 buttonsEnabled ? () => _onTap(false) : null,

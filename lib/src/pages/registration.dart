@@ -67,7 +67,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
                 ),
                 Row(
                   children: [
-                    ElevatedButton.icon(
+                    FilledButton.icon(
                       icon: const Icon(Icons.check),
                       label: Text(S.of(context).registrationOk),
                       onPressed: _loading ? null : () => register(context),
@@ -154,8 +154,8 @@ class RegistrationCodeScanner extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text(S.of(context).registrationQrScannerTitle)),
       body: MobileScanner(
-        onDetect: (barcode) {
-          var data = barcode.raw.split('\n');
+        onDetect: (capture) {
+          var data = capture.barcodes.first.rawValue?.split('\n');
           if (data == null || data.length != 3) {
             throw QrScanError(S.of(context).registrationInvalidQrCode);
           }

@@ -123,13 +123,13 @@ class IntroStage extends TaskStage {
                     data: markdown,
                     fitContent: false,
                     styleSheet: MarkdownStyleSheet(
-                      textScaleFactor: 1.3,
+                      textScaler: const TextScaler.linear(1.3),
                       p: const TextStyle(height: 1.5),
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 16.0),
-                    child: ElevatedButton.icon(
+                    child: FilledButton.icon(
                       label: Text(S.of(context).taskAdvance),
                       icon: const Icon(Icons.arrow_forward),
                       onPressed: finish,
@@ -221,7 +221,7 @@ class ScrollableTextStage extends TaskStage {
           maintainState: true,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ElevatedButton.icon(
+            child: FilledButton.icon(
               onPressed: finish,
               icon: const Icon(Icons.arrow_forward),
               label: Text(S.of(context).taskAdvance),
@@ -712,17 +712,17 @@ class QuestionsStage extends TaskStage {
                     maintainState: true,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ElevatedButton(
+                      child: FilledButton(
                         child: const Icon(Icons.arrow_back),
                         style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all(
+                            minimumSize: WidgetStateProperty.all(
                                 const Size.fromWidth(40.0)),
-                            padding: MaterialStateProperty.all(EdgeInsets.zero),
-                            backgroundColor: MaterialStateProperty.all(
+                            padding: WidgetStateProperty.all(EdgeInsets.zero),
+                            backgroundColor: WidgetStateProperty.all(
                                 nToAnswerLeft > 0
                                     ? Theme.of(context).colorScheme.primary
                                     : Theme.of(context).colorScheme.secondary),
-                            elevation: MaterialStateProperty.all(
+                            elevation: WidgetStateProperty.all(
                                 nToAnswerLeft > 0 ? null : 0.0)),
                         onPressed: () {
                           _pageToQuestion(
@@ -765,17 +765,17 @@ class QuestionsStage extends TaskStage {
                     maintainState: true,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: ElevatedButton(
+                      child: FilledButton(
                         child: const Icon(Icons.arrow_forward),
                         style: ButtonStyle(
-                            minimumSize: MaterialStateProperty.all(
+                            minimumSize: WidgetStateProperty.all(
                                 const Size.fromWidth(40.0)),
-                            padding: MaterialStateProperty.all(EdgeInsets.zero),
-                            backgroundColor: MaterialStateProperty.all(
+                            padding: WidgetStateProperty.all(EdgeInsets.zero),
+                            backgroundColor: WidgetStateProperty.all(
                                 nToAnswerRight > 0
                                     ? Theme.of(context).colorScheme.primary
                                     : Theme.of(context).colorScheme.secondary),
-                            elevation: MaterialStateProperty.all(
+                            elevation: WidgetStateProperty.all(
                                 nToAnswerRight > 0 ? null : 0.0)),
                         onPressed: () {
                           _pageToQuestion(
@@ -793,7 +793,7 @@ class QuestionsStage extends TaskStage {
             visible: !_selectedAnswerIndices.contains(null),
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton.icon(
+              child: FilledButton.icon(
                 onPressed: () => _checkAnswers(context),
                 icon: const Icon(Icons.arrow_forward),
                 label: Text(S.of(context).taskAdvance),

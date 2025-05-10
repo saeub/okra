@@ -181,11 +181,15 @@ class _TaskPageState extends State<TaskPage> {
           ? AppBar(title: Text(widget.experiment.title))
           : null,
       body: SafeArea(
-        child: WillPopScope(
-          onWillPop: () async {
+        child: PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) async {
+            if (didPop) {
+              return;
+            }
             if (_mode == TaskPageMode.task || _mode == TaskPageMode.ratings) {
               _logger.log('aborting task');
-              return await showDialog<bool>(
+              var shouldPop = await showDialog<bool>(
                     barrierDismissible: false,
                     context: context,
                     builder: (context) => AlertDialog(
@@ -210,8 +214,9 @@ class _TaskPageState extends State<TaskPage> {
                     ),
                   ) ??
                   false;
-            } else {
-              return true;
+              if (shouldPop) {
+                Navigator.of(context).pop();
+              }
             }
           },
           child: OrientationBuilder(builder: (context, orientation) {
@@ -371,13 +376,13 @@ class InstructionsWidget extends StatelessWidget {
                     data: experiment.instructions,
                     fitContent: false,
                     styleSheet: MarkdownStyleSheet(
-                      textScaleFactor: 1.3,
+                      textScaler: const TextScaler.linear(1.3),
                       p: const TextStyle(height: 1.5),
                     ),
                   ),
                 ),
                 if (experiment.hasPracticeTask && experiment.nTasksDone == 0)
-                  ElevatedButton.icon(
+                  FilledButton.icon(
                     icon: const Icon(Icons.sports_tennis),
                     label: Text(S.of(context).instructionsStartPracticeTask),
                     onPressed: onStartPracticePressed,
@@ -385,17 +390,17 @@ class InstructionsWidget extends StatelessWidget {
                 else if (experiment.hasPracticeTask)
                   Column(
                     children: [
-                      ElevatedButton.icon(
+                      FilledButton.icon(
                         icon: const Icon(Icons.sports_tennis),
                         label:
                             Text(S.of(context).instructionsRestartPracticeTask),
                         style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
+                          backgroundColor: WidgetStateProperty.all<Color>(
                               Theme.of(context).colorScheme.secondary),
                         ),
                         onPressed: onStartPracticePressed,
                       ),
-                      ElevatedButton.icon(
+                      FilledButton.icon(
                         icon: const Icon(Icons.arrow_forward),
                         label: Text(S.of(context).instructionsStartTask),
                         onPressed: onStartPressed,
@@ -403,7 +408,7 @@ class InstructionsWidget extends StatelessWidget {
                     ],
                   )
                 else
-                  ElevatedButton.icon(
+                  FilledButton.icon(
                     icon: const Icon(Icons.arrow_forward),
                     label: Text(S.of(context).instructionsStartTask),
                     onPressed: onStartPressed,
@@ -712,7 +717,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
           ),
         ),
         const Spacer(flex: 1),
-        ElevatedButton.icon(
+        FilledButton.icon(
           icon: const Icon(Icons.arrow_forward),
           label: Text(S.of(context).taskAdvance),
           onPressed: _answers[_currentRatingIndex] != null
@@ -870,12 +875,12 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(4.0),
-                              child: ElevatedButton.icon(
+                              child: FilledButton.icon(
                                 icon: const Icon(Icons.schedule),
                                 label:
                                     Text(S.of(context).taskResultsNoNextTask),
                                 style: ButtonStyle(
-                                  backgroundColor: MaterialStateProperty.all<
+                                  backgroundColor: WidgetStateProperty.all<
                                           Color>(
                                       Theme.of(context).colorScheme.secondary),
                                 ),
@@ -884,7 +889,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                             ),
                             Padding(
                               padding: const EdgeInsets.all(4.0),
-                              child: ElevatedButton.icon(
+                              child: FilledButton.icon(
                                 icon: const Icon(Icons.arrow_forward),
                                 label: Text(S.of(context).taskResultsNextTask),
                                 onPressed: widget.onContinuePressed,
@@ -895,13 +900,12 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                         if (widget.practice)
                           Padding(
                             padding: const EdgeInsets.only(top: 16.0),
-                            child: ElevatedButton.icon(
+                            child: FilledButton.icon(
                               icon: const Icon(Icons.sports_tennis),
                               label: Text(
                                   S.of(context).taskResultsRepeatPracticeTask),
                               style: ButtonStyle(
-                                backgroundColor: MaterialStateProperty.all<
-                                        Color>(
+                                backgroundColor: WidgetStateProperty.all<Color>(
                                     Theme.of(context).colorScheme.secondary),
                               ),
                               onPressed: widget.onRepeatPracticePressed,
@@ -911,7 +915,7 @@ class _ResultsWidgetState extends State<ResultsWidget> {
                     );
                   } else {
                     // No tasks left
-                    return ElevatedButton.icon(
+                    return FilledButton.icon(
                       icon: const Icon(Icons.check),
                       label: Text(S.of(context).taskResultsFinishExperiment),
                       onPressed: Navigator.of(context).pop,

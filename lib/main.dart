@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:localstorage/localstorage.dart';
 import 'package:provider/provider.dart';
 
 import 'generated/l10n.dart';
@@ -69,59 +68,21 @@ class StorageWrapper extends StatefulWidget {
 }
 
 class _StorageWrapperState extends State<StorageWrapper> {
-  late Future<LocalStorage> _localStorageFuture;
+  late Future<Storage> _storageFuture;
 
   @override
   void initState() {
     super.initState();
-    _localStorageFuture = Storage.loadLocalStorage();
+    _storageFuture = Storage.init();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<LocalStorage>(
-      future: _localStorageFuture,
+    return FutureBuilder<Storage>(
+      future: _storageFuture,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          Storage storage;
-          try {
-            storage = Storage(snapshot.data!);
-          } on IncompatibleStorageError catch (e) {
-            return Scaffold(
-              body: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('An error occurred while loading storage: $e\n\n'
-                        'We are unable to resolve this issue. '
-                        'You can try deleting all stored settings and data and starting from scratch. '
-                        'You will have to add your APIs again. '
-                        'Contact your API provider for more information.\n\n'
-                        'Alternatively, exit the app and try downgrading it.\n'),
-                    Text(
-                      'Delete all data now?',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    ElevatedButton.icon(
-                      icon: const Icon(Icons.delete),
-                      label: const Text('YES, DELETE'),
-                      style: ButtonStyle(
-                        backgroundColor: MaterialStateProperty.all<Color>(
-                            Theme.of(context).colorScheme.error),
-                      ),
-                      onPressed: () async {
-                        await snapshot.data!.clear();
-                        setState(() {
-                          _localStorageFuture = Storage.loadLocalStorage();
-                        });
-                      },
-                    )
-                  ],
-                ),
-              ),
-            );
-          }
+          Storage storage = snapshot.data!;
           return ChangeNotifierProvider.value(
             value: storage,
             child: widget.child,

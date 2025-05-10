@@ -85,7 +85,7 @@ class _ExperimentsMenuPageState extends State<ExperimentsMenuPage> {
               child: Text(S.of(context).experimentsIntro,
                   style: const TextStyle(color: Colors.black, fontSize: 18.0)),
             ),
-            ElevatedButton.icon(
+            FilledButton.icon(
               onPressed: () async {
                 try {
                   var registrationData = await Navigator.of(context)
@@ -298,7 +298,7 @@ class ExperimentCard extends StatelessWidget {
                           color: Theme.of(context)
                               .colorScheme
                               .primary
-                              .withOpacity(0.4),
+                              .withValues(alpha: 0.4),
                         ),
                       ),
                     ),
@@ -323,7 +323,7 @@ class ExperimentCard extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      ElevatedButton.icon(
+                      FilledButton.icon(
                         onPressed: onTap,
                         icon: const Icon(Icons.arrow_forward),
                         label: Text(S.of(context).experimentsStart),
@@ -362,8 +362,10 @@ class ExperimentCard extends StatelessWidget {
               color: Colors.transparent,
               child: InkWell(
                 highlightColor: Colors.transparent,
-                splashColor:
-                    Theme.of(context).colorScheme.primary.withOpacity(0.4),
+                splashColor: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withValues(alpha: 0.4),
                 onTap: enabled ? onTap : null,
               ),
             ),
