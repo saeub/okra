@@ -570,7 +570,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
 
       case TaskRatingType.radio:
         inputWidget = Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (var i = 0; i < TaskRating.radioLevels; i++)
@@ -635,8 +635,8 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                                         style: const TextStyle(fontSize: 17.0),
                                       ),
                                     ),
-                                  ),
-                                if (i == TaskRating.radioLevels - 1 &&
+                                  )
+                                else if (i == TaskRating.radioLevels - 1 &&
                                     rating.highExtreme != null)
                                   Expanded(
                                     child: Padding(
@@ -644,6 +644,17 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                                           const EdgeInsets.only(left: 16.0),
                                       child: Text(
                                         rating.highExtreme!,
+                                        style: const TextStyle(fontSize: 17.0),
+                                      ),
+                                    ),
+                                  )
+                                else if (rating.options != null)
+                                  Expanded(
+                                    child: Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 16.0),
+                                      child: Text(
+                                        rating.options![i] ?? '',
                                         style: const TextStyle(fontSize: 17.0),
                                       ),
                                     ),
@@ -710,6 +721,21 @@ class _RatingsWidgetState extends State<RatingsWidget> {
                           ),
                         ],
                       ),
+                    )
+                  else if (rating.type != TaskRatingType.radioVertical &&
+                      rating.options != null)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (var i = 0; i < TaskRating.radioLevels; i++)
+                          Expanded(
+                            child: Text(
+                              rating.options![i] ?? '',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(fontSize: 17.0),
+                            ),
+                          )
+                      ],
                     ),
                 ],
               ),
@@ -753,7 +779,7 @@ class _RatingsWidgetState extends State<RatingsWidget> {
       emoticonIndices = emoticonIndices.reversed.toList();
     }
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         for (var i = 0; i < emoticonIndices.length; i++)

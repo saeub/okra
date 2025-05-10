@@ -28,12 +28,20 @@ DEVICE_KEY = "mock_devkey"
 EXAMPLE_IMAGE = "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAABAAEDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD5/ooooA//2Q=="
 
 
-def example_rating(type: str = "emoticon"):
+def example_rating(type: str = "emoticon", extremes_only: bool = False):
+    if extremes_only:
+        options = {
+            "lowExtreme": "bad",
+            "highExtreme": "good",
+        }
+    else:
+        options = {
+            "options": ["very bad", "bad", "neutral", "good", "very good"],
+        }
     return {
         "question": "Question?",
         "type": type,
-        "lowExtreme": "bad",
-        "highExtreme": "good",
+        **options,
     }
 
 
@@ -103,7 +111,7 @@ EXPERIMENTS_TASKS = [
             "nTasks": 5,
             "nTasksDone": 0,
             "hasPracticeTask": True,
-            "ratings": [example_rating("radio")],
+            "ratings": [example_rating("radio", extremes_only=True)],
         },
         {
             "words": ["EXAMPLE", "EXALMPE", "EXAMPLE"],
@@ -134,7 +142,7 @@ EXPERIMENTS_TASKS = [
             "instructions": "Choose the matching picture.",
             "nTasks": 4,
             "nTasksDone": 3,
-            "ratings": [example_rating("slider")],
+            "ratings": [example_rating("slider", extremes_only=True)],
         },
         {
             "showQuestionMark": True,

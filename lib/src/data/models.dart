@@ -86,20 +86,30 @@ class TaskRating {
   final String question;
   final TaskRatingType type;
   final String? lowExtreme, highExtreme;
+  final List<String?>? options;
 
   const TaskRating(this.question, this.type,
-      {this.lowExtreme, this.highExtreme});
+      {this.lowExtreme, this.highExtreme, this.options});
 
   static TaskRating fromJson(Map<String, dynamic> json) {
     var type = typeMap[json['type']];
     if (type == null) {
       throw ArgumentError('Unknown rating type "${json['type']}"');
     }
+    if (type == TaskRatingType.slider && json.containsKey('options')) {
+      throw ArgumentError('Cannot use "options" with "slider" type ratings');
+    }
+    if (json.containsKey('options') &&
+        (json.containsKey('lowExtreme') || json.containsKey('highExtreme'))) {
+      throw ArgumentError(
+          'Cannot use "options" with "lowExtreme" or "highExtreme"');
+    }
     return TaskRating(
       json['question'],
       type,
       lowExtreme: json['lowExtreme'],
       highExtreme: json['highExtreme'],
+      options: json['options']?.cast<String?>(),
     );
   }
 }
